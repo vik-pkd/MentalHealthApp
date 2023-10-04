@@ -1,0 +1,23 @@
+{
+  "name": "mental-health-app-backend",
+  "version": "1.0.0",
+  "description": "B.Tech. Project",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vik-pkd/MentalHealthApp.git"
+  },
+  "author": "Vikas Saini And Sanjh Maheshwari",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vik-pkd/MentalHealthApp/issues"
+  },
+  "homepage": "https://github.com/vik-pkd/MentalHealthApp#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
