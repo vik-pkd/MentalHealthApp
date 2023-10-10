@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema({
+const patientSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
@@ -14,33 +14,24 @@ const userSchema = new mongoose.Schema({
     age: {
         type: Number
     },
-    userType: {
-        type: String
-    },
     Score: {
         type: Number
     },
     Streak: {
         type: Number
     },
-    doctors: [
-        { 
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        }
-    ],
-    patients: [
-        { 
+    caregivers: [
+        {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User' 
         }
     ],
-    caretakers: [
-        {
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: 'User'
+    doctors: [
+        { 
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User' 
         }
     ]
 });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('Patient', patientSchema);
