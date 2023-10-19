@@ -1,2 +1,0 @@
-# MentalHealthApp
-B.Tech. Project
