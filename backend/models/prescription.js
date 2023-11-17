@@ -12,21 +12,25 @@ const prescriptionSchema = new mongoose.Schema({
     medicine: {
         type: String
     },
-    prescription_date: {
-        type: String
-    },
     start_date: {
         type: Date
-    },
-    start_slot: {
-        type: String
     },
     end_date: {
         type: Date
     },
-    end_slot: {
-        type: String
-    },
+    slots: [
+        {
+            slot_name: {
+                type: String,       
+            },
+            slot_time: {
+                type: String
+            },
+            isBeforeFood: {
+                type: Boolean
+            }
+        }
+    ],
 });
 
-module.exports = mongoose.model("Prescription", userSchema);
+module.exports = mongoose.model("Prescription", prescriptionSchema);
