@@ -12,6 +12,9 @@ const doctorSchema = new mongoose.Schema({
     password: {
         type: String
     },
+    key: {
+        type: String
+    },
     age: {
         type: Number
     },
@@ -31,7 +34,7 @@ doctorSchema.pre('save', function (next) {
             next();
         })
     }
-})
+});
 
 doctorSchema.methods.comparePassword = async function (password) {
     if (!password) throw new Error('Password is missing, can not compare!');

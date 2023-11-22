@@ -1,6 +1,8 @@
 const Patient = require('../models/patient');
 const Doctor = require('../models/doctor');
 const ObjectId = require('mongoose').Types.ObjectId;
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 module.exports.getDoctors = async (req, res) => {
     try {
@@ -21,10 +23,78 @@ module.exports.addDoctor = async (req, res) => {
             return res.send({ status: 'failure', message: 'This email is already in use, try to sign-in' })
         }
 
-        const doctor = Doctor({ name, email, password, age })
+        const key = "";
+        const doctor = Doctor({ name, email, password, age, key })
         await doctor.save();
         res.send({ status: 'success' });
     } catch (error) {
         res.send(`Error occured while adding doctor ${error}`);
     }
+}
+
+module.exports.doctorSignIn = async (req, res) => {
+    const { email, password } = req.body;
+    const doctor = await Doctor.findOne({ email })
+
+    if (!doctor) return res.json({ status: 'failure', message: 'Doctor not found, with given email!' })
+
+    const isMatch = await doctor.comparePassword(password);
+    if (!isMatch) return res.json({ status: 'failure', message: 'email / password does not match!' })
+
+    const token = jwt.sign({ userId: doctor._id }, process.env.JWT_SECRET, { expiresIn: '1d' })
+
+    res.send({ status: 'success', doctor, token })
+}
+
+
+module.exports.doctorAddKey = async (req, res) => {
+    const { userId, publicKey } = req.body;
+
+    const updateDocument = {
+        $set: {
+            key: publicKey,
+        },
+    };
+    const doctor = await Doctor.findOneAndUpdate({ _id: userId }, updateDocument)
+
+    // console.log(doctor);
+    if (!doctor) return res.json({ status: 'failure', message: 'Doctor not found, with given id!' })
+
+    res.send({ status: 'success', doctor })
+}
+
+module.exports.verifyBiometrics = async (req, res) => {
+    const { signature, payload } = req.body;
+    const userId = payload.split('__')[0];
+
+    const doctor = await Doctor.findOne({ _id: userId })
+
+    if (!doctor) return res.json({ status: 'failure', message: 'Doctor not found, with given id!' })
+
+    // this is the public key that was saved 
+    // console.log(doctor);
+    const publicKey = doctor.key;
+
+    // console.log(publicKey);
+
+    const verifier = crypto.createVerify('RSA-SHA256');
+    verifier.update(payload);
+
+    const isVerified = verifier.verify(
+        `-----BEGIN PUBLIC KEY-----\n${publicKey}\n-----END PUBLIC KEY-----`,
+        signature,
+        'base64',
+    );
+
+    if (!isVerified) {
+        return res.json({
+            status: 'failed',
+            message: 'Unfortunetely we could not verify your Face ID authentication',
+        });
+    }
+
+    const token = jwt.sign({ userId: doctor._id }, process.env.JWT_SECRET, { expiresIn: '1d' })
+    return res.json({
+        status: 'success', doctor, token
+    });
 }

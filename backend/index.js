@@ -7,6 +7,8 @@ const patientRoutes = require('./routes/Patient');
 const doctorRoutes = require('./routes/Doctor');
 const Doctor = require('./models/doctor');
 
+require('dotenv').config()
+
 const app = express();
 
 const PORT = 5000;
@@ -19,13 +21,17 @@ app.use(bodyParser.json());
 app.use('/patients', patientRoutes);
 app.use('/doctors', doctorRoutes);
 
-const test = async (email, password) => {
-  const doctor = await Doctor.findOne({ email: email });
-  console.log(await doctor.comparePassword(password));
-}
+app.use('/', (req, res) => {
+  res.send({ status: 'success', message: 'Welcome to backend zone!' })
+})
 
-test("sanjh@gmail.com", "1234");
-test("sanjh@gmail.com", "12345");
+// const test = async (email, password) => {
+//   const doctor = await Doctor.findOne({ email: email });
+//   console.log(await doctor.comparePassword(password));
+// }
+
+// test("sanjh@gmail.com", "1234");
+// test("sanjh@gmail.com", "12345");
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
