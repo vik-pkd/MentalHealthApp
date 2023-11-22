@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image } from 'react-native'
+import { StyleSheet, Text, View, Image, Platform } from 'react-native'
 import React from 'react'
 
 import {
@@ -36,24 +36,25 @@ const data = {
     legend: ["Mental Score"] // optional
 };
 
+var deviceHeight = Dimensions.get('window').height;
+var deviceWidth = Dimensions.get('window').width;
+
 export default function FancyCard() {
     return (
-        <View>
-            <View style={[styles.card, styles.cardElevated]}>
-                <LineChart
-                    data={data}
-                    width={360}
-                    height={180}
-                    chartConfig={chartConfig}
-                />
-                <View style={styles.cardBody}>
-                    <Text style={styles.cardTitle}>Score Record</Text>
-                    {/* <Text style={styles.cardLabel}>Pink City, Jaipur</Text> */}
-                    <Text style={styles.cardDescription}>This is the track of your congnitive assessment from past few months, you can get a more detailed analysis by training more.</Text>
-                    {/* <Text style={styles.cardFooter}>12 mins away</Text> */}
-                </View>
-            </View>
 
+        <View style={[styles.card, styles.cardElevated]}>
+            <LineChart
+                data={data}
+                width={styles.card.width}
+                height={styles.card.height - 130}
+                chartConfig={chartConfig}
+            />
+            <View style={styles.cardBody}>
+                <Text style={styles.cardTitle}>Score Record</Text>
+                {/* <Text style={styles.cardLabel}>Pink City, Jaipur</Text> */}
+                <Text style={styles.cardDescription}>This is the track of your congnitive assessment from past few months, you can get a more detailed analysis by training more.</Text>
+                {/* <Text style={styles.cardFooter}>12 mins away</Text> */}
+            </View>
         </View>
     )
 }
@@ -65,11 +66,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8
     },
     card: {
-        width: 360,
+        width: screenWidth - 16,
         height: 310,
         borderRadius: 6,
-        marginVertical: 12,
-        marginHorizontal: 16
+        // marginVertical: 12,
+        marginHorizontal: 8,
+        // margin: 8
     },
     cardElevated: {
         backgroundColor: '#FFFFFF',

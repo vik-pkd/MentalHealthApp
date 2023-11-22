@@ -2,6 +2,9 @@ import { StyleSheet, Text, View, Image } from 'react-native'
 import React from 'react'
 import FlatCards from './FlatCards'
 
+import { Dimensions } from "react-native";
+const screenWidth = Dimensions.get("window").width;
+
 export default function BasicCard() {
     return (
         <View>
@@ -29,11 +32,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8
     },
     card: {
-        width: 360,
+        width: screenWidth - 16,
         height: 230,
         borderRadius: 6,
-        marginVertical: 12,
-        marginHorizontal: 16
+        marginVertical: 8,
+        marginHorizontal: 8
     },
     cardElevated: {
         backgroundColor: '#FFFFFF',
@@ -69,7 +72,7 @@ const styles = StyleSheet.create({
     cardDescription: {
         color: '#57606f',
         fontSize: 13,
-        marginBottom: 14,
+        marginBottom: 4,
         marginTop: 6
     },
     cardFooter: {
