@@ -1,15 +1,13 @@
 import { useState } from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
 import { Image, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 // import DateTimePicker from '@react-native-community/datetimepicker';
 
-const Stack = createStackNavigator();
-
-function PatientProfile() {
+function Profile() {
 
 	const [isModalVisible, setModalVisible] = useState(false);
 	const [medicineName, setMedicineName] = useState('');
-	const [date, setDate] = useState('');
+	const [startDate, setStartDate] = useState('');
+	const [endDate, setEndDate] = useState('');
 	const [slot, setSlot] = useState('');
 	const [beforeOrAfter, setBeforeOrAfter] = useState('');
 
@@ -24,15 +22,15 @@ function PatientProfile() {
 
 	// Dummy patient data (replace with actual data)
 	const patientData = {
-		name: 'John Doe',
-		email: 'john.doe@example.com',
-		points: 100,
+		name: 'Ajay',
+		email: 'ajay.sharma@gmail.com',
+		points: 0,
 	};
 
 	return (
 		<View style={styles.container}>
 			<View style={styles.profileContainer}>
-				<View style={styles.profilePhotoContainer}>
+				<View>
 					<View style={styles.profilePhoto} >
 					</View>
 					{/* <Image
@@ -52,8 +50,8 @@ function PatientProfile() {
 				<Text style={styles.label}>Points:</Text>
 				<Text style={styles.value}>{patientData.points}</Text>
 
-				<TouchableOpacity style={styles.button} onPress={handlePrescription}>
-					<Text style={styles.buttonText}>Write Prescription</Text>
+				<TouchableOpacity onPress={handlePrescription}>
+					<Text>Write Prescription</Text>
 				</TouchableOpacity>
 			</View>
 
@@ -88,10 +86,18 @@ function PatientProfile() {
 						<TextInput
 							
 							style={styles.input}
-							placeholder="Date"
-							value={date}
-							onChangeText={text => setDate(text)}
+							placeholder="Start date"
+							value={startDate}
+							onChangeText={text => setStartDate(text)}
 						/>
+
+						<TextInput	
+							style={styles.input}
+							placeholder="End date"
+							value={endDate}
+							onChangeText={text => setEndDate(text)}
+						/>
+
 						<TextInput
 							style={styles.input}
 							placeholder="Slot"
@@ -108,7 +114,7 @@ function PatientProfile() {
 
 						{/* Save Button */}
 						<TouchableOpacity style={styles.saveButton} onPress={handleSavePrescription}>
-							<Text style={styles.buttonText}>Save Prescription</Text>
+							<Text>Save Prescription</Text>
 						</TouchableOpacity>
 					</View>
 				</View>
@@ -185,4 +191,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PatientProfile;
+export default Profile;

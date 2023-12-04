@@ -1,21 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import { FlatList, View } from 'react-native';
 import ReminderCard from './ReminderCard';
 
-function Reminders(): React.JSX.Element {
+function Reminders() {
     const [reminders, setReminders] = useState([]);
-
-    // ################ IP address 
-    const reminderURL = `http://10.32.2.207:5000/prescription/65258f35bdf06bf2d2632580`;
-    console.log(reminderURL);
-    // const url = 'http://localhost:5000/prescription/65258f35bdf06bf2d2632580';
+    
     useEffect(() => {
-        fetch(reminderURL)
-            .then(data => data.json())
-            .then(reminders => {
-                console.log(reminders); setReminders(reminders);
-            })
-            .catch(err => console.log(err));
+        const reminders = [
+            {
+                medicine: 'Paracetamol',
+                date: '2023-12-04',
+                slot: 'Evening',
+                isBeforeFood: false
+            },
+            {
+                medicine: 'Paracetamol',
+                date: '2023-12-05',
+                slot: 'Evening',
+                isBeforeFood: false
+            },
+            {
+                medicine: 'Paracetamol',
+                date: '2023-12-06',
+                slot: 'Evening',
+                isBeforeFood: false
+            },
+        ];
+        setReminders(reminders);
     }, []);
     
     return (

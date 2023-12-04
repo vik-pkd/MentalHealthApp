@@ -1,16 +1,15 @@
-import { StyleSheet, Text, View, Image, FlatList } from 'react-native';
+import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity } from 'react-native';
 import React from 'react';
-import FlatCards from './FlatCards';
 
 export default function ReminderCard(props) {
     return (
         <View>
             <View style={styles.container}>
                 <View style={[styles.card]}>
-                    <Text style={styles.cardText}>{props.medicine}</Text>
-                    <Text style={styles.cardText}>{props.date}</Text>
-                    <Text style={styles.cardText}>{props.slot}</Text>
-                    <Text style={styles.cardText}>{props.isBeforeFood?"Yes":"No"}</Text>
+                    <Text style={styles.cardText}>Medicine: {props.medicine}</Text>
+                    <Text style={styles.cardText}>Date: {props.date}</Text>
+                    <Text style={styles.cardText}>Slot: {props.slot}</Text>
+                    <Text style={styles.cardText}>Before/After food: {props.isBeforeFood?"Before":"After"}</Text>
                 </View>
             </View>
         </View>
@@ -41,4 +40,7 @@ const styles = StyleSheet.create({
     cardText: {
         color: '#ffffff',
     },
+    medicineTakenButton: {
+        backgroundColor: 'white'
+    }
 });
