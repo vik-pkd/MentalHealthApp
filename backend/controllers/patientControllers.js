@@ -4,8 +4,12 @@ const ObjectId = require('mongoose').Types.ObjectId;
 
 module.exports.getPatients = async (req, res) => {
     try {
-        const patients = await Patient.find({});
-        res.send(patients);
+        const doctorId = req.user._id;
+        const patients = (await Doctor.findById(doctorId).populate('patients')).patients;
+        const includedPatients = patients.filter((patient) => {
+            return patient.email.includes(req.query.searchText);
+        })
+        res.send(includedPatients);
     } catch (err) {
         res.send(err);
     }
@@ -13,22 +17,21 @@ module.exports.getPatients = async (req, res) => {
 
 module.exports.addPatient = async (req, res) => {
     try {
-        // TODO fetch usedId from session or cookies after auth (hardcoded for now)
-        const doctorId = '652591304ae9e13d68002868';
-        const patientId = req.body.patient;
-
-        console.log(patientId)
-        // add patient and doctor in each other's list
-        const doctor = (await Doctor.find({ _id: doctorId }))[0];
-        const patient = (await Patient.find({ _id: patientId }))[0];
-        if (!doctor.patients.includes(new ObjectId(patientId))) {
-            doctor.patients.push(new ObjectId(patientId));
-            doctor.save();
+        const doctorId = req.user._id;
+        const doctor = await Doctor.findById(doctorId);
+        const isNewUser = await Patient.isThisEmailInUse(req.body.email);
+        if (!isNewUser) {
+            return res.send({ status: 'failure', message: 'This email is already in use, try to sign-in' })
         }
-        if (!patient.doctors.includes(new ObjectId(doctorId))) {
-            patient.doctors.push(new ObjectId(doctorId));
-            patient.save();
-        }
+        const patient = new Patient({
+            ...req.body,
+            Score: 0,
+            Streak: 0,
+            doctor: doctorId
+        })
+        
+        await patient.save();
+        await doctor.addPatient(patient._id);
         res.send({ status: 'success' });
     } catch (error) {
         res.send(`Error occured while adding patient ${error}`);

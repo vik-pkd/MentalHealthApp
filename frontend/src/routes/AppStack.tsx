@@ -7,11 +7,13 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import Home from '../screens/Home';
 import Games from '../screens/Games';
 import Mindfulness from '../screens/Mindfulness';
+import PatientSearch from '../screens/PatientSearch';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const homeName = "Home";
 const detailsName = "Games";
 const settingsName = "Mindfulness";
+const patientsName = "Patients";
 
 const Tab = createBottomTabNavigator();
 
@@ -33,6 +35,8 @@ export const AppStack = () => {
 
             } else if (rn === settingsName) {
               iconName = focused ? 'happy' : 'happy-outline';
+            } else if (rn === patientsName) {
+              iconName = focused ? 'happy': 'happy-outline';
             }
 
             // You can return any component that you like here!
@@ -46,6 +50,7 @@ export const AppStack = () => {
         <Tab.Screen name='Games' component={Games} />
         <Tab.Screen name='Home' component={Home} />
         <Tab.Screen name='Mindfulness' component={Mindfulness} />
+        <Tab.Screen name='Patients' component={PatientSearch} />
       </Tab.Navigator>
     </NavigationContainer>
   )

@@ -21,7 +21,7 @@ const doctorSchema = new mongoose.Schema({
     patients: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
+            ref: 'Patient'
         }
     ]
 });
@@ -33,6 +33,8 @@ doctorSchema.pre('save', function (next) {
             this.password = hash;
             next();
         })
+    } else {
+        next();
     }
 });
 
@@ -57,6 +59,19 @@ doctorSchema.statics.isThisEmailInUse = async function (email) {
         console.log(error.message)
         return false;
     }
+}
+
+doctorSchema.methods.addPatient = async function (patientId) {
+    try {
+        const id = patientId;
+        this.patients.push(id);
+        console.log('in doctor model', patientId);
+        await this.save();
+        console.log('in doctor model after', patientId);
+    } catch (error) {
+        console.log(error.message);
+    }
+    return;
 }
 
 module.exports = mongoose.model('Doctor', doctorSchema);

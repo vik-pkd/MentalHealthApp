@@ -97,6 +97,7 @@ const Login = ({ navigation }: LoginScreenProps) => {
       }
 
       const resp = await client.post('/doctors/sign-in', { ...user })
+      await AsyncStorage.setItem('authorizationToken', resp.data.token);
       const userId = resp.data.doctor._id;
 
       const rnBiometrics = new ReactNativeBiometrics();
