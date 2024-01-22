@@ -5,9 +5,10 @@ const ObjectId = require('mongoose').Types.ObjectId;
 module.exports.getPatients = async (req, res) => {
     try {
         const doctorId = req.user._id;
+        const searchText = req.query.searchText.toLowerCase();
         const patients = (await Doctor.findById(doctorId).populate('patients')).patients;
         const includedPatients = patients.filter((patient) => {
-            return patient.email.includes(req.query.searchText);
+            return patient.email.toLowerCase().includes(searchText) || patient.name.toLowerCase().includes(searchText);
         })
         res.send(includedPatients);
     } catch (err) {

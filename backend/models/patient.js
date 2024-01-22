@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const patientSchema = new mongoose.Schema({
     name: {
@@ -29,6 +30,18 @@ const patientSchema = new mongoose.Schema({
     {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Doctor'
+    }
+});
+
+patientSchema.pre('save', function (next) {
+    if (this.isModified('password')) {
+        bcrypt.hash(this.password, 8, (err, hash) => {
+            if (err) return next(err);
+            this.password = hash;
+            next();
+        })
+    } else {
+        next();
     }
 });
 

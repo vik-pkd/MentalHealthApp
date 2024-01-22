@@ -6,37 +6,19 @@ import PatientSearchEntry from '../components/PatientSearchEntry';
 
 export default function PatientSearch() {
     const [searchText, setSearchText] = useState('');
-
-    useEffect(() => {
-    //   console.log(searchText);
-    }, [searchText])
+    const [patientList, setPatientList] = useState<{'_id': string}[]>([]);
     
-
-    const handleSearch = async () => {
-        console.log(searchText);
-        const token = await AsyncStorage.getItem('authorizationToken');
-        // const response = client.get('/');
-        console.log('token =', token);
-    }
-
-    const patientList = [
-        {
-            name: "Patient0",
-            _id: 0,
-        },
-        {
-            name: "Patient1",
-            _id: 1,
-        },
-        {
-            name: "Patient2",
-            _id: 2,
-        },
-        {
-            name: "Patient3",
-            _id: 3
-        },
-    ];
+    useEffect(() => {
+        const fetchData = async () => {
+            const authToken = await AsyncStorage.getItem('authorizationToken');
+            const headers = {
+                'Authorization': `Bearer ${authToken}`
+            };
+            const response = await client.get(`/patients/get-patients?searchText=${searchText}`, { headers });
+            setPatientList(response.data);
+        };
+        fetchData();
+    }, [searchText]);
 
     const renderPatientSearchEntry = ({ item }: any) => (
         <PatientSearchEntry name={item.name} _id={item._id} />
@@ -55,8 +37,8 @@ export default function PatientSearch() {
                 </View>
                 <View style={{ flex: 1 }}>
                     <Button
-                        title='Search'
-                        onPress={handleSearch}
+                        title='Clear'
+                        onPress={() => setSearchText('')}
                     />
                 </View>
             </View>

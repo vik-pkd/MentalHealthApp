@@ -9,6 +9,8 @@ import React, { useContext, useState, useEffect } from 'react'
 //context API
 import { AppwriteContext } from '../appwrite/AppwriteContext'
 import { useLogin } from '../context/LoginProvider';
+import { Button } from '@rneui/base'
+import AddPatientModal from '../components/AddPatientModal'
 
 type UserObj = {
     name: String;
@@ -17,6 +19,7 @@ type UserObj = {
 
 export default function Home() {
     const { setIsLoggedIn, profile } = useLogin();
+    const [modalVisible, setModalVisible] = useState(false);
 
     const handleLogout = () => {
 
@@ -26,6 +29,14 @@ export default function Home() {
             duration: Snackbar.LENGTH_SHORT
         });
 
+    }
+    
+    const openModal = () => {
+        setModalVisible(true);
+    };
+
+    const closeModal = () => {
+        setModalVisible(false);
     }
 
     // useEffect(() => {
@@ -51,6 +62,10 @@ export default function Home() {
                         <Text style={styles.userDetails}>Email: {profile.email}</Text>
                     </View>
                 )}
+                <Button
+                    onPress={openModal}
+                    title={'Add Patient'}
+                />
                 <FancyCard />
                 <BasicCard />
                 {/* <HistoryCard /> */}
@@ -64,6 +79,7 @@ export default function Home() {
                 icon={{ name: 'logout', color: '#FFFFFF' }}
                 onPress={handleLogout}
             />
+            <AddPatientModal isVisible={modalVisible} closeModal={closeModal}/>
         </View>
     )
 }
