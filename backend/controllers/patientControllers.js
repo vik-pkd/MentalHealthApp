@@ -8,7 +8,7 @@ module.exports.getPatients = async (req, res) => {
         const searchText = req.query.searchText.toLowerCase();
         const patients = (await Doctor.findById(doctorId).populate('patients')).patients;
         const includedPatients = patients.filter((patient) => {
-            return patient.email.toLowerCase().includes(searchText) || patient.name.toLowerCase().includes(searchText);
+            return searchText.length > 0 && (patient.email.toLowerCase().includes(searchText) || patient.name.toLowerCase().includes(searchText));
         })
         res.send(includedPatients);
     } catch (err) {

@@ -1,13 +1,14 @@
-import { StyleSheet, Text, TextInput, View, Button, FlatList } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Button, FlatList, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import client from '../api/client';
 import PatientSearchEntry from '../components/PatientSearchEntry';
+import Ionicons from 'react-native-vector-icons/Ionicons'
 
 export default function PatientSearch() {
     const [searchText, setSearchText] = useState('');
-    const [patientList, setPatientList] = useState<{'_id': string}[]>([]);
-    
+    const [patientList, setPatientList] = useState<{ '_id': string }[]>([]);
+
     useEffect(() => {
         const fetchData = async () => {
             const authToken = await AsyncStorage.getItem('authorizationToken');
@@ -27,20 +28,20 @@ export default function PatientSearch() {
     return (
         <View style={styles.continer}>
             <View style={styles.formContainer}>
-                <View style={{ flex: 1 }}>
-                    <TextInput
-                        value={searchText}
-                        onChangeText={(text) => { setSearchText(text); }}
-                        style={{ backgroundColor: 'blue' }}
-                        placeholder='Search by email address'
-                    />
-                </View>
-                <View style={{ flex: 1 }}>
-                    <Button
-                        title='Clear'
-                        onPress={() => setSearchText('')}
-                    />
-                </View>
+                <TextInput
+                    value={searchText}
+                    style={styles.input}
+                    onChangeText={(text) => { setSearchText(text); }}
+                    placeholder='Search by email address'
+                    placeholderTextColor={'grey'}
+                />
+                <TouchableOpacity onPress={() => setSearchText('')}>
+                    <View style={styles.cancelButton}>
+                        <View style={styles.cancelButtonIcon}>
+                            <Ionicons name="close" size={20} color="white" />
+                        </View>
+                    </View>
+                </TouchableOpacity>
             </View>
 
             <View style={styles.patientList}>
@@ -61,22 +62,40 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
-        // backgroundColor: 'red'
+        justifyContent: 'flex-start',
     },
     formContainer: {
-        flex: 1,
+        // width: '100%',
         flexDirection: 'row',
+        paddingHorizontal: 6,
+        marginHorizontal: 7,
+        borderWidth: 2,
+        borderColor: 'black',
+        borderRadius: 8,
+        marginBottom: 8
+    },
+    input: {
+        flex: 1,
+        color: 'black'
+    },
+    cancelButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 14,
+        paddingHorizontal: 3
+    },
+    cancelButtonIcon:{
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        backgroundColor: 'grey',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     patientList: {
         width: '100%',
-        backgroundColor: 'green',
-        // position: 'absolute'
+        flexDirection: 'column',
+        alignItems: 'stretch',
+        justifyContent: 'center'
     },
-    smallText: {
-        color: '#000000'
-    },
-    searchBtn: {
-
-    }
 });

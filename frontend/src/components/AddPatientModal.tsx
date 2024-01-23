@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Modal, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import client from '../api/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -21,7 +21,7 @@ export default function AddPatientModal(props: any) {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${authToken}`
         };
-        const response = await client.post('/patients/add-patient', patientData, {headers});
+        const response = await client.post('/patients/add-patient', patientData, { headers });
         props.closeModal();
     }
 
@@ -34,39 +34,50 @@ export default function AddPatientModal(props: any) {
         >
             <View style={styles.container}>
                 <View style={styles.content}>
-                    <View>
-                        <Text style={[styles.inputText]}>Name</Text>
+                    <View style={[styles.labelAndInput]}>
+                        <Text style={[styles.blackText]}>Name</Text>
                         <TextInput
-                            style={[styles.inputText]}
+                            style={[styles.blackText]}
                             onChangeText={(text) => { setName(text); }}
                         />
                     </View>
                     <View>
-                        <Text style={[styles.inputText]}>Email</Text>
+                        <Text style={[styles.blackText]}>Email</Text>
                         <TextInput
-                            style={[styles.inputText]}
+                            style={[styles.blackText]}
                             keyboardType='email-address'
                             onChangeText={(text) => { setEmail(text); }}
                         />
                     </View>
                     <View>
-                        <Text style={[styles.inputText]}>Password</Text>
+                        <Text style={[styles.blackText]}>Password</Text>
                         <TextInput
-                            style={[styles.inputText]}
+                            style={[styles.blackText]}
                             secureTextEntry={true}
                             onChangeText={(text) => { setPassword(text); }}
                         />
                     </View>
                     <View>
-                        <Text style={[styles.inputText]}>Age</Text>
+                        <Text style={[styles.blackText]}>Age</Text>
                         <TextInput
-                            style={[styles.inputText]}
+                            style={[styles.blackText]}
                             keyboardType='numeric'
                             onChangeText={(text) => { setAge(text); }}
                         />
                     </View>
-                    <Button title='Submit' onPress={handleSubmit} />
-                    <Button title="Close Modal" onPress={props.closeModal} />
+                    <View style={styles.buttonSection}>
+                        <Pressable onPress={handleSubmit}>
+                            <View style={[styles.button]}>
+                                <Text style={[styles.buttonText]}>Submit</Text>
+                            </View>
+                        </Pressable>
+                        
+                        <Pressable onPress={props.closeModal}>
+                            <View style={[styles.button]}>
+                                <Text style={[styles.buttonText]}>Close</Text>
+                            </View>
+                        </Pressable>
+                    </View>
                 </View>
             </View>
         </Modal>
@@ -86,7 +97,24 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         elevation: 5,
     },
-    inputText: {
+    labelAndInput: {
+        // flexDirection: 'row',
+        // backgroundColor: 'red',
+        marginVertical: 3
+    },
+    blackText: {
         color: 'black'
+    },
+    buttonSection: {
+        flexDirection: 'row'
+    },
+    button: {
+        backgroundColor: '#2196F3',
+        borderRadius: 6,
+        padding: 6,
+        marginHorizontal: 6
+    },
+    buttonText: {
+        color: 'white'
     }
 });

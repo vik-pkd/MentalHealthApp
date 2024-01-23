@@ -7,27 +7,29 @@ const PatientSearchEntry = (props: any) => {
     };
 
     return (
-        <View style={styles.container}>
-            <Pressable onPress={handlePress}>
-                <Text style={{ backgroundColor: 'blue', textAlign: 'left', flex: 1 }}>
+        <Pressable onPress={handlePress}>
+            <View style={styles.container}>
+                <Text style={styles.text}>
                     {props.name}
                 </Text>
-            </ Pressable>
-        </View>
+            </View>
+        </ Pressable>
     )
 };
 
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        // backgroundColor: 'yellow',
-        alignItems: 'center',
+        alignItems: 'flex-start',
+        // flexDirection: 'row',
         justifyContent: 'center',
-        borderColor: 'black',
-        flexDirection: 'row',
-        borderWidth: 2,
-        margin: 2
+        paddingHorizontal: 6,
+        paddingVertical: 4,
+        marginHorizontal: 8,
+        marginVertical: 3
+    },
+    text: {
+        color: 'black',
     }
 });
 
