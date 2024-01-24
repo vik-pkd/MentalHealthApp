@@ -36,7 +36,7 @@ export const AppStack = () => {
             } else if (rn === settingsName) {
               iconName = focused ? 'happy' : 'happy-outline';
             } else if (rn === patientsName) {
-              iconName = focused ? 'happy': 'happy-outline';
+              iconName = focused ? 'person': 'person-outline';
             }
 
             // You can return any component that you like here!

@@ -4,14 +4,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import client from '../api/client';
 import PatientSearchEntry from '../components/PatientSearchEntry';
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import { useSelector } from 'react-redux';
 
 export default function PatientSearch() {
     const [searchText, setSearchText] = useState('');
     const [patientList, setPatientList] = useState<{ '_id': string }[]>([]);
-
+    const authToken = useSelector((state: Record<string, {token : string | null}>) => state.authToken.token);
+    
     useEffect(() => {
         const fetchData = async () => {
-            const authToken = await AsyncStorage.getItem('authorizationToken');
             const headers = {
                 'Authorization': `Bearer ${authToken}`
             };

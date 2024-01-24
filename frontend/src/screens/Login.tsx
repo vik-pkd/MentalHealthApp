@@ -16,6 +16,9 @@ import { AuthStackParamList } from '../routes/AuthStack';
 import { useLogin } from '../context/LoginProvider';
 import ReactNativeBiometrics, { BiometryTypes } from 'react-native-biometrics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch } from 'react-redux';
+
+import { authTokenActions } from '../store/authToken-slice';
 
 type LoginScreenProps = NativeStackScreenProps<AuthStackParamList, 'Login'>
 
@@ -26,6 +29,7 @@ const Login = ({ navigation }: LoginScreenProps) => {
 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const dispatch = useDispatch();
 
 
   const handleFaceID = async () => {
@@ -97,7 +101,10 @@ const Login = ({ navigation }: LoginScreenProps) => {
       }
 
       const resp = await client.post('/doctors/sign-in', { ...user })
-      await AsyncStorage.setItem('authorizationToken', resp.data.token);
+      if (resp.data && resp.data.token) {
+        dispatch(authTokenActions.set(resp.data.token));
+        await AsyncStorage.setItem('authorizationToken', resp.data.token);
+      }
       const userId = resp.data.doctor._id;
 
       const rnBiometrics = new ReactNativeBiometrics();

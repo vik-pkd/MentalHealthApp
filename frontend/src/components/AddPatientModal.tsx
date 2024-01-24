@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Button, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import client from '../api/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSelector } from 'react-redux';
 
 export default function AddPatientModal(props: any) {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [age, setAge] = useState('');
+    const authToken = useSelector((state: Record<string, {token : string | null}>) => state.authToken.token);
 
     const handleSubmit = async () => {
         const patientData = {
@@ -16,7 +18,6 @@ export default function AddPatientModal(props: any) {
             password: password,
             age: age
         };
-        const authToken = await AsyncStorage.getItem('authorizationToken');
         const headers = {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${authToken}`
