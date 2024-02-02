@@ -1,5 +1,6 @@
 const Patient = require('../models/patient');
 const Doctor = require('../models/doctor');
+const { pick } = require('../utils/util');
 const ObjectId = require('mongoose').Types.ObjectId;
 
 module.exports.getPatients = async (req, res) => {
@@ -35,9 +36,31 @@ module.exports.addPatient = async (req, res) => {
         await doctor.addPatient(patient._id);
         res.send({ status: 'success' });
     } catch (error) {
-        res.send(`Error occured while adding patient ${error}`);
+        res.send({status: 'failure', message: 'Could not add patient'});
     }
 }
+
+module.exports.getDetails = async (req, res) => {
+    // first checking for only doctor
+    // TODO logic to be added when patient and caregiver login will be added
+    try {
+        const doctorId = req.user._id;
+        const patientId = new ObjectId(req.params._id);
+        const patients = (await Doctor.findById(doctorId)).patients;
+        if (patients.includes(patientId)) {
+            const patient = await Patient.findById(patientId);
+            const { _id, name, email, age } = patient;
+            const dataToSend = { _id, name, email, age };
+            res.send({status: 'Success', data: dataToSend });
+        } else {
+            res.send({status: 'failure', message: 'Not allowed action'});
+        }
+    } catch (err) {
+        console.log(err);
+        res.send({status: 'failure', message: 'Could not fetch patient details'});
+    }
+
+};
 
 module.exports.getPoints = async (req, res) => {
     try {

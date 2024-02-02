@@ -1,16 +1,13 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
+import { useNavigation } from '@react-navigation/native';
 
-const PatientSearchEntry = (props: any) => {
-    const handlePress = (e: any) => {
-        console.log('Touched', props);
-    };
-
+const PatientSearchEntry: React.FC<{_id :string; name: string; email: string; onPress: (_id: string) => void}> = ({_id, name, email, onPress}) => {
     return (
-        <Pressable onPress={handlePress}>
+        <Pressable onPress={() => onPress(_id) }>
             <View style={styles.container}>
                 <Text style={styles.text}>
-                    {props.name}
+                    {name} with {_id}
                 </Text>
             </View>
         </ Pressable>

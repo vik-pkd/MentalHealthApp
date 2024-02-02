@@ -2,6 +2,7 @@ const express = require('express');
 
 const doctorControllers = require('../controllers/doctorControllers');
 const { isAuth } = require('../middleware/auth');
+const upload = require('../utils/multer');
 
 const router = express.Router();
 
@@ -20,5 +21,7 @@ router.post('/create-patient', isAuth, (req, res) => {
 
 router.post('/save-key', doctorControllers.doctorAddKey);
 router.post('/verify-key', doctorControllers.verifyBiometrics);
+
+router.post('/add-prescription/patient/:_id',isAuth, upload.single('image'), doctorControllers.addPrescription);
 
 module.exports = router;
