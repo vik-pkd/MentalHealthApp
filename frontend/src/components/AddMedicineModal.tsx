@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, Image, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import client from '../api/client';
 import { useSelector } from 'react-redux';
 import DatePicker from 'react-native-date-picker';
@@ -31,6 +31,20 @@ export default function AddMedicineModal(props: any) {
         const response = await client.post(`/doctors/add-prescription/patient/${props.PatientId}`, prescriptionData, { headers });
         console.log(response.data);
         props.closeModal();
+    };
+
+    const clearForm = () => {
+        setMedicineName('');
+        setStartDate(new Date());
+        setEndDate(new Date());
+        setSlot('');
+        setIsBeforeFood(false);
+        setImage({uri: '', type: '', name: ''});
+    };
+
+    const handleCloseModal = () => {
+        props.closeModal();
+        clearForm();
     };
 
     const uploadImageHandler = async () => {
@@ -76,8 +90,13 @@ export default function AddMedicineModal(props: any) {
                         <Pressable
                             onPress={uploadImageHandler}
                         >
-                            <View style={styles.button}>
-                                <Text style={styles.blackText}>Upload image</Text>
+                            <View style={styles.btnPickImg}>
+                                <View style={styles.btnPickImgCommand}>
+                                    <Text style={styles.buttonText}>Upload image</Text>
+                                </View>
+                                <View style={styles.btnPickImgState}>
+                                    <Text style={styles.blackText}>{image.uri ? image.name : 'Select an image'}</Text>
+                                </View>
                             </View>
                         </Pressable>
                     </View>
@@ -119,7 +138,7 @@ export default function AddMedicineModal(props: any) {
                             </View>
                         </Pressable>
 
-                        <Pressable onPress={props.closeModal}>
+                        <Pressable onPress={handleCloseModal}>
                             <View style={[styles.button]}>
                                 <Text style={[styles.buttonText]}>Close</Text>
                             </View>
@@ -158,6 +177,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     button: {
+        flexDirection: 'row',
         backgroundColor: '#2196F3',
         borderRadius: 6,
         padding: 6,
@@ -166,4 +186,22 @@ const styles = StyleSheet.create({
     buttonText: {
         color: 'white'
     },
+    btnPickImg: {
+        flexDirection: 'row',
+        borderWidth: 1,
+        borderRadius: 10
+    },
+    btnPickImgCommand: {
+        backgroundColor: '#2196F3',
+        padding: 3,
+        borderRadius: 10,
+        marginRight: 5
+    },
+    btnPickImgState: {
+
+    },
+    imageInfoText: {
+        width: 200,
+        height: 100
+    }
 });
