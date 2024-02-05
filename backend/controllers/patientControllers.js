@@ -1,6 +1,5 @@
 const Patient = require('../models/patient');
 const Doctor = require('../models/doctor');
-const { pick } = require('../utils/util');
 const ObjectId = require('mongoose').Types.ObjectId;
 
 module.exports.getPatients = async (req, res) => {

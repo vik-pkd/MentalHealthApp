@@ -10,13 +10,12 @@ import { AppStack } from './AppStack';
 import { AuthStack } from './AuthStack';
 import axios from 'axios';
 import { useLogin } from '../context/LoginProvider';
-
-
+import authService from '../utils/auth';
 
 export const Router = () => {
     // const [isLoading, setIsLoading] = useState<boolean>(true)
     // const { appwrite, isLoggedIn, setIsLoggedIn } = useContext(AppwriteContext)
-    const { isLoggedIn } = useLogin()
+    const { isLoggedIn, setIsLoggedIn } = useLogin()
 
     const fetchApi = async () => {
         try {
@@ -26,6 +25,16 @@ export const Router = () => {
             console.log(error);
         }
     };
+
+    const hasAuthToken = async () => {
+        const hasToken = await authService.checkAuthentication();
+        setIsLoggedIn(hasToken);
+    };
+
+    useEffect(() => {
+        hasAuthToken();
+    }, []);
+    
 
     // useEffect(() => {
     //     // fetchApi();
