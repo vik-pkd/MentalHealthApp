@@ -1,8 +1,11 @@
+const fs = require('fs');
+
 const Patient = require('../models/patient');
 const Doctor = require('../models/doctor');
 const ObjectId = require('mongoose').Types.ObjectId;
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const Prescription = require('../models/prescription');
 
 module.exports.getDoctors = async (req, res) => {
     try {
@@ -98,3 +101,21 @@ module.exports.verifyBiometrics = async (req, res) => {
         status: 'success', doctor, token
     });
 }
+
+module.exports.addPrescription = async (req, res) => {
+    const patientId = req.params._id;
+    const doctorId = req.user._id;
+    const body = JSON.parse(req.body.details);
+    const { name, quantity, startDate, endDate, slot} = body;
+    const medicinePhotoData = fs.readFileSync(req.file.path);
+    const prescription = new Prescription({
+        patient: new ObjectId(patientId),
+        image: medicinePhotoData,
+        medicine: name,
+        quantity: quantity,
+        start_date: startDate,
+        end_date: endDate
+    });
+    await prescription.save();
+    res.send({status: 'success'});
+};

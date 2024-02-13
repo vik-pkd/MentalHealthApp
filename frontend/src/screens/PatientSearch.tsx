@@ -5,12 +5,17 @@ import client from '../api/client';
 import PatientSearchEntry from '../components/PatientSearchEntry';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { PatientSerachStackParamList } from '../routes/AppStack';
 
-export default function PatientSearch() {
+type PatientSearchScreenProps = NativeStackScreenProps<PatientSerachStackParamList, 'PatientSearch'>;
+
+const PatientSearch: React.FC<PatientSearchScreenProps> = ({ navigation }) => {
     const [searchText, setSearchText] = useState('');
     const [patientList, setPatientList] = useState<{ '_id': string }[]>([]);
     const authToken = useSelector((state: Record<string, {token : string | null}>) => state.authToken.token);
-    
+
     useEffect(() => {
         const fetchData = async () => {
             const headers = {
@@ -23,7 +28,12 @@ export default function PatientSearch() {
     }, [searchText]);
 
     const renderPatientSearchEntry = ({ item }: any) => (
-        <PatientSearchEntry name={item.name} _id={item._id} />
+        <PatientSearchEntry
+            name={item.name}
+            _id={item._id}
+            email={item.email}
+            onPress={(_id: string)=>  navigation.navigate('PatientProfile', {_id: _id}) }
+        />
     );
 
     return (
@@ -57,6 +67,8 @@ export default function PatientSearch() {
         </View>
     )
 }
+
+export default PatientSearch;
 
 const styles = StyleSheet.create({
     continer: {

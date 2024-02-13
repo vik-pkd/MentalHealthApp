@@ -9,6 +9,8 @@ import Games from '../screens/Games';
 import Mindfulness from '../screens/Mindfulness';
 import PatientSearch from '../screens/PatientSearch';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import PatientProfile from '../screens/PatientProfile';
 
 const homeName = "Home";
 const detailsName = "Games";
@@ -16,6 +18,22 @@ const settingsName = "Mindfulness";
 const patientsName = "Patients";
 
 const Tab = createBottomTabNavigator();
+
+export type PatientSerachStackParamList = {
+  PatientSearch: undefined;
+  PatientProfile: {_id: string};
+}
+
+const Stack = createNativeStackNavigator<PatientSerachStackParamList>();
+
+const PatientStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name='PatientSearch' component={PatientSearch}/>
+      <Stack.Screen name='PatientProfile' component={PatientProfile} />
+    </Stack.Navigator>
+  );
+};
 
 export const AppStack = () => {
   return (
@@ -50,7 +68,8 @@ export const AppStack = () => {
         <Tab.Screen name='Games' component={Games} />
         <Tab.Screen name='Home' component={Home} />
         <Tab.Screen name='Mindfulness' component={Mindfulness} />
-        <Tab.Screen name='Patients' component={PatientSearch} />
+        <Tab.Screen name='Patients' component={PatientStack}>
+        </Tab.Screen>
       </Tab.Navigator>
     </NavigationContainer>
   )

@@ -1,15 +1,17 @@
 const mongoose = require("mongoose");
 
 const prescriptionSchema = new mongoose.Schema({
-    doctor: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    },
     patient: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'Patient'
     },
     medicine: {
+        type: String
+    },
+    image: {
+        type: Buffer
+    },
+    quantity: {
         type: String
     },
     prescription_date: {
@@ -29,4 +31,4 @@ const prescriptionSchema = new mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model("Prescription", userSchema);
+module.exports = mongoose.model("Prescription", prescriptionSchema);
