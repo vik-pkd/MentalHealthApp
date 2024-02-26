@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image, Platform } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 
 import {
     LineChart,
@@ -9,6 +9,8 @@ import {
     ContributionGraph,
     StackedBarChart
 } from "react-native-chart-kit";
+
+import { useLogin } from '../context/LoginProvider'; // Adjust the import path as necessary
 
 import { Dimensions } from "react-native";
 const screenWidth = Dimensions.get("window").width;
@@ -24,22 +26,64 @@ const chartConfig = {
     useShadowColorFromDataset: false // optional
 };
 
-const data = {
-    labels: ["January", "February", "March", "April", "May", "June"],
-    datasets: [
-        {
-            data: [20, 45, 28, 80, 99, 43],
-            color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
-            strokeWidth: 2 // optional
-        }
-    ],
-    legend: ["Mental Score"] // optional
+// Function to generate labels for the last 7 days
+const getLast7DaysLabels = () => {
+    const labels = [];
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        labels.push(`${d.getMonth() + 1}/${d.getDate()}`); // Format: MM/DD
+    }
+    return labels;
 };
+
+
+// const data = {
+//     labels: ["January", "February", "March", "April", "May", "June"],
+//     datasets: [
+//         {
+//             data: [20, 45, 28, 80, 99, 43],
+//             color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
+//             strokeWidth: 2 // optional
+//         }
+//     ],
+//     legend: ["Mental Score"] // optional
+// };
 
 var deviceHeight = Dimensions.get('window').height;
 var deviceWidth = Dimensions.get('window').width;
 
 export default function FancyCard() {
+    const { userPoints } = useLogin(); // Fetch userPoints from context
+
+    // Function to generate random points
+    const getRandomPoints = () => Math.floor(Math.random() * 6); // Random points between 0 and 5
+    const [data, setData] = useState({
+        labels: getLast7DaysLabels(),
+        datasets: [
+            {
+                data: [
+                    getRandomPoints(), 0, getRandomPoints(),
+                    0, getRandomPoints(), getRandomPoints(),
+                    userPoints // Current day points
+                ],
+                color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`,
+                strokeWidth: 2
+            }
+        ],
+        legend: ["Mental Score"]
+    });
+
+    useEffect(() => {
+        // Update the last entry with the current day's points
+        setData(prevData => {
+            const newData = { ...prevData };
+            newData.datasets[0].data[6] = userPoints; // Assuming userPoints is a number
+            return newData;
+        });
+    }, [userPoints]);
+
+
     return (
 
         <View style={[styles.card, styles.cardElevated]}>
@@ -48,12 +92,11 @@ export default function FancyCard() {
                 width={styles.card.width}
                 height={styles.card.height - 130}
                 chartConfig={chartConfig}
+                fromZero={true}
             />
             <View style={styles.cardBody}>
                 <Text style={styles.cardTitle}>Score Record</Text>
-                {/* <Text style={styles.cardLabel}>Pink City, Jaipur</Text> */}
-                <Text style={styles.cardDescription}>This is the track of your congnitive assessment from past few months, you can get a more detailed analysis by training more.</Text>
-                {/* <Text style={styles.cardFooter}>12 mins away</Text> */}
+                <Text style={styles.cardDescription}>This is the track of your congnitive assessment from past few days, you can get a more detailed analysis by training more.</Text>
             </View>
         </View>
     )

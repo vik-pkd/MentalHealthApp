@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, Pressable, Platform } from 'react-native'
+import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, Pressable, Platform, Image } from 'react-native'
 import React, { useContext, useState } from 'react'
 
 //react native elements
@@ -13,11 +13,12 @@ import { AppwriteContext } from '../appwrite/AppwriteContext'
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../routes/AuthStack';
 import client from '../api/client';
+import { useLogin } from '../context/LoginProvider';
 
 type SignupScreenProps = NativeStackScreenProps<AuthStackParamList, 'Signup'>
 
 const Signup = ({ navigation }: SignupScreenProps) => {
-  const { appwrite, setIsLoggedIn } = useContext(AppwriteContext)
+  const { setIsLoggedIn, setProfile } = useLogin();
 
   const [error, setError] = useState<string>('')
   const [name, setName] = useState<string>('')
@@ -47,21 +48,18 @@ const Signup = ({ navigation }: SignupScreenProps) => {
       };
 
 
-      client.post('/doctors/add-doctor', { ...user })
-        .then((response: any) => {
-          if (response) {
-            setIsLoggedIn(true)
-            Snackbar.show({
-              text: 'Signup success',
-              duration: Snackbar.LENGTH_SHORT
-            })
-          }
-        })
-        .catch(e => {
-          console.log(e);
-          setError(e.message)
-
-        });
+      const res = await client.post('/patients/add-patient', { ...user })
+      if (res) {
+        const resp = await client.post('/patients/sign-in', { email, password })
+        if (resp) {
+          setProfile(resp.data.patient);
+          setIsLoggedIn(true);
+          Snackbar.show({
+            text: 'Login success',
+            duration: Snackbar.LENGTH_SHORT
+          })
+        }
+      }
     }
   }
   return (
@@ -69,7 +67,15 @@ const Signup = ({ navigation }: SignupScreenProps) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}>
       <View style={styles.formContainer}>
+
+        <Image
+          style={styles.logo}
+          source={require('../logo.png')}
+        />
         <Text style={styles.appName}>Game Mind</Text>
+        <Text style={styles.welcome}>
+          Welcome to the world of healing
+        </Text>
 
         {/* Name */}
         <TextInput
@@ -162,10 +168,10 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: 'bold',
     alignSelf: 'center',
-    marginBottom: 20,
+    marginBottom: 5,
   },
   input: {
-    backgroundColor: '#fef8fa',
+    backgroundColor: '#FCF8FF',
     padding: 10,
     height: 40,
     alignSelf: 'center',
@@ -225,9 +231,21 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 15,
   },
+  welcome: {
+    color: '#484848',
+    alignSelf: 'center',
+    fontWeight: 'bold',
+    fontSize: 12,
+    marginBottom: 15,
+  },
   loginLabel: {
     color: '#1d9bf0',
   },
+  logo: {
+    width: 150,
+    height: 150,
+    alignSelf: 'center',
+  }
 });
 
 export default Signup
