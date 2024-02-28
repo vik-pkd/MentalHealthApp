@@ -9,12 +9,10 @@ interface GameCardProps {
     title: string;
     description: string;
     imageUrl: number;
-    progress: number;
-    imageList: number[];
 }
 
 
-const GameCard: React.FC<GameCardProps> = ({ title, description, imageUrl, progress, imageList }) => {
+const Game: React.FC<GameCardProps> = ({ title, description, imageUrl }) => {
     return (
         // Main card starts here
         <View style={[styles.card, styles.cardElevated]}>
@@ -24,23 +22,11 @@ const GameCard: React.FC<GameCardProps> = ({ title, description, imageUrl, progr
                     <View style={styles.cardBody}>
                         <Text style={styles.cardTitle}>{title}</Text>
                         <Text style={styles.cardDescription}>{description}</Text>
-                        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imagesList}>
-                            {imageList.map((img, index) => (
-                                <Image key={index} source={img} style={styles.listImage} />
-                            ))}
-                        </ScrollView>
                     </View>
                     <Image
                         style={styles.cardImage}
                         source={imageUrl}
                     />
-                </View>
-
-                <View style={styles.progressContainer}>
-                    {/* <Text style={styles.cardDescription}>{progress}/100 points</Text> */}
-                    <Progress.Bar progress={progress / 100} width={null} height={14} color={'rgba(134, 65, 244, 1)'} animationType="spring" >
-                        <Text style={{ position: 'absolute', flex: 0, color: 'black', fontSize: 10, paddingHorizontal: 4 }}>{progress}/100 Mental Points</Text>
-                    </Progress.Bar>
                 </View>
             </View >
         </View  >
@@ -65,7 +51,7 @@ const styles = StyleSheet.create({
     },
     cardImage: {
         width: 100, // Adjust width as needed
-        height: 120, // Adjust height as needed
+        height: 150, // Adjust height as needed
     },
     // gameIcon: {
     //     width: 50,
@@ -112,4 +98,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default GameCard;
+export default Game;
