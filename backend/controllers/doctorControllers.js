@@ -106,6 +106,8 @@ module.exports.addPrescription = async (req, res) => {
     const patientId = req.params._id;
     const doctorId = req.user._id;
     const body = JSON.parse(req.body.details);
+
+    // Todo add other fields of prescription
     const { name, quantity, startDate, endDate, slot} = body;
     const medicinePhotoData = fs.readFileSync(req.file.path);
     const prescription = new Prescription({

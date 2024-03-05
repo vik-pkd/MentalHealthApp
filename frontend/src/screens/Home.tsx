@@ -11,6 +11,7 @@ import { AppwriteContext } from '../appwrite/AppwriteContext'
 import { useLogin } from '../context/LoginProvider';
 import { Button } from '@rneui/base'
 import AddPatientModal from '../components/AddPatientModal'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 type UserObj = {
     name: String;
@@ -21,8 +22,8 @@ export default function Home() {
     const { setIsLoggedIn, profile } = useLogin();
     const [modalVisible, setModalVisible] = useState(false);
 
-    const handleLogout = () => {
-
+    const handleLogout = async () => {
+        await AsyncStorage.removeItem('authorizationToken');
         setIsLoggedIn(false);
         Snackbar.show({
             text: 'Logout Successful',

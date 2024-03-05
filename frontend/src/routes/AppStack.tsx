@@ -11,6 +11,8 @@ import PatientSearch from '../screens/PatientSearch';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import PatientProfile from '../screens/PatientProfile';
+import AddPrescription from '../components/addPrescription';
+import MedicineInfo from '../components/addPrescription/MedicineInfo';
 
 const homeName = "Home";
 const detailsName = "Games";
@@ -21,7 +23,8 @@ const Tab = createBottomTabNavigator();
 
 export type PatientSerachStackParamList = {
   PatientSearch: undefined;
-  PatientProfile: {_id: string};
+  PatientProfile: { _id: string };
+  Prescription: { _id : string };
 }
 
 const Stack = createNativeStackNavigator<PatientSerachStackParamList>();
@@ -29,8 +32,9 @@ const Stack = createNativeStackNavigator<PatientSerachStackParamList>();
 const PatientStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name='PatientSearch' component={PatientSearch}/>
+      <Stack.Screen name='PatientSearch' component={PatientSearch} />
       <Stack.Screen name='PatientProfile' component={PatientProfile} />
+      <Stack.Screen name='Prescription' component={AddPrescription} />
     </Stack.Navigator>
   );
 };
@@ -54,7 +58,7 @@ export const AppStack = () => {
             } else if (rn === settingsName) {
               iconName = focused ? 'happy' : 'happy-outline';
             } else if (rn === patientsName) {
-              iconName = focused ? 'person': 'person-outline';
+              iconName = focused ? 'person' : 'person-outline';
             }
 
             // You can return any component that you like here!

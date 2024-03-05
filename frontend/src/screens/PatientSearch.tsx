@@ -22,6 +22,7 @@ const PatientSearch: React.FC<PatientSearchScreenProps> = ({ navigation }) => {
                 'Authorization': `Bearer ${authToken}`
             };
             const response = await client.get(`/patients/get-patients?searchText=${searchText}`, { headers });
+            console.log('response.data', response.data);
             setPatientList(response.data);
         };
         fetchData();

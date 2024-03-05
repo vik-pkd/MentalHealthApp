@@ -5,7 +5,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { PatientSerachStackParamList } from '../routes/AppStack';
 import client from '../api/client';
 import { useSelector } from 'react-redux';
-import AddMedicineModal from '../components/AddMedicineModal';
+import BasicButton from '../components/BasicButton';
 
 type PatientProfileScreenRouteProp = RouteProp<
     PatientSerachStackParamList,
@@ -16,11 +16,12 @@ type PatientProfileProps = {
     route: PatientProfileScreenRouteProp;
 };
 
+type ProfileScreenProps = NativeStackScreenProps<PatientSerachStackParamList, 'PatientProfile'>;
 
-const PatientProfile = (props: any) => {
-    const route = useRoute<RouteProp<PatientSerachStackParamList>>();
+
+const PatientProfile = ({navigation, route}: ProfileScreenProps) => {
     const params = route.params;
-    const authToken = useSelector((state: Record<string, { token: string | null }>) => state.authToken.token);
+    const authToken = useSelector((state: Record<string, { token: string}>) => state.authToken.token);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [age, setAge] = useState(0);
@@ -74,17 +75,9 @@ const PatientProfile = (props: any) => {
                     </View>
                 </View>
             </View>
-            <Pressable
-                onPress={() => setIsMedicineModalVisible(true)}
-            >
-                <View style={styles.addModalButton}>
-                    <Text style={styles.buttonText}>Add medicine</Text>
-                </View>
-            </Pressable>
-            <AddMedicineModal
-                isVisible={isMedicineModalVisible}
-                closeModal={() => setIsMedicineModalVisible(false)}
-                PatientId={params!._id}
+            <BasicButton
+                title='Add Prescription'
+                onPress={() => navigation.navigate('Prescription', {_id: params!._id})}
             />
         </View>
     );
