@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 
-import PatientProfile from '../screens/doctor/PatientProfileOld';
+import PatientProfile from '../screens/doctor/PatientProfile';
 import PatientSearch from '../screens/doctor/PatientSearch';
 import DoctorDashboard from '../screens/doctor/DoctorDashboard';
 

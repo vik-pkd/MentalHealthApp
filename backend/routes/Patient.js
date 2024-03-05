@@ -12,7 +12,7 @@ const { patientValidation, validatePatientSignUp, validatePatientSignIn } = requ
 router.get('/get-patients', isAuth, patientControllers.getPatients);
 
 // To assign a particular patient to doctor
-// router.post('/add-patient', isAuth, patientControllers.addPatient);
+router.post('/add-patient', isAuth, patientControllers.addPatient);
 
 // get details of a patient
 router.get('/patient/:_id', isAuth, patientControllers.getDetails);

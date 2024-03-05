@@ -1,4 +1,5 @@
 const Patient = require('../models/patient');
+const Doctor = require('../models/doctor')
 const ObjectId = require('mongoose').Types.ObjectId;
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -6,6 +7,7 @@ const canvas = require('canvas');
 const faceapi = require('@vladmandic/face-api');
 
 module.exports.getPatients = async (req, res) => {
+    // console.log('Inside search patients!')
     try {
         const doctorId = req.user._id;
         const searchText = req.query.searchText.toLowerCase();
@@ -20,9 +22,12 @@ module.exports.getPatients = async (req, res) => {
 }
 
 module.exports.addPatient = async (req, res) => {
+    console.log('Inside add patients!')
     try {
         const doctorId = req.user._id;
-        const doctor = await Doctor.findById(doctorId);
+
+        const doctor = await Doctor.findOne({ _id: doctorId });
+        // console.log(doctor);
         const isNewUser = await Patient.isThisEmailInUse(req.body.email);
         if (!isNewUser) {
             return res.send({ status: 'failure', message: 'This email is already in use, try to sign-in' })

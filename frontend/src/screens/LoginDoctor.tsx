@@ -2,19 +2,16 @@ import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, Pressable, Pla
 import React, { useContext, useState } from 'react'
 import client from '../api/client';
 
-//react native elements
-import { FAB } from '@rneui/themed'
 //Snackbar
 import Snackbar from 'react-native-snackbar'
-
-//context API
-import { AppwriteContext } from '../appwrite/AppwriteContext'
 
 // Navigation
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../routes/AuthStack';
 import { useLogin } from '../context/LoginProvider';
-import ReactNativeBiometrics, { BiometryTypes } from 'react-native-biometrics';
+
+import { useDispatch } from 'react-redux';
+import { authTokenActions } from '../store/authToken-slice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type LoginScreenProps = NativeStackScreenProps<AuthStackParamList, 'LoginDoctor'>
@@ -26,7 +23,7 @@ const LoginDoctor = ({ navigation }: LoginScreenProps) => {
 
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-
+    const dispatch = useDispatch();
 
     const handleFaceID = async () => {
 
@@ -100,7 +97,10 @@ const LoginDoctor = ({ navigation }: LoginScreenProps) => {
             }
 
             const resp = await client.post('/doctors/sign-in', { ...user })
-            const userId = resp.data.doctor._id;
+            if (resp.data && resp.data.token) {
+                dispatch(authTokenActions.set(resp.data.token));
+                await AsyncStorage.setItem('authorizationToken', resp.data.token);
+            }
 
             if (resp) {
                 setProfile(resp.data.doctor);

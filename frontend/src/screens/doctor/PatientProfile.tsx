@@ -49,38 +49,36 @@ const PatientProfile = (props: any) => {
         <View style={styles.container}>
             <View style={styles.userInfo}>
                 <View style={styles.userInfoItem}>
-                    <View>
-                        <Text style={styles.blackText}>Name</Text>
-                    </View>
-                    <View style={{}}>
-                        <Text style={styles.blackText}>{name}</Text>
-                    </View>
+                    <Text style={styles.infoKey}>Name:</Text>
+                    <Text style={styles.infoValue}>{name}</Text>
                 </View>
 
                 <View style={styles.userInfoItem}>
-                    <View>
-                        <Text style={styles.blackText}>Email</Text>
-                    </View>
-                    <View style={{}}>
-                        <Text style={styles.blackText}>{email}</Text>
-                    </View>
+                    <Text style={styles.infoKey}>Email:</Text>
+                    <Text style={styles.infoValue}>{email}</Text>
                 </View>
+
                 <View style={styles.userInfoItem}>
-                    <View>
-                        <Text style={styles.blackText}>Age</Text>
-                    </View>
-                    <View>
-                        <Text style={styles.blackText}>{age}</Text>
-                    </View>
+                    <Text style={styles.infoKey}>Age:</Text>
+                    <Text style={styles.infoValue}>{age}</Text>
                 </View>
             </View>
-            <Pressable
-                onPress={() => setIsMedicineModalVisible(true)}
-            >
-                <View style={styles.addModalButton}>
-                    <Text style={styles.buttonText}>Add medicine</Text>
-                </View>
-            </Pressable>
+            <View style={styles.buttonContainer}>
+                <Pressable
+                    onPress={() => setIsMedicineModalVisible(true)}
+                    style={styles.addModalButton}
+                >
+                    <Text style={styles.buttonText}>Add Medicine</Text>
+                </Pressable>
+
+                <Pressable
+                    onPress={() => setIsMedicineModalVisible(true)}
+                    style={styles.addModalButton}
+                >
+                    <Text style={styles.buttonText}>Add Activities</Text>
+                </Pressable>
+            </View>
+
             <AddMedicineModal
                 isVisible={isMedicineModalVisible}
                 closeModal={() => setIsMedicineModalVisible(false)}
@@ -95,33 +93,56 @@ export default PatientProfile;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center'
+        backgroundColor: '#f4f4f8', // Light background color
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-    blackText: {
-        color: 'black'
+    infoKey: {
+        fontSize: 16,
+        color: '#6A1B9A', // Purple text color for the key
+        fontWeight: 'bold',
+    },
+    infoValue: {
+        fontSize: 16,
+        color: '#4A148C', // Slightly darker purple text color for the value
     },
     userInfo: {
-        borderColor: 'black',
-        borderWidth: 2,
-        borderRadius: 6,
-        width: '60%'
+        width: '90%',
+        padding: 10,
+        borderRadius: 8,
+        marginBottom: 20,
+        backgroundColor: 'white', // White card background
+        shadowColor: '#000', // Shadow for the card
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     userInfoItem: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingHorizontal: 3,
-        margin: 1
-    },
-    userInfoKey: {
-        flex: 1
+        marginVertical: 8, // Adds margin vertically inside the card
     },
     addModalButton: {
-        backgroundColor: '#2196F3',
-        margin: 3,
-        padding: 5,
-        borderRadius: 5
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 8,
+        backgroundColor: 'rgba(134, 65, 244, 1)', // Purple background color for the button
+        elevation: 2,
     },
     buttonText: {
-        color: 'white'
-    }
+        fontSize: 18,
+        color: 'white', // White text color for the button
+        fontWeight: 'bold',
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        width: '100%',
+        marginBottom: 10,
+        marginHorizontal: 8
+    },
 });
