@@ -14,9 +14,8 @@ export default function BasicCard() {
                 </View>
 
                 <View style={styles.cardBody}>
-                    <Text style={styles.cardTitle}>Popular Activities</Text>
-                    {/* <Text style={styles.cardLabel}>Pink City, Jaipur</Text> */}
-                    <Text style={styles.cardDescription}>These are what most active users are doing right now!</Text>
+                    <Text style={styles.cardTitle}>Recommended Activities</Text>
+                    <Text style={styles.cardDescription}>These are the activities recommended by your doctor, you can earn extra points and rewards by doing this!</Text>
                     <Text style={styles.cardFooter}>Updated 12 mins ago</Text>
                 </View>
             </View>
@@ -33,7 +32,7 @@ const styles = StyleSheet.create({
     },
     card: {
         width: screenWidth - 16,
-        height: 230,
+        height: 250,
         borderRadius: 6,
         marginVertical: 8,
         marginHorizontal: 8
@@ -72,7 +71,7 @@ const styles = StyleSheet.create({
     cardDescription: {
         color: '#57606f',
         fontSize: 13,
-        marginBottom: 4,
+
         marginTop: 6
     },
     cardFooter: {
