@@ -21,6 +21,9 @@ const patientSchema = new mongoose.Schema({
     Streak: {
         type: Number
     },
+    face: {
+        type: Array
+    },
     caregiver:
     {
         type: mongoose.Schema.Types.ObjectId,
@@ -44,6 +47,17 @@ patientSchema.pre('save', function (next) {
         next();
     }
 });
+
+patientSchema.methods.comparePassword = async function (password) {
+    if (!password) throw new Error('Password is missing, can not compare!');
+
+    try {
+        const result = await bcrypt.compare(password, this.password);
+        return result;
+    } catch (error) {
+        console.log('Error while comparing password!', error.message);
+    }
+}
 
 patientSchema.statics.isThisEmailInUse = async function (email) {
     if (!email) throw new Error('Invalid email!')

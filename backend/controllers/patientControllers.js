@@ -1,8 +1,13 @@
 const Patient = require('../models/patient');
-const Doctor = require('../models/doctor');
+const Doctor = require('../models/doctor')
 const ObjectId = require('mongoose').Types.ObjectId;
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const canvas = require('canvas');
+const faceapi = require('@vladmandic/face-api');
 
 module.exports.getPatients = async (req, res) => {
+    // console.log('Inside search patients!')
     try {
         const doctorId = req.user._id;
         const searchText = req.query.searchText.toLowerCase();
@@ -17,9 +22,12 @@ module.exports.getPatients = async (req, res) => {
 }
 
 module.exports.addPatient = async (req, res) => {
+    console.log('Inside add patients!')
     try {
         const doctorId = req.user._id;
-        const doctor = await Doctor.findById(doctorId);
+
+        const doctor = await Doctor.findOne({ _id: doctorId });
+        // console.log(doctor);
         const isNewUser = await Patient.isThisEmailInUse(req.body.email);
         if (!isNewUser) {
             return res.send({ status: 'failure', message: 'This email is already in use, try to sign-in' })
@@ -30,17 +38,16 @@ module.exports.addPatient = async (req, res) => {
             Streak: 0,
             doctor: doctorId
         })
-        
+
         await patient.save();
         await doctor.addPatient(patient._id);
         res.send({ status: 'success' });
     } catch (error) {
-        res.send({status: 'failure', message: 'Could not add patient'});
+        res.send({ status: 'failure', message: 'Could not add patient' });
     }
 }
 
 module.exports.getDetails = async (req, res) => {
-    // first checking for only doctor
     // TODO logic to be added when patient and caregiver login will be added
     try {
         const doctorId = req.user._id;
@@ -50,16 +57,94 @@ module.exports.getDetails = async (req, res) => {
             const patient = await Patient.findById(patientId);
             const { _id, name, email, age } = patient;
             const dataToSend = { _id, name, email, age };
-            res.send({status: 'Success', data: dataToSend });
+            res.send({ status: 'Success', data: dataToSend });
         } else {
-            res.send({status: 'failure', message: 'Not allowed action'});
+            res.send({ status: 'failure', message: 'Not allowed action' });
         }
     } catch (err) {
         console.log(err);
-        res.send({status: 'failure', message: 'Could not fetch patient details'});
+        res.send({ status: 'failure', message: 'Could not fetch patient details' });
     }
 
 };
+
+
+module.exports.patientSignIn = async (req, res) => {
+    const { email, password } = req.body;
+    const patient = await Patient.findOne({ email })
+
+    if (!patient) return res.json({ status: 'failure', message: 'Patient not found, with given email!' })
+
+    const isMatch = await patient.comparePassword(password);
+    if (!isMatch) return res.json({ status: 'failure', message: 'email / password does not match!' })
+
+    const token = jwt.sign({ userId: patient._id }, process.env.JWT_SECRET, { expiresIn: '1d' })
+
+    res.send({ status: 'success', patient, token })
+}
+
+module.exports.patientAddPhoto = async (req, res) => {
+
+    const { userId } = req.body;
+    console.log(req.file);
+    try {
+        const profileBuffer = req.file.buffer;
+        const img = await canvas.loadImage(profileBuffer);
+        const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
+        const patient = await Patient.findByIdAndUpdate(userId, { face: detections.descriptor });
+        res.send({ status: 'success', message: 'Your profile is updated!' });
+    }
+    catch (error) {
+        res.send({ status: 'failure', message: 'Error while processing the image!' })
+    }
+
+}
+
+async function getDescriptorsFromDB(image) {
+    // Get all the face data from mongodb and loop through each of them to read the data
+    let faces = await Patient.find();
+    for (i = 0; i < faces.length; i++) {
+        // Change the face data descriptors from Objects to Float32Array type
+        for (j = 0; j < faces[i].face.length; j++) {
+            faces[i].face[j] = new Float32Array(Object.values(faces[i].face[j]));
+        }
+        // Turn the DB face docs to
+        faces[i] = new faceapi.LabeledFaceDescriptors(String(faces[i]._id), faces[i].face);
+    }
+
+    // Load face matcher to find the matching face
+    const faceMatcher = new faceapi.FaceMatcher(faces, 0.6);
+
+    // Read the image using canvas or other method
+    const img = await canvas.loadImage(image);
+    let temp = faceapi.createCanvasFromMedia(img);
+    // Process the image for the model
+    const displaySize = { width: img.width, height: img.height };
+    faceapi.matchDimensions(temp, displaySize);
+
+    // Find matching faces
+    const detections = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
+    const resizedDetections = faceapi.resizeResults(detections, displaySize);
+    const results = resizedDetections.map((d) => faceMatcher.findBestMatch(d.descriptor));
+    return results;
+}
+
+module.exports.patientVerifyPhoto = async (req, res) => {
+
+    try {
+        const profileBuffer = req.file.buffer;
+        let result = await getDescriptorsFromDB(profileBuffer);
+        const user = await Patient.findOne({ _id: result[0]._label });
+
+        console.log(result);
+
+        res.send({ status: 'success', message: user });
+    }
+    catch (error) {
+        res.send({ status: 'failure', message: 'No faces were matched!' })
+    }
+
+}
 
 module.exports.getPoints = async (req, res) => {
     try {

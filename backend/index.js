@@ -7,11 +7,24 @@ const patientRoutes = require('./routes/Patient');
 const doctorRoutes = require('./routes/Doctor');
 const Doctor = require('./models/doctor');
 
+const tf = require('@tensorflow/tfjs-node')
+const faceapi = require('@vladmandic/face-api');
+
 require('dotenv').config()
 
 const app = express();
 
 const PORT = 5000;
+
+// Load all the Face models 
+async function LoadModels() {
+  // Load the models
+  // __dirname gives the root directory of the server
+  await faceapi.nets.faceRecognitionNet.loadFromDisk(__dirname + "/fmodels");
+  await faceapi.nets.faceLandmark68Net.loadFromDisk(__dirname + "/fmodels");
+  await faceapi.nets.ssdMobilenetv1.loadFromDisk(__dirname + "/fmodels");
+}
+LoadModels();
 
 // Establish connection with database
 connectToMongo();
