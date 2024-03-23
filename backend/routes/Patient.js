@@ -25,4 +25,6 @@ router.post('/verify-photo', upload.single('profile'), patientControllers.patien
 
 router.get('/:patientId/points/:point', patientControllers.getPoints);
 
+router.get('/prescriptions/patient/:_id', isAuth, patientControllers.getPrescriptions);
+
 module.exports = router;

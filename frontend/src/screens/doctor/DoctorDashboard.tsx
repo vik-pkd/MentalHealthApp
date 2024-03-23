@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { useLogin } from '../../context/LoginProvider';
 import FlatCardsVertical from '../../components/FlatCardsVertical'
 import client from '../../api/client';
+import AddMedicine from '../../components/AddMedicine';
 
 type UserObj = {
     name: String;
@@ -30,6 +31,7 @@ export default function DoctorDashboard() {
 
     // Existing code...
     const [isAddPatientModalVisible, setAddPatientModalVisible] = useState(false);
+    const [isAddMedicineModalVisible, setAddMedicineModalVisible] = useState(false);
     const [patientName, setPatientName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -92,7 +94,13 @@ export default function DoctorDashboard() {
                         <Text style={styles.userDetails}>Email: {profile.email}</Text>
                     </View>
                 )}
-
+                <TouchableOpacity onPress={() => setAddMedicineModalVisible(true)} style={styles.card}>
+                    <Image source={require('../../add_medicine.png')} style={styles.cardImage} />
+                    <View style={styles.cardContent}>
+                        <Text style={styles.cardTitle}>Add Medicine</Text>
+                        <Text style={styles.cardDescription}>Tap here to add a new medicine for future prescriptions.</Text>
+                    </View>
+                </TouchableOpacity>
                 <TouchableOpacity onPress={openAddPatientModal} style={styles.card}>
                     <Image source={require('../../patient.jpg')} style={styles.cardImage} />
                     <View style={styles.cardContent}>
@@ -147,13 +155,17 @@ export default function DoctorDashboard() {
                         </View>
                     </View>
                 </Modal>
+                <AddMedicine
+                    isVisible={isAddMedicineModalVisible}
+                    onRequestClose={() => setAddMedicineModalVisible(false)}
+                />
                 {/* <Text style={styles.cardTitle}>Past Appointments</Text> */}
+                {/* <FlatCardsVertical />
                 <FlatCardsVertical />
                 <FlatCardsVertical />
                 <FlatCardsVertical />
                 <FlatCardsVertical />
-                <FlatCardsVertical />
-                <FlatCardsVertical />
+                <FlatCardsVertical /> */}
 
             </ScrollView>
             <FAB

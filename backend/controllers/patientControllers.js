@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const canvas = require('canvas');
 const faceapi = require('@vladmandic/face-api');
+const Prescription = require('../models/prescription');
 
 module.exports.getPatients = async (req, res) => {
     // console.log('Inside search patients!')
@@ -159,3 +160,25 @@ module.exports.getPoints = async (req, res) => {
         res.send({ error: error });
     }
 }
+
+module.exports.getPrescriptions = async (req, res) => {
+    console.log('sending0');
+    try {
+        const doctorId = req.user._id;
+        const patientId = new ObjectId(req.params._id);
+        console.log(doctorId, patientId);
+        const prescriptions = (await Prescription.find({patient: patientId})).map(item => ({
+            patient: item.patient,
+            medicine: item.medicine,
+            quantity: item.quantity,
+            start_date: item.start_date,
+            end_date: item.end_date,
+        }));
+        // console.log(prescriptions);
+        console.log('sending');
+        res.send({ status: "success", prescriptions: prescriptions });
+    } catch (err) {
+        res.send({ status: "failure" });
+        console.log(err);
+    }
+};

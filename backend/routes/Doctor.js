@@ -19,5 +19,6 @@ router.post('/sign-in', validateDoctorSignIn, doctorValidation, doctorController
 // router.post('/verify-key', doctorControllers.verifyBiometrics);
 
 router.post('/add-prescription/patient/:_id', isAuth, upload.single('image'), doctorControllers.addPrescription);
+router.post('/add-medicine', isAuth, upload.single('image'), doctorControllers.addMedicine);
 
 module.exports = router;

@@ -13,7 +13,8 @@ const storage = multer.diskStorage({
         callBack(null, 'uploads/');
     },
     filename: (req, file, callBack) => {
-        callBack(null, new Date().toISOString().replace(/[:]/g, '-') + '-' + file.originalname);
+        const newFileName = (new Date().toISOString() + '-' + file.originalname).replace(/[:.]/g, '-');
+        callBack(null, newFileName);
     }
 });
 const upload = multer({ storage, fileFilter });

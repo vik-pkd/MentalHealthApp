@@ -22,7 +22,7 @@ const StartEndDate = ({ navigation, route }: StartEndDateScreenProps) => {
     };
 
     return (
-        <View>
+        <View style={styles.datePicker}>
             <CustomDatePicker
                 mode="date"
                 label="Start Date"

@@ -2,6 +2,7 @@ const fs = require('fs');
 
 const Patient = require('../models/patient');
 const Doctor = require('../models/doctor');
+const Medicine = require('../models/medicine');
 const ObjectId = require('mongoose').Types.ObjectId;
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -106,7 +107,8 @@ module.exports.addPrescription = async (req, res) => {
     const patientId = req.params._id;
     const doctorId = req.user._id;
     const body = JSON.parse(req.body.details);
-    const { name, quantity, startDate, endDate, slot } = body;
+    console.log('body', body);
+    const { name, quantity, startDate, endDate, foodTiming, doseTimings } = body;
     const medicinePhotoData = fs.readFileSync(req.file.path);
     const prescription = new Prescription({
         patient: new ObjectId(patientId),
@@ -114,8 +116,31 @@ module.exports.addPrescription = async (req, res) => {
         medicine: name,
         quantity: quantity,
         start_date: startDate,
-        end_date: endDate
+        end_date: endDate,
+        foodTiming: foodTiming,
+        doseTimings: doseTimings,
+        prescription_date: new Date(),
     });
+    console.log(prescription);
     await prescription.save();
     res.send({ status: 'success' });
 };
+
+module.exports.addMedicine = async (req, res) => {
+    try {
+        const doctorId = req.user._id;
+        const body = JSON.parse(req.body.details);
+        const { name, foodTiming } = body;
+        const medicinePhotoData = fs.readFileSync(req.file.path);
+        const medicine = new Medicine({
+            doctor: doctorId,
+            name: name,
+            foodTiming: foodTiming,
+            image: medicinePhotoData
+        });        
+        await medicine.save();
+        res.send({status: "success"});
+    } catch (error) {
+        res.send({status: "failure"});
+    }
+}
