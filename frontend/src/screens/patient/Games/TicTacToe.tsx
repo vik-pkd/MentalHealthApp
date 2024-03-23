@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, StyleSheet, View, SafeAreaView } from 'react-native';
 import WebView from 'react-native-webview';
 import {
@@ -12,31 +12,50 @@ import { useLogin } from '../../../context/LoginProvider';
 
 type GameScreenProps = NativeStackScreenProps<GameStackParamList, 'TicTacToe'>;
 
-const TicTacToe = ({ navigation }: GameScreenProps) => {
+const TicTacToe = ({ navigation, route }: GameScreenProps) => {
     const [dialogVisible, setDialogVisible] = useState(false);
     const [pointEarned, setpointEarned] = useState(false);
-    const { updateUserPoints } = useLogin();
+    const { updateUserPoints, setExtraPoints } = useLogin();
+    const { extraPoints } = route.params ?? { extraPoints: 0 };
 
     const handleMessage = (event: any) => {
         const data = JSON.parse(event.nativeEvent.data);
         console.log(data);
         if (data.type) {
+            const totalPoints = data.points + extraPoints;
+            setExtraPoints(extraPoints);
             setDialogVisible(true);
-            setpointEarned(data.points);
-            updateUserPoints(data.points, 'Puzzle');
+            setpointEarned(totalPoints);
+            updateUserPoints(totalPoints, 'Strategy');
         }
     };
 
     const navigateBack = () => {
         // Close the dialog and navigate back
         setDialogVisible(false);
-        navigation.goBack(); // Or use the specific navigation action you need
+        const state = navigation.getState();
+
+        // Find out if the current screen is at the root of its stack navigator
+        let isAtRootOfStack = false;
+        if (state.routes.length > 1) {
+            isAtRootOfStack = false; // More than one route in the stack implies it's not at the root
+        } else {
+            isAtRootOfStack = true; // Only one route in the stack implies it's at the root
+        }
+
+        if (isAtRootOfStack || !navigation.canGoBack()) {
+            // If at the root or cannot go back further, navigate to Home
+            navigation.navigate('Home');
+        } else {
+            // Otherwise, go back in the current stack
+            navigation.goBack();
+        }
     };
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <WebView
-                source={{ uri: 'http://192.168.11.3:3000/' }}
+                source={{ uri: 'file:///android_asset/games/tic_tac_toe/index.html' }}
                 onMessage={handleMessage}
             />
             <Dialog

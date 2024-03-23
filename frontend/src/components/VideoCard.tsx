@@ -47,7 +47,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ title, bodyText, videoId }) => {
                 <Button
                     title={finished ? 'Finished' : (playing ? 'Pause' : 'Play')}
                     onPress={togglePlaying}
-                    color="rgba(134, 65, 244, 1)"
+                    color="rgba(156,77,204, 1)"
                     disabled={finished}  // Disable the button if the video is finished
                 />
             </View>

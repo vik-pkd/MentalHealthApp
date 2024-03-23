@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import { Dimensions } from "react-native";
 import * as Progress from 'react-native-progress';
 const screenWidth = Dimensions.get("window").width;
+const screenHeight = Dimensions.get("window").height;
 
 
 interface GameCardProps {
@@ -38,7 +39,7 @@ const GameCard: React.FC<GameCardProps> = ({ title, description, imageUrl, progr
 
                 <View style={styles.progressContainer}>
                     {/* <Text style={styles.cardDescription}>{progress}/100 points</Text> */}
-                    <Progress.Bar progress={progress / 100} width={null} height={14} color={'rgba(134, 65, 244, 1)'} animationType="spring" >
+                    <Progress.Bar progress={progress / 100} width={null} height={14} color={'#9c4dcc'} animationType="spring" >
                         <Text style={{ position: 'absolute', flex: 0, color: 'black', fontSize: 10, paddingHorizontal: 4 }}>{progress}/100 Mental Points</Text>
                     </Progress.Bar>
                 </View>
@@ -50,10 +51,10 @@ const GameCard: React.FC<GameCardProps> = ({ title, description, imageUrl, progr
 const styles = StyleSheet.create({
     card: {
         width: screenWidth - 16,
-        height: 150,
+        height: screenHeight / 4,
         borderRadius: 6,
         marginHorizontal: 8,
-        margin: 8
+        margin: 8,
     },
     cardElevated: {
         backgroundColor: '#FFFFFF',
@@ -64,8 +65,10 @@ const styles = StyleSheet.create({
         }
     },
     cardImage: {
-        width: 100, // Adjust width as needed
-        height: 120, // Adjust height as needed
+        marginTop: 32,
+        marginRight: 16,
+        width: 85, // Adjust width as needed
+        height: 85, // Adjust height as needed
     },
     // gameIcon: {
     //     width: 50,
@@ -86,7 +89,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     cardTitle: {
-        color: '#000000',
+        color: '#38006b',
         fontSize: 22,
         fontWeight: 'bold',
         marginBottom: 4,
@@ -101,8 +104,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8
     },
     imagesList: {
-        marginTop: 8,
-        marginBottom: 8,
+        marginTop: 12,
+        marginBottom: 12,
         paddingHorizontal: 8,
     },
     listImage: {
