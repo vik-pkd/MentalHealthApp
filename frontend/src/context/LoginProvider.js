@@ -7,6 +7,7 @@ const LoginProvider = ({ children }) => {
     const [profile, setProfile] = useState({});
     const [userCategory, setUserCategory] = useState('');
     const [userPoints, setUserPoints] = useState(0);
+    const [extraPoints, setExtraPoints] = useState(0);
     // New state for storing section-specific points
     const [sectionPoints, setSectionPoints] = useState({});
 
@@ -37,7 +38,9 @@ const LoginProvider = ({ children }) => {
                 setUserPoints,
                 sectionPoints,
                 setSectionPoints,
-                updateUserPoints
+                updateUserPoints,
+                extraPoints,
+                setExtraPoints
             }}
         >
             {children}

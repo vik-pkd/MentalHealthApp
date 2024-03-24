@@ -4,17 +4,19 @@ import GameCard from '../../components/GameCard';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { GameStackParamList } from '../../routes/PatientStack';
 import { useLogin } from '../../context/LoginProvider';
+import * as Progress from 'react-native-progress';
 
 type GameScreenProps = NativeStackScreenProps<GameStackParamList, 'Games'>
 
 const Games = ({ navigation }: GameScreenProps) => {
-    const { sectionPoints, setSectionPoints } = useLogin();
-
+    const { sectionPoints, setSectionPoints, userPoints, profile } = useLogin();
     const cards = [
-        { id: '1', title: 'Puzzle', description: 'Solve math puzzles to sharpen your numerical skills.', imageUrl: require('../../puzzle-game.png') },
-        { id: '2', title: 'Focus', description: 'Solve math puzzles to sharpen your numerical skills..', imageUrl: require('../../puzzle-game.png') },
-        { id: '3', title: 'Coordination', description: 'Solve math puzzles to sharpen your numerical skills.', imageUrl: require('../../puzzle-game.png') },
-        { id: '4', title: 'IQ', description: 'Solve math puzzles to sharpen your numerical skills.', imageUrl: require('../../puzzle-game.png') },
+        { id: '1', title: 'Puzzle', description: 'Engage with games that challenge your problem-solving and pattern recognition skills.', imageUrl: require('../../../assets/game_types/puzzle.png'), navigate: 'Puzzle' as keyof GameStackParamList, imageList: [require('../../../assets/icons/2048.png'), require('../../../assets/icons/tetris.png'), require('../../../assets/icons/minesweeper.png')] },
+        { id: '2', title: 'Focus', description: 'Hone your concentration and precision with games that require sharp attention and accuracy.', imageUrl: require('../../../assets/game_types/focus.png'), navigate: 'Focus' as keyof GameStackParamList, imageList: [require('../../../assets/icons/typing.png'), require('../../../assets/icons/maze.png'), require('../../../assets/icons/slicer.png')] },
+        { id: '3', title: 'Strategy', description: 'Test and enhance your cognitive abilities with games that require strategic thinking and foresight.', imageUrl: require('../../../assets/game_types/strategy.png'), navigate: 'Strategy' as keyof GameStackParamList, imageList: [require('../../../assets/icons/2048.png'), require('../../tic-tac-toe.png'), require('../../puzzle.png')] },
+        { id: '4', title: 'Memory', description: 'Boost your memory  prowess with games designed to test recall abilities and cognitive skills.', imageUrl: require('../../../assets/game_types/memory.png'), navigate: 'Memory' as keyof GameStackParamList, imageList: [require('../../../assets/icons/cardmatch.png'), require('../../../assets/icons/quiz.png')] },
+        { id: '5', title: 'Coordination', description: 'Sharpen your  coordination with games that challenge your reaction speed and precision.', imageUrl: require('../../../assets/game_types/coordination.png'), navigate: 'Coordination' as keyof GameStackParamList, imageList: [require('../../../assets/icons/snake.png'), require('../../../assets/icons/crossroad.png'), require('../../../assets/icons/pingpong.png')] },
+        { id: '6', title: 'Casual', description: 'Relax and unwind with games that provide entertainment and the challenge to beat your high score.', imageUrl: require('../../../assets/game_types/casual.png'), navigate: 'Casual' as keyof GameStackParamList, imageList: [require('../../../assets/icons/rock.png'), require('../../../assets/icons/slicer.png')] },
     ].map(card => ({
         ...card,
         progress: sectionPoints && sectionPoints[card.title] ? sectionPoints[card.title] : 0,
@@ -23,21 +25,23 @@ const Games = ({ navigation }: GameScreenProps) => {
     return (
         <View style={{ flex: 1 }}>
 
-            <View style={styles.continer}>
-                <Text style={styles.title}>Train your abilities</Text>
+            <View style={styles.userContainer}>
+                <View style={styles.detailsAndProgress}>
+                    <Text style={styles.detailsText}>Hone your abilities {profile.name}!</Text>
+                </View>
             </View>
 
             <ScrollView>
                 {cards.map((card) => (
 
-                    <TouchableOpacity onPress={() => navigation.navigate('Puzzle')} key={card.id}>
+                    <TouchableOpacity onPress={() => navigation.navigate(card.navigate)} key={card.id}>
 
                         <GameCard
                             title={card.title}
                             description={card.description}
                             imageUrl={card.imageUrl}
                             progress={card.progress}
-                            imageList={[require('../../sudoku.png'), require('../../tic-tac-toe.png'), require('../../puzzle.png')]}
+                            imageList={card.imageList}
                         />
                     </TouchableOpacity>
                 ))}
@@ -48,13 +52,21 @@ const Games = ({ navigation }: GameScreenProps) => {
 }
 
 const styles = StyleSheet.create({
-    continer: {
-        borderRadius: 4,
-        margin: 4,
+    userContainer: {
+        flexDirection: 'row',
         padding: 8,
         alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'rgba(134, 65, 244, 1)'
+        backgroundColor: '#6A1B9A', // Or any other color matching your theme
+    },
+    detailsAndProgress: {
+        flex: 1,
+        justifyContent: 'space-evenly', // Evenly distribute space around items
+    },
+    detailsText: {
+        fontSize: 18,
+        color: '#FFFFFF',
+        marginBottom: 4,
+        alignSelf: 'center'
     },
     title: {
         color: '#fff',
@@ -67,7 +79,7 @@ const styles = StyleSheet.create({
         color: '#000000'
     },
     back: {
-        backgroundColor: "#fff"
+        backgroundColor: "#f4f1f4"
     },
     container: {
         flex: 1,
@@ -75,13 +87,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
 
     },
-    video: {
-        marginTop: 20,
-        maxHeight: 200,
-        width: 320,
-        flex: 1
-    }
-
 })
 
 export default Games;

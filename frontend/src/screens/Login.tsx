@@ -124,7 +124,7 @@ const Login = ({ navigation }: LoginScreenProps) => {
                     Snackbar.show({
                       text: 'Login success',
                       duration: Snackbar.LENGTH_SHORT,
-                      backgroundColor: '#63BAAA'
+                      backgroundColor: '#9c4dcc'
                     })
                     setIsLoggedIn(true);
                   }
@@ -136,7 +136,7 @@ const Login = ({ navigation }: LoginScreenProps) => {
           Snackbar.show({
             text: 'Login success',
             duration: Snackbar.LENGTH_SHORT,
-            backgroundColor: '#63BAAA'
+            backgroundColor: '#9c4dcc'
           })
           setIsLoggedIn(true);
         }
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   appName: {
-    color: 'rgba(134, 65, 244, 1)',
+    color: '#9c4dcc',
     fontSize: 40,
     fontWeight: 'bold',
     alignSelf: 'center',

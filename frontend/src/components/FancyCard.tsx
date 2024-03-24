@@ -37,19 +37,6 @@ const getLast7DaysLabels = () => {
     return labels;
 };
 
-
-// const data = {
-//     labels: ["January", "February", "March", "April", "May", "June"],
-//     datasets: [
-//         {
-//             data: [20, 45, 28, 80, 99, 43],
-//             color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
-//             strokeWidth: 2 // optional
-//         }
-//     ],
-//     legend: ["Mental Score"] // optional
-// };
-
 var deviceHeight = Dimensions.get('window').height;
 var deviceWidth = Dimensions.get('window').width;
 
@@ -58,6 +45,7 @@ export default function FancyCard() {
 
     // Function to generate random points
     const getRandomPoints = () => Math.floor(Math.random() * 6); // Random points between 0 and 5
+    const dailyGoals = [2, 2, 3, 3, 4, 4, 5]; // Example daily goals
     const [data, setData] = useState({
         labels: getLast7DaysLabels(),
         datasets: [
@@ -67,11 +55,16 @@ export default function FancyCard() {
                     0, getRandomPoints(), getRandomPoints(),
                     userPoints // Current day points
                 ],
-                color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`,
+                color: (opacity = 1) => `rgba(156, 77, 204, ${opacity})`,
+                strokeWidth: 2
+            },
+            {
+                data: dailyGoals,
+                color: (opacity = 1) => `rgba(56,0,107, ${opacity})`,
                 strokeWidth: 2
             }
         ],
-        legend: ["Mental Score"]
+        legend: ["Mental Score", "Daily Goals"]
     });
 
     useEffect(() => {
@@ -150,8 +143,7 @@ const styles = StyleSheet.create({
     cardDescription: {
         color: '#57606f',
         fontSize: 13,
-        marginBottom: 14,
-        marginTop: 6
+        marginTop: 4
     },
     cardFooter: {
         color: '#34495e'
