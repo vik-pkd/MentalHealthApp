@@ -21,7 +21,7 @@ export default function Launch({ navigation }: LaunchScreenProps) {
 
     const handleCaretakerPress = async () => {
         setUserCategory('caretaker');
-        navigation.navigate('Login')
+        navigation.navigate('LoginCaretaker')
     }
 
 

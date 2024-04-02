@@ -1,5 +1,6 @@
 const Patient = require('../models/patient');
 const Doctor = require('../models/doctor')
+const Caregiver = require('../models/caregiver')
 const ObjectId = require('mongoose').Types.ObjectId;
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -25,9 +26,13 @@ module.exports.addPatient = async (req, res) => {
     console.log('Inside add patients!')
     try {
         const doctorId = req.user._id;
-
         const doctor = await Doctor.findOne({ _id: doctorId });
-        // console.log(doctor);
+        const caregiverid = new ObjectId(req.body.caregiverid);
+        const caregiver = await Caregiver.findById(caregiverid);
+        // console.log(caregiverid);
+        // console.log(caregiver);
+
+
         const isNewUser = await Patient.isThisEmailInUse(req.body.email);
         if (!isNewUser) {
             return res.send({ status: 'failure', message: 'This email is already in use, try to sign-in' })
@@ -41,6 +46,7 @@ module.exports.addPatient = async (req, res) => {
 
         await patient.save();
         await doctor.addPatient(patient._id);
+        await caregiver.addPatient(patient._id);
         res.send({ status: 'success' });
     } catch (error) {
         res.send({ status: 'failure', message: 'Could not add patient' });

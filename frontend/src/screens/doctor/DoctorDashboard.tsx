@@ -6,10 +6,20 @@ import { useSelector } from 'react-redux';
 import { useLogin } from '../../context/LoginProvider';
 import FlatCardsVertical from '../../components/FlatCardsVertical'
 import client from '../../api/client';
+import FlatCards from '../../components/FlatCards';
+import BasicCard from '../../components/BasicCard';
+import { Picker } from '@react-native-picker/picker';
 
 type UserObj = {
     name: String;
     email: String;
+}
+
+// Define the type for a caregiver object based on your backend structure.
+type CaregiverObj = {
+    _id: string;
+    name: string;
+    // add other fields as needed
 }
 
 export default function DoctorDashboard() {
@@ -25,9 +35,6 @@ export default function DoctorDashboard() {
 
     }
 
-
-
-
     // Existing code...
     const [isAddPatientModalVisible, setAddPatientModalVisible] = useState(false);
     const [patientName, setPatientName] = useState('');
@@ -35,6 +42,9 @@ export default function DoctorDashboard() {
     const [password, setPassword] = useState('');
     const [age, setAge] = useState('');
     const [error, setError] = useState<string>('');
+    const [caregivers, setCaregivers] = useState<CaregiverObj[]>([]);
+    const [selectedCaregiver, setSelectedCaregiver] = useState<string>('');
+
 
     // Function to handle opening the add patient modal
     const openAddPatientModal = () => {
@@ -46,6 +56,21 @@ export default function DoctorDashboard() {
         setAddPatientModalVisible(false);
     };
 
+    const fetchCaregivers = async () => {
+        try {
+            // Assuming 'client' is your configured Axios instance with baseURL set to your server
+            const response = await client.get('/caregivers/get-caregivers');
+            setCaregivers(response.data);
+        } catch (err) {
+            // Handle the error as needed
+            console.error(err);
+        }
+    };
+
+    useEffect(() => {
+        fetchCaregivers();
+    }, []);
+
     const handleAddPatient = async () => {
 
         const headers = {
@@ -55,11 +80,14 @@ export default function DoctorDashboard() {
 
         const patientData = {
             doctorid: profile._id,
+            caregiverid: selectedCaregiver,
             name: patientName,
             email: email,
             password: password, // Make sure your server is setup to handle password securely
             age: age
         };
+
+        console.log(patientData)
 
         // Replace 'url-to-your-server' with your actual server URL and endpoint
         const response = await client.post(`/patients/add-patient`, patientData, { headers });
@@ -139,6 +167,25 @@ export default function DoctorDashboard() {
                                 onChangeText={text => setAge(text)}
                             />
 
+
+                            {/* Caregivers Picker */}
+                            {caregivers.length > 0 && (
+                                <>
+                                    <Text style={styles.label}>Assign Caregiver:</Text>
+                                    <View style={styles.pickerContainer}>
+                                        <Picker
+                                            selectedValue={selectedCaregiver}
+                                            onValueChange={(itemValue) => setSelectedCaregiver(itemValue)}
+                                            style={styles.picker}
+                                        >
+                                            {caregivers.map((caregiver) => (
+                                                <Picker.Item key={caregiver._id} label={caregiver.name} value={caregiver._id} />
+                                            ))}
+                                        </Picker>
+                                    </View>
+                                </>
+                            )}
+
                             <Pressable
                                 onPress={handleAddPatient}
                                 style={[styles.btn, { marginTop: error ? 10 : 20 }]}>
@@ -147,13 +194,8 @@ export default function DoctorDashboard() {
                         </View>
                     </View>
                 </Modal>
-                {/* <Text style={styles.cardTitle}>Past Appointments</Text> */}
-                <FlatCardsVertical />
-                <FlatCardsVertical />
-                <FlatCardsVertical />
-                <FlatCardsVertical />
-                <FlatCardsVertical />
-                <FlatCardsVertical />
+
+                {/* <BasicCard /> */}
 
             </ScrollView>
             <FAB
@@ -272,5 +314,21 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 18,
     },
-
+    label: {
+        fontSize: 16,
+        color: '#666',
+        padding: 8,
+        // Add any other styling you need for the label
+    },
+    pickerContainer: {
+        borderColor: 'gray',
+        borderWidth: 1,
+        paddingBottom: 16,
+        borderRadius: 1,
+        marginBottom: 12,
+    },
+    picker: {
+        height: 40,
+        width: '100%',
+    },
 })
