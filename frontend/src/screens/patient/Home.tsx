@@ -11,7 +11,6 @@ import LinearGradient from 'react-native-linear-gradient';
 //context API
 import { useLogin } from '../../context/LoginProvider';
 import MedicinePrescriptionDisplay from '../../components/doctor/MedicinePrescriptionDisplay';
-import PrescriptionCalendarModal from '../../components/patient/PrescriptionCalendarModal'
 import MedicineReminderDisplay from '../../components/patient/MedicineReminderDisplay'
 
 type UserObj = {

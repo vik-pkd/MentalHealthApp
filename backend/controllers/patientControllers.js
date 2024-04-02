@@ -207,7 +207,8 @@ module.exports.getReminders = async (req, res) => {
                 prescriptionId: ele._id,
                 medicine: ele.medicine,
                 quantity: ele.quantity,
-                time: doseTime
+                time: doseTime,
+                doseIndex: j
             });            
         }
     }
