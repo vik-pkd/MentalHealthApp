@@ -7,7 +7,7 @@ const PatientSearchEntry: React.FC<{_id :string; name: string; email: string; on
         <Pressable onPress={() => onPress(_id) }>
             <View style={styles.container}>
                 <Text style={styles.text}>
-                    {name} with {_id}
+                    {name}
                 </Text>
             </View>
         </ Pressable>

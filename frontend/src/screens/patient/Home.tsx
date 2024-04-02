@@ -10,10 +10,14 @@ import LinearGradient from 'react-native-linear-gradient';
 
 //context API
 import { useLogin } from '../../context/LoginProvider';
+import MedicinePrescriptionDisplay from '../../components/doctor/MedicinePrescriptionDisplay';
+import PrescriptionCalendarModal from '../../components/patient/PrescriptionCalendarModal'
+import MedicineReminderDisplay from '../../components/patient/MedicineReminderDisplay'
 
 type UserObj = {
     name: String;
     email: String;
+    id: String;
 }
 
 interface Badge {
@@ -142,6 +146,8 @@ export default function Home() {
                 <FancyCard />
                 <BasicCard />
                 {/* <HistoryCard /> */}
+                {/* <MedicinePrescriptionDisplay patientId={profile._id}/> */}
+                <MedicineReminderDisplay patientId={profile._id}/>
             </ScrollView>
             <FAB
                 placement="right"

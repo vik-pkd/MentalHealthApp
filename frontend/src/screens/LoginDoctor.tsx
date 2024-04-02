@@ -106,8 +106,9 @@ const LoginDoctor = ({ navigation }: LoginScreenProps) => {
                 setProfile(resp.data.doctor);
 
                 const faceFeatures = resp.data.doctor.face;
+                console.log('faceFeatures', faceFeatures);
 
-                if (faceFeatures.length === 0) {
+                if (faceFeatures && faceFeatures.length === 0) {
                     Alert.alert(
                         'Face ID',
                         'Would you like to enable Face ID authentication for the next time?',

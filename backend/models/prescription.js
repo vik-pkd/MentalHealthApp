@@ -20,15 +20,15 @@ const prescriptionSchema = new mongoose.Schema({
     start_date: {
         type: Date
     },
-    start_slot: {
-        type: String
-    },
     end_date: {
         type: Date
     },
-    end_slot: {
-        type: String
+    foodTiming: {
+        type: String,
     },
+    doseTimings: [{
+        type: Date,
+    }]
 });
 
 module.exports = mongoose.model("Prescription", prescriptionSchema);

@@ -1,11 +1,16 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { PatientSerachStackParamList } from '../../routes/DoctorStack'
 import client from '../../api/client';
 import { useSelector } from 'react-redux';
-import AddMedicineModal from '../../components/AddMedicineModal';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+import MedicinePrescriptionDisplay from '../../components/doctor/MedicinePrescriptionDisplay';
+import FancyCard from '../../components/FancyCard';
+import BasicCard from '../../components/BasicCard';
+
 
 type PatientProfileScreenRouteProp = RouteProp<
     PatientSerachStackParamList,
@@ -16,8 +21,11 @@ type PatientProfileProps = {
     route: PatientProfileScreenRouteProp;
 };
 
+type PatientProfileParamsList = NativeStackScreenProps<PatientSerachStackParamList, 'PatientProfile'>;
 
-const PatientProfile = (props: any) => {
+const Tab = createMaterialTopTabNavigator();
+
+const PatientProfile = ({navigation}: PatientProfileParamsList) => {
     const route = useRoute<RouteProp<PatientSerachStackParamList>>();
     const params = route.params;
     const authToken = useSelector((state: Record<string, { token: string | null }>) => state.authToken.token);
@@ -47,6 +55,7 @@ const PatientProfile = (props: any) => {
 
     return (
         <View style={styles.container}>
+            <ScrollView>
             <View style={styles.userInfo}>
                 <View style={styles.userInfoItem}>
                     <Text style={styles.infoKey}>Name:</Text>
@@ -65,7 +74,7 @@ const PatientProfile = (props: any) => {
             </View>
             <View style={styles.buttonContainer}>
                 <Pressable
-                    onPress={() => setIsMedicineModalVisible(true)}
+                    onPress={() => navigation.navigate('Prescription', {_id: params!._id})}
                     style={styles.addModalButton}
                 >
                     <Text style={styles.buttonText}>Add Medicine</Text>
@@ -78,12 +87,8 @@ const PatientProfile = (props: any) => {
                     <Text style={styles.buttonText}>Add Activities</Text>
                 </Pressable>
             </View>
-
-            <AddMedicineModal
-                isVisible={isMedicineModalVisible}
-                closeModal={() => setIsMedicineModalVisible(false)}
-                PatientId={params!._id}
-            />
+            <MedicinePrescriptionDisplay patientId={params!._id}/>
+            </ScrollView>
         </View>
     );
 };

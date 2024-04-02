@@ -1,7 +1,7 @@
 const express = require('express');
 
 const doctorControllers = require('../controllers/doctorControllers');
-const { isAuth } = require('../middleware/auth');
+const { isDoctorAuth } = require('../middleware/auth');
 const upload = require('../utils/multer');
 
 const router = express.Router();
@@ -18,6 +18,7 @@ router.post('/sign-in', validateDoctorSignIn, doctorValidation, doctorController
 // router.post('/save-key', doctorControllers.doctorAddKey);
 // router.post('/verify-key', doctorControllers.verifyBiometrics);
 
-router.post('/add-prescription/patient/:_id', isAuth, upload.single('image'), doctorControllers.addPrescription);
+router.post('/add-prescription/patient/:_id', isDoctorAuth, upload.single('image'), doctorControllers.addPrescription);
+router.post('/add-medicine', isDoctorAuth, upload.single('image'), doctorControllers.addMedicine);
 
 module.exports = router;
