@@ -1,24 +1,23 @@
 import { useEffect, useState } from "react";
 import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
-import client from "../api/client";
+import client from "../../api/client";
 import { useSelector } from "react-redux";
-import globalStyles from "../constants/styles";
-import MedPresCard from "./MedicinePresCard";
+import globalStyles from "../../constants/styles";
+import MedicineReminderCard from "./MedicineReminderCard";
 
-const MedicinePrescriptionDisplay: React.FC<{ patientId: string }> = ({ patientId }) => {
+const MedicineReminderDisplay: React.FC<{ patientId: string }> = ({ patientId }) => {
     const authToken = useSelector((state: Record<string, { token: string | null }>) => state.authToken.token);
-    const [prescriptions, setPrescriptions] = useState<any[]>([]);
+    const [reminders, setReminders] = useState<any[]>([]);
 
     useEffect(() => {
         const headers = {
             'Authorization': `Bearer ${authToken}`
         };
         const fetchPrescriptions = async () => {
-            const resp = await client.get(`/patients/prescriptions/patient/${patientId}`, { headers });
+            const resp = await client.get(`/patients/reminders`, { headers });
             if (resp.data.status === 'success') {
-                setPrescriptions(resp.data.prescriptions);
+                setReminders(resp.data.reminders);
             }
-            console.log('medicine prescription display', resp.data);
         };
         fetchPrescriptions();
     }, [patientId]);
@@ -32,14 +31,14 @@ const MedicinePrescriptionDisplay: React.FC<{ patientId: string }> = ({ patientI
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({item, index}) => (<MedPresCard key={index} prescription={item}></MedPresCard>) }
             /> */}
-            {prescriptions && prescriptions.map((item, index) => (
-                <MedPresCard key={index} prescription={item} />
+            {reminders && reminders.map((item, index) => (
+                <MedicineReminderCard key={index} reminder={item} />
             ))}
         </View>
     );
 }
 
-export default MedicinePrescriptionDisplay;
+export default MedicineReminderDisplay;
 
 const styles = StyleSheet.create({
 

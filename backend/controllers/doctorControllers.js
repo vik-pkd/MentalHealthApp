@@ -44,8 +44,8 @@ module.exports.doctorSignIn = async (req, res) => {
 
     const isMatch = await doctor.comparePassword(password);
     if (!isMatch) return res.json({ status: 'failure', message: 'email / password does not match!' })
-
-    const token = jwt.sign({ userId: doctor._id }, process.env.JWT_SECRET, { expiresIn: '1d' })
+    console.log('doctor signing-in');
+    const token = jwt.sign({ userId: doctor._id, role: 'doctor' }, process.env.JWT_SECRET, { expiresIn: '1d' })
 
     res.send({ status: 'success', doctor, token })
 }
@@ -107,7 +107,6 @@ module.exports.addPrescription = async (req, res) => {
     const patientId = req.params._id;
     const doctorId = req.user._id;
     const body = JSON.parse(req.body.details);
-    console.log('body', body);
     const { name, quantity, startDate, endDate, foodTiming, doseTimings } = body;
     const medicinePhotoData = fs.readFileSync(req.file.path);
     const prescription = new Prescription({
@@ -121,7 +120,6 @@ module.exports.addPrescription = async (req, res) => {
         doseTimings: doseTimings,
         prescription_date: new Date(),
     });
-    console.log(prescription);
     await prescription.save();
     res.send({ status: 'success' });
 };

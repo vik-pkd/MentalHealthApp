@@ -7,7 +7,7 @@ import client from '../../api/client';
 import { useSelector } from 'react-redux';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import MedicinePrescriptionDisplay from '../../components/MedicinePrescriptionDisplay';
+import MedicinePrescriptionDisplay from '../../components/doctor/MedicinePrescriptionDisplay';
 import FancyCard from '../../components/FancyCard';
 import BasicCard from '../../components/BasicCard';
 

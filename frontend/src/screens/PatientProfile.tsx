@@ -6,7 +6,7 @@ import { PatientSerachStackParamList } from '../routes/AppStack';
 import client from '../api/client';
 import { useSelector } from 'react-redux';
 import BasicButton from '../components/BasicButton';
-import MedicinePrescriptionDisplay from '../components/MedicinePrescriptionDisplay';
+import MedicinePrescriptionDisplay from '../components/doctor/MedicinePrescriptionDisplay';
 import FancyCard from '../components/FancyCard';
 
 type PatientProfileScreenRouteProp = RouteProp<
