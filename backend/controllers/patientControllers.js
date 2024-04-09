@@ -6,6 +6,8 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const canvas = require('canvas');
 const faceapi = require('@vladmandic/face-api');
+const Prescription = require('../models/prescription');
+const DoseHistory = require('../models/doseHistory');
 
 module.exports.getPatients = async (req, res) => {
     // console.log('Inside search patients!')
@@ -83,8 +85,8 @@ module.exports.patientSignIn = async (req, res) => {
 
     const isMatch = await patient.comparePassword(password);
     if (!isMatch) return res.json({ status: 'failure', message: 'email / password does not match!' })
-
-    const token = jwt.sign({ userId: patient._id }, process.env.JWT_SECRET, { expiresIn: '1d' })
+    const token = jwt.sign({ userId: patient._id, role: 'patient' }, process.env.JWT_SECRET, { expiresIn: '1d' })
+    console.log('patient signed in', token);
 
     res.send({ status: 'success', patient, token })
 }
@@ -163,5 +165,79 @@ module.exports.getPoints = async (req, res) => {
         res.send({ points: patient.Score });
     } catch (error) {
         res.send({ error: error });
+    }
+}
+
+module.exports.getPrescriptions = async (req, res) => {
+    try {
+        const doctorId = req.user._id;
+        const patientId = new ObjectId(req.params._id);
+        // console.log(doctorId, patientId);
+        const prescriptions = (await Prescription.find({patient: patientId})).map(item => ({
+            _id: item._id,
+            patient: item.patient,
+            medicine: item.medicine,
+            quantity: item.quantity,
+            start_date: item.start_date,
+            end_date: item.end_date,
+        }));
+        res.send({ status: "success", prescriptions: prescriptions });
+    } catch (err) {
+        res.send({ status: "failure" });
+    }
+};
+
+module.exports.getReminders = async (req, res) => {
+    const patientId = req.user._id;
+    console.log('reminders fetching...', patientId);
+    const current_date = new Date();
+    // get all prescriptions of patient
+    // const query = { $and: [ {patient: patientId}, ] };
+    // , {start_date: { $lte : current_date}}, {end_date: { $gt: current_date}}
+    const condition1 = {patient: patientId};
+    const condition2 = {start_date: { $lte : current_date}};
+    const condition3 = {end_date: { $gt: current_date}};
+    const prescriptions = (await Prescription.find({ $and: [condition1, condition2, condition3] })).map(item => ({
+        _id: item._id,
+        patient: item.patient,
+        medicine: item.medicine,
+        quantity: item.quantity,
+        doseTimings: item.doseTimings
+    }));
+    const reminders = [];
+    for (let i = 0; i < prescriptions.length; i++) {
+        const ele = prescriptions[i];
+        for (let j = 0; j < ele.doseTimings.length; j++) {
+            const doseTime = ele.doseTimings[j];
+            reminders.push({
+                prescriptionId: ele._id,
+                medicine: ele.medicine,
+                quantity: ele.quantity,
+                time: doseTime,
+                doseIndex: j
+            });            
+        }
+    }
+    reminders.sort((a, b) => a.time.getTime() - b.time.getTime());
+    res.send({status: "success", reminders: reminders});
+};
+
+module.exports.takeMedicine = async (req, res) => {
+    try {
+        const patientId = req.user._id;
+        const { prescriptionId, doseIndex } = req.body;
+
+        // TODO time validation
+        const doseHistory = new DoseHistory({
+            patient: patientId,
+            prescription: prescriptionId,
+            date: new Date(),
+            slot: doseIndex,
+            istaken: true
+        });
+        await doseHistory.save();
+        res.send({status: "success"});        
+    } catch (error) {
+        res.send({status: "failure"});
     }
 }

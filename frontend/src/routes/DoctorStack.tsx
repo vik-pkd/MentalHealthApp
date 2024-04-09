@@ -7,6 +7,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import PatientProfile from '../screens/doctor/PatientProfile';
 import PatientSearch from '../screens/doctor/PatientSearch';
 import DoctorDashboard from '../screens/doctor/DoctorDashboard';
+import AddPrescription from '../components/addPrescription';
 
 const homeName = "Dashboard";
 const detailsName = "Patients";
@@ -17,6 +18,7 @@ const Tab = createBottomTabNavigator();
 export type PatientSerachStackParamList = {
     PatientSearch: undefined;
     PatientProfile: { _id: string };
+    Prescription: { _id : string };
 }
 
 const Stack = createNativeStackNavigator<PatientSerachStackParamList>();
@@ -26,6 +28,7 @@ const PatientStack = () => {
         <Stack.Navigator>
             <Stack.Screen name='PatientSearch' component={PatientSearch} />
             <Stack.Screen name='PatientProfile' component={PatientProfile} />
+            <Stack.Screen name='Prescription' component={AddPrescription} />
         </Stack.Navigator>
     );
 };

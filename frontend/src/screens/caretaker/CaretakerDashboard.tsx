@@ -17,6 +17,7 @@ import FlatCardsVertical from '../../components/FlatCardsVertical'
 export default function CaretakerDashboard() {
     const { setIsLoggedIn, profile } = useLogin();
     const [patients, setPatients] = useState([]);
+    const [reminders, setReminders] = useState([[]]);
 
     // Dummy patient information
     const patientInfo = {
@@ -28,6 +29,22 @@ export default function CaretakerDashboard() {
 
     // Dummy medication information array
     const medicineInfo = [
+        {
+            name: 'Medicine A',
+            quantity: '2 Pills',
+            startDate: new Date(2024, 3, 14, 8, 0), // April 14, 2024, 08:00 AM
+            startSlot: 'Morning',
+            endDate: new Date(2024, 3, 21, 20, 0), // April 21, 2024, 08:00 PM
+            endSlot: 'Evening',
+        },
+        {
+            name: 'Medicine A',
+            quantity: '2 Pills',
+            startDate: new Date(2024, 3, 14, 8, 0), // April 14, 2024, 08:00 AM
+            startSlot: 'Morning',
+            endDate: new Date(2024, 3, 21, 20, 0), // April 21, 2024, 08:00 PM
+            endSlot: 'Evening',
+        },
         {
             name: 'Medicine A',
             quantity: '2 Pills',
@@ -56,8 +73,9 @@ export default function CaretakerDashboard() {
                     caregiverid: profile._id,
                 }
                 const response = await client.post('/caregivers/get-patients', data);
-                console.log('data : ', response.data);
-                setPatients(response.data);
+                console.log('data : ', response.data.reminders[0]);
+                setPatients(response.data.patients);
+                setReminders(response.data.reminders);
             } catch (err) {
                 console.error(err);
                 // Snackbar.show({
@@ -88,16 +106,25 @@ export default function CaretakerDashboard() {
                                         unfilledColor="rgba(255, 255, 255, 0.5)"
                                         borderColor="rgba(255, 255, 255, 0)"
                                     /> */}
-                                    <Text style={styles.pointsText}>Alerted: {10} / 50 Patients </Text>
+                                    <Text style={styles.pointsText}>Alerted: {0} / {patients.length} Patients </Text>
 
                                 </View>
                             </View>
                         </TouchableOpacity>
                     )}
                 </View>
-                {patients && patients.map((patient) => (
-                    <FlatCardsVertical key={0} patientInfo={patient} medicineInfo={medicineInfo} />
-                ))}
+                {patients && reminders && patients.map((patient, index) => {
+                    // Get the corresponding reminders for this patient
+                    const patientReminders = reminders[index];
+                    // console.log(patientReminders);
+                    return (
+                        <FlatCardsVertical
+                            key={index} // Assuming each patient has a unique _id
+                            patientInfo={patient}
+                            medicineInfo={patientReminders}
+                        />
+                    );
+                })}
             </ScrollView>
             <FAB
                 placement="right"

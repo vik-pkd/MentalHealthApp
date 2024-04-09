@@ -3,20 +3,21 @@ const mongoose = require("mongoose");
 const doseHistorySchema = new mongoose.Schema({
     patient: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'Patient'
     },
-    medicine: {
-        type: String
+    prescription: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Prescription'
     },
     date: {
         type: Date
     },
     slot: {
-        type: String,
+        type: Number,
     },
     istaken: {
         type: Boolean
     }
 });
 
-module.exports = mongoose.model("DoseHistory", userSchema);
+module.exports = mongoose.model("DoseHistory", doseHistorySchema);

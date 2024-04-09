@@ -2,6 +2,7 @@ const fs = require('fs');
 
 const Patient = require('../models/patient');
 const Doctor = require('../models/doctor');
+const Medicine = require('../models/medicine');
 const ObjectId = require('mongoose').Types.ObjectId;
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -43,8 +44,8 @@ module.exports.doctorSignIn = async (req, res) => {
 
     const isMatch = await doctor.comparePassword(password);
     if (!isMatch) return res.json({ status: 'failure', message: 'email / password does not match!' })
-
-    const token = jwt.sign({ userId: doctor._id }, process.env.JWT_SECRET, { expiresIn: '1d' })
+    console.log('doctor signing-in');
+    const token = jwt.sign({ userId: doctor._id, role: 'doctor' }, process.env.JWT_SECRET, { expiresIn: '1d' })
 
     res.send({ status: 'success', doctor, token })
 }
@@ -106,7 +107,7 @@ module.exports.addPrescription = async (req, res) => {
     const patientId = req.params._id;
     const doctorId = req.user._id;
     const body = JSON.parse(req.body.details);
-    const { name, quantity, startDate, endDate, slot } = body;
+    const { name, quantity, startDate, endDate, foodTiming, doseTimings } = body;
     const medicinePhotoData = fs.readFileSync(req.file.path);
     const prescription = new Prescription({
         patient: new ObjectId(patientId),
@@ -114,8 +115,30 @@ module.exports.addPrescription = async (req, res) => {
         medicine: name,
         quantity: quantity,
         start_date: startDate,
-        end_date: endDate
+        end_date: endDate,
+        foodTiming: foodTiming,
+        doseTimings: doseTimings,
+        prescription_date: new Date(),
     });
     await prescription.save();
     res.send({ status: 'success' });
 };
+
+module.exports.addMedicine = async (req, res) => {
+    try {
+        const doctorId = req.user._id;
+        const body = JSON.parse(req.body.details);
+        const { name, foodTiming } = body;
+        const medicinePhotoData = fs.readFileSync(req.file.path);
+        const medicine = new Medicine({
+            doctor: doctorId,
+            name: name,
+            foodTiming: foodTiming,
+            image: medicinePhotoData
+        });        
+        await medicine.save();
+        res.send({status: "success"});
+    } catch (error) {
+        res.send({status: "failure"});
+    }
+}

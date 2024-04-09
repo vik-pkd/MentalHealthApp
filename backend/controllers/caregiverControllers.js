@@ -53,14 +53,41 @@ module.exports.getPatientsCaregiver = async (req, res) => {
     const caregiverid = new ObjectId(req.body.caregiverid);
     console.log(caregiverid)
     const patients = (await Caregiver.findById(caregiverid).populate('patients')).patients;
-    res.send(patients);
 
-}
+    const reminder_list = []
+    for (let i = 0; i < patients.length; i++) {
+        const patientId = patients[i]._id;
+        console.log('reminders fetching...', patientId);
+        const current_date = new Date();
 
-module.exports.checkPrescription = async (req, res) => {
-    const patientId = req.params._id;
-
-    // TODO : Get the patient and check if he / she took the dosage (daily ?)
-
+        const condition1 = { patient: patientId };
+        const condition2 = { start_date: { $lte: current_date } };
+        const condition3 = { end_date: { $gt: current_date } };
+        const prescriptions = (await Prescription.find({ $and: [condition1, condition2, condition3] })).map(item => ({
+            _id: item._id,
+            patient: item.patient,
+            medicine: item.medicine,
+            quantity: item.quantity,
+            doseTimings: item.doseTimings
+        }));
+        const reminders = [];
+        for (let i = 0; i < prescriptions.length; i++) {
+            const ele = prescriptions[i];
+            for (let j = 0; j < ele.doseTimings.length; j++) {
+                const doseTime = ele.doseTimings[j];
+                reminders.push({
+                    prescriptionId: ele._id,
+                    medicine: ele.medicine,
+                    quantity: ele.quantity,
+                    time: doseTime,
+                    doseIndex: j
+                });
+            }
+        }
+        reminders.sort((a, b) => a.time.getTime() - b.time.getTime());
+        reminder_list.push(reminders)
+    }
+    console.log(reminder_list)
+    res.send({ status: "success", patients: patients, reminders: reminder_list });
 
 }
