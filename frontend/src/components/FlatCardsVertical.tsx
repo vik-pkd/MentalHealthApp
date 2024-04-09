@@ -1,88 +1,175 @@
-import {
-    StyleSheet, Text, View,
-    Button,
-    SafeAreaView,
-    Alert
-} from 'react-native'
-import React from 'react'
+import React from 'react';
+import { StyleSheet, Text, View, Image, Alert, TouchableOpacity, ScrollView } from 'react-native';
 
-export default function FlatCardsVertical() {
-    return (
-        <View>
-            <View style={styles.container}>
+const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const formattedTime = date.toLocaleString('en-US', {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+    });
+    return formattedTime;
+};
 
-                <View style={[styles.card, styles.cardOne]}>
-                    <Text style={styles.cardText}>Meditate</Text>
-                </View>
 
-                <View style={[styles.card2]}>
-                    <Text style={styles.card2Text}>Breath</Text>
-
-                    <Text style={styles.card2BodyText}>Perform this for 1-2 mins.</Text>
-
-                    <View style
-                        ={styles.buttonContainer}>
-                        <Button
-                            title="Start"
-                            color="rgba(134, 65, 244, 1)"
-
-                            onPress={() => Alert.alert('Go!!!!!!!')}
-                        />
-                    </View>
-
-                </View>
-            </View>
-        </View>
-    )
+interface PatientInfo {
+    name: string;
+    age: number;
+    condition: string;
+    profileImageUri: string;
 }
+
+interface MedicineInfo {
+    doseIndex: number;
+    medicine: string;
+    prescriptionId: any;
+    quantity: any;
+    time: any;
+}
+
+interface FlatCardsVerticalProps {
+    patientInfo: PatientInfo;
+    medicineInfo: MedicineInfo[];
+}
+
+const FlatCardsVertical: React.FC<FlatCardsVerticalProps> = ({ patientInfo, medicineInfo }) => {
+    const getTimeDetails = (time: Date) => {
+        const currentTime = new Date();
+        // Convert the reminder time from the reminder object to a Date object
+        const reminderTime = new Date(time);
+        // Compare the current time with the reminder time to determine the color
+        const timeColor = currentTime < reminderTime ? 'green' : 'red';
+        const alertEnabled = currentTime > reminderTime;
+
+        return { timeColor, alertEnabled };
+    };
+
+    const handleAlert = (medName: any) => {
+        // Handle alert logic here
+        Alert.alert('Submit', 'Are you sure to submit the medicine', [
+            {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+            },
+            { text: 'Yes', onPress: () => console.log(`Alert for medicine: ${medName}`) },
+        ]);
+    };
+
+
+    return (
+        <View style={styles.container}>
+            {/* Patient Information Card */}
+            <View style={[styles.card, styles.patientCard]}>
+                <Image source={require('../../assets/caretaker/patient.png')} style={styles.profileImage} />
+                <Text style={styles.nameText}>{patientInfo.name}</Text>
+                <Text style={styles.detailsText}>Age: {patientInfo.age}</Text>
+
+            </View>
+
+            {/* Medication Information Cards */}
+            <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={true}>
+                {medicineInfo.map((med, index) => {
+                    const { timeColor, alertEnabled } = getTimeDetails(med.time); // Logic for time color and alert
+
+                    return (
+                        <View key={index} style={[styles.card, styles.medicationCard]}>
+                            <Text style={styles.medicationTitle}>{med.medicine}</Text>
+                            <Text style={[styles.medDetail, { color: timeColor }]}>
+                                Time: {formatDate(med.time)}
+                            </Text>
+                            {alertEnabled && (
+                                <TouchableOpacity style={styles.alertButton} onPress={() => handleAlert(med.medicine)}>
+                                    <Text style={styles.alertButtonText}>Alert</Text>
+                                </TouchableOpacity>
+                            )}
+                        </View>
+                    );
+                })}
+            </ScrollView>
+        </View>
+    );
+};
+
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         flexDirection: 'row',
-        padding: 0,
-        margin: 8
+        padding: 10,
+        justifyContent: 'space-around',
+        margin: 4,
+        backgroundColor: '#ce93d8',
+        borderRadius: 10,
+        height: 190
     },
     card: {
-        flex: 1,
-        width: 100,
-        height: 100,
-        borderRadius: 4,
-        margin: 0,
+        borderRadius: 10,
+        padding: 10,
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
+        shadowColor: '#000',
+        shadowOffset: { height: 3, width: 0 },
+        elevation: 3,
         alignItems: 'center',
-        justifyContent: 'center'
     },
-    card2: {
-        flex: 1,
-        flexGrow: 1,
-        width: 100,
-        height: 100,
-        borderRadius: 4,
-        // margin: 2,
-        paddingLeft: 8,
-        // alignItems: 'flex-start',
-        // justifyContent: 'flex-start'
+    patientCard: {
+        backgroundColor: '#9C27B0', // Or your theme color
+        marginRight: 8
     },
-    card2Text: {
-        color: '#000000',
+    profileImage: {
+        width: 70,
+        height: 70,
+        borderRadius: 35,
+        marginBottom: 10,
+    },
+    nameText: {
+        color: '#fff',
         fontSize: 18,
-        fontWeight: '400'
+        fontWeight: 'bold',
     },
-    card2BodyText: {
-        color: '#57606f',
+    detailsText: {
+        color: '#fff',
         fontSize: 14,
-        fontWeight: '400'
     },
-    cardText: {
-        color: '#ffffff',
+    medicationCard: {
+        backgroundColor: '#E1BEE7',
+        marginVertical: 5, // Add spacing between cards
+    },
+    medicationTitle: {
+        color: '#4A148C', // Darker theme color for contrast
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    medicationDetail: {
+        backgroundColor: '#F3E5F5', // Even lighter shade
+        borderRadius: 5,
+        marginBottom: 5,
+        padding: 5,
+    },
+    medName: {
+        color: '#4A148C',
         fontSize: 16,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
-    cardOne: {
-        backgroundColor: 'rgba(134, 65, 244, 1)'
+    medDetail: {
+        color: '#6A1B9A',
+        fontSize: 14,
     },
-    buttonContainer: {
-        marginTop: 4
-    }
+    alertButton: {
+        backgroundColor: 'red', // Or your theme color for buttons
+        padding: 10,
+        borderRadius: 5,
+        marginTop: 10,
+    },
+    alertButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+    },
+    scrollView: {
+        // You can set a maximum height to constrain the scroll view, if needed
+        maxHeight: 300, // or whatever height you desire
+    },
+});
 
-})
+export default FlatCardsVertical;

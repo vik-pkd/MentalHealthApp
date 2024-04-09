@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import BasicButton from '../BasicButton';
 import CustomDatePicker from '../CustomDatePicker';
@@ -12,11 +12,10 @@ import { PatientSerachStackParamList } from '../../routes/DoctorStack';
 
 const milliSecondsInDay = 86400000;
 
-type TimeScreenProps = NativeStackScreenProps<AddPrescriptionStackParamList, 'TimeInfo'>;
+type TimeInfoProps = NativeStackScreenProps<AddPrescriptionStackParamList, 'TimeInfo'> &
+    NativeStackScreenProps<PatientSerachStackParamList, 'Prescription'>;
 
-type PrescriptionScreenProps = NativeStackScreenProps<PatientSerachStackParamList, 'Prescription'>;
-
-const TimeInfo = ({ route }: TimeScreenProps) => {
+const TimeInfo = ({ route, navigation }: TimeInfoProps) => {
     const { numberOfDoses, setDoseTimings, name, doseTimings, startDate, endDate, quantity, foodTiming, image } = usePrescription();
     const authToken = useSelector((state: Record<string, { token: string }>) => state.authToken.token);
 
@@ -55,6 +54,15 @@ const TimeInfo = ({ route }: TimeScreenProps) => {
         console.log('running2');
         const response = await client.post(`/doctors/add-prescription/patient/${route.params.patientId}`, prescriptionData, { headers });
         console.log('response.data in timeinfo', response.data);
+
+        Alert.alert('Submit', 'Are you sure to submit the medicine', [
+            {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+            },
+            { text: 'Yes', onPress: () => navigation.navigate('PatientSearch') },
+        ]);
     }
 
 

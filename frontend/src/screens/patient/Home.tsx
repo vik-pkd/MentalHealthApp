@@ -1,17 +1,21 @@
-import { StyleSheet, Text, View, ScrollView, Image, Animated, Modal, TouchableOpacity, FlatList } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, Image, Animated, Modal, TouchableOpacity, FlatList, Platform } from 'react-native'
 import FancyCard from '../../components/FancyCard'
 import BasicCard from '../../components/BasicCard'
 import HistoryCard from '../../components/HistoryCards'
-import { FAB } from '@rneui/themed'
+import { Button, FAB } from '@rneui/themed'
 import Snackbar from 'react-native-snackbar'
 import React, { useContext, useState, useEffect, useRef } from 'react'
 import * as Progress from 'react-native-progress';
 import LinearGradient from 'react-native-linear-gradient';
+import { useSelector } from "react-redux";
+import client from "../../api/client";
 
 //context API
 import { useLogin } from '../../context/LoginProvider';
 import MedicinePrescriptionDisplay from '../../components/doctor/MedicinePrescriptionDisplay';
 import MedicineReminderDisplay from '../../components/patient/MedicineReminderDisplay'
+import Ionicons from 'react-native-vector-icons/Ionicons'
+import PushNotification from 'react-native-push-notification'
 
 type UserObj = {
     name: String;
@@ -68,9 +72,11 @@ export default function Home() {
     const { setIsLoggedIn, profile, userCategory, userPoints } = useLogin();
     const moveAnim = useRef(new Animated.Value(0)).current;
     const [isModalVisible, setModalVisible] = useState(false);
+    const [isPresModalVisible, setPresModalVisible] = useState(false);
+    const authToken = useSelector((state: Record<string, { token: string | null }>) => state.authToken.token);
 
     const isCurrentRank = (badge: Badge): boolean => userPoints >= badge.minPoints && userPoints <= badge.maxPoints;
-
+    const [numReminders, setNumReminders] = useState(0);
     const handleLogout = () => {
 
         setIsLoggedIn(false);
@@ -83,6 +89,10 @@ export default function Home() {
 
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
+    };
+
+    const togglePresModal = () => {
+        setPresModalVisible(!isPresModalVisible);
     };
 
     // Define the animation sequence
@@ -111,6 +121,20 @@ export default function Home() {
         return () => moveAnim.stopAnimation();
     }, [moveAnim]);
 
+    useEffect(() => {
+        const headers = {
+            'Authorization': `Bearer ${authToken}`
+        };
+        const fetchPrescriptions = async () => {
+            const resp = await client.get(`/patients/reminders`, { headers });
+            if (resp.data.status === 'success') {
+                setNumReminders(resp.data.reminders.length);
+            }
+        };
+        fetchPrescriptions();
+    }, [profile._id]);
+
+
 
     return (
         <View style={styles.container}>
@@ -118,36 +142,50 @@ export default function Home() {
                 <View style={styles.stickyHeader}>
                     {profile && (
 
-                        <TouchableOpacity onPress={toggleModal}>
-                            <View style={styles.userContainer}>
+
+                        <View style={styles.userContainer}>
+
+
+                            <TouchableOpacity onPress={toggleModal}>
                                 <Animated.View style={[styles.userContainer, { transform: [{ translateY: moveAnim }] }]}>
                                     <Image source={require('../../../assets/badges/1.png')} style={styles.badgeImage} />
                                     {/* ... */}
                                 </Animated.View>
-                                <View style={styles.detailsAndProgress}>
-                                    <Text style={styles.detailsText}>Welcome {profile.name}!</Text>
-                                    <Progress.Bar
-                                        style={styles.progress}
-                                        progress={userPoints / 100} // Assuming 1000 is the max points
-                                        width={200}
-                                        color="red"
-                                        unfilledColor="rgba(255, 255, 255, 0.5)"
-                                        borderColor="rgba(255, 255, 255, 0)"
-                                    />
+                            </TouchableOpacity>
 
-                                    <Text style={styles.pointsText}>Points: {userPoints} / 100 </Text>
 
-                                </View>
+                            <View style={styles.detailsAndProgress}>
+                                <Text style={styles.detailsText}>Welcome {profile.name}!</Text>
+                                <Progress.Bar
+                                    style={styles.progress}
+                                    progress={userPoints / 100} // Assuming 1000 is the max points
+                                    width={185}
+                                    color="red"
+                                    unfilledColor="rgba(255, 255, 255, 0.5)"
+                                    borderColor="rgba(255, 255, 255, 0)"
+                                />
+
+                                <Text style={styles.pointsText}>Points: {userPoints} / 100 </Text>
+
                             </View>
-                        </TouchableOpacity>
+
+                            <TouchableOpacity onPress={togglePresModal}>
+                                <View style={styles.notificationContainer}>
+                                    <Ionicons name="notifications-circle-outline" color="#f4f1f4" size={60} />
+                                    {numReminders > 0 && (
+                                        <View style={styles.notificationDot} />
+                                    )}
+                                </View>
+                            </TouchableOpacity>
+                        </View>
                     )}
                 </View>
                 <FancyCard />
                 <BasicCard />
                 {/* <HistoryCard /> */}
-                {/* <MedicinePrescriptionDisplay patientId={profile._id}/> */}
-                <MedicineReminderDisplay patientId={profile._id}/>
+                {/* <MedicineReminderDisplay patientId={profile._id} /> */}
             </ScrollView>
+
             <FAB
                 placement="right"
                 color='#6A1B9A'
@@ -171,6 +209,21 @@ export default function Home() {
                         ))}
                     </ScrollView>
                     <TouchableOpacity style={styles.closeButton} onPress={toggleModal}>
+                        <Text style={styles.closeButtonText}>Close</Text>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={isPresModalVisible}
+                onRequestClose={togglePresModal}
+            >
+                <View style={styles.modalViewPres}>
+                    <Text style={styles.modalTitle}>Prescriptions</Text>
+                    <MedicineReminderDisplay patientId={profile._id} />
+                    <TouchableOpacity style={styles.closeButtonPres} onPress={togglePresModal}>
                         <Text style={styles.closeButtonText}>Close</Text>
                     </TouchableOpacity>
                 </View>
@@ -231,6 +284,21 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 5,
     },
+    modalViewPres: {
+        margin: 20,
+        backgroundColor: "#f4f1f4",
+        borderRadius: 20,
+        padding: 20,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
     modalTitle: {
         fontSize: 24,
         fontWeight: 'bold',
@@ -276,6 +344,12 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 10,
     },
+    closeButtonPres: {
+        marginTop: 5,
+        backgroundColor: '#6A1B9A', // Or any other color matching your theme
+        padding: 10,
+        borderRadius: 10,
+    },
     closeButtonText: {
         color: 'white',
         fontSize: 18,
@@ -283,5 +357,20 @@ const styles = StyleSheet.create({
     scrollViewStyle: {
         height: '76%', // Or a fixed value like 300
         alignSelf: 'center', // This will center the ScrollView
+    },
+    notificationContainer: {
+        // Container to position the dot relative to the icon
+        position: 'relative',
+        marginRight: 4
+    },
+    notificationDot: {
+        // Red dot style
+        position: 'absolute',
+        right: 0, // Position as needed
+        top: 0, // Position as needed
+        width: 10, // Size as needed
+        height: 10, // Size as needed
+        borderRadius: 5, // Half the size of the width to make it round
+        backgroundColor: 'red',
     },
 });

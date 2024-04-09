@@ -4,9 +4,7 @@ import FlatCards from './FlatCards'
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { GameStackParamList } from '../routes/PatientStack';
-
 import { Dimensions } from "react-native";
-const screenWidth = Dimensions.get("window").width;
 import * as Progress from 'react-native-progress';
 import { useLogin } from '../context/LoginProvider';
 
@@ -19,6 +17,8 @@ interface Activity {
     navigation: keyof GameStackParamList;
     img: ReturnType<typeof require>;
 }
+
+const screenWidth = Dimensions.get("window").width;
 
 export default function BasicCard() {
     const navigation = useNavigation<GameScreenProps>();

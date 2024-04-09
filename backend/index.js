@@ -5,7 +5,7 @@ const connectToMongo = require('./utils/db');
 
 const patientRoutes = require('./routes/Patient');
 const doctorRoutes = require('./routes/Doctor');
-const Doctor = require('./models/doctor');
+const caregiverRoutes = require('./routes/Caregiver')
 
 const tf = require('@tensorflow/tfjs-node')
 const faceapi = require('@vladmandic/face-api');
@@ -33,6 +33,7 @@ app.use(bodyParser.json());
 
 app.use('/patients', patientRoutes);
 app.use('/doctors', doctorRoutes);
+app.use('/caregivers', caregiverRoutes)
 
 app.use('/', (req, res) => {
   res.send({ status: 'success', message: 'Welcome to backend zone!' })
