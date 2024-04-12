@@ -29,6 +29,6 @@ router.get('/prescriptions/patient/:_id', isDoctorOrPatientAuth, patientControll
 
 router.get('/reminders', isPatientAuth, patientControllers.getReminders);
 
-router.post('/taken-medicine', isPatientAuth, patientControllers.takeMedicine);
+router.put('/taken-medicine', isPatientAuth, patientControllers.takeMedicine);
 
 module.exports = router;

@@ -7,6 +7,8 @@ const ObjectId = require('mongoose').Types.ObjectId;
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const Prescription = require('../models/prescription');
+const DoseHistory = require('../models/doseHistory');
+const { setMidNight } = require('../utils/date');
 
 module.exports.getDoctors = async (req, res) => {
     try {
@@ -104,6 +106,7 @@ module.exports.verifyBiometrics = async (req, res) => {
 }
 
 module.exports.addPrescription = async (req, res) => {
+    console.log('running in doctor add prescription');
     const patientId = req.params._id;
     const doctorId = req.user._id;
     const body = JSON.parse(req.body.details);
@@ -121,6 +124,28 @@ module.exports.addPrescription = async (req, res) => {
         prescription_date: new Date(),
     });
     await prescription.save();
+    const doseHistories = [];
+    for (let date = setMidNight(new Date(startDate)); date <= setMidNight(new Date(endDate)); date.setTime(date.getTime() + 86400000)) {
+        for (let doseIndex = 0; doseIndex < doseTimings.length; doseIndex++) {
+            const doseTime = new Date(doseTimings[doseIndex]);
+            doseTime.setFullYear(date.getFullYear());
+            doseTime.setDate(date.getDate());
+            doseTime.setMonth(date.getMonth());
+
+            const midNight = setMidNight(doseTime);
+
+            doseHistories.push({
+                patient: patientId,
+                prescription: prescription._id,
+                date: midNight,
+                time: doseTime,
+                slot: doseIndex,
+                istaken: false,
+                edited: false,
+            });
+        }
+    }
+    const pushed = await DoseHistory.insertMany(doseHistories);
     res.send({ status: 'success' });
 };
 

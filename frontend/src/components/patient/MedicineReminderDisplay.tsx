@@ -45,15 +45,14 @@ const MedicineReminderDisplay: React.FC<{ patientId: string }> = ({ patientId })
     const authToken = useSelector((state: Record<string, { token: string | null }>) => state.authToken.token);
     const [reminders, setReminders] = useState<any[]>([]);
 
-    const removeReminder = (id: any) => {
+    const removeReminder = async (id: any) => {
         // Remove the reminder with the given id
-        console.log(`ID to be removed : ${id}`)
-
+        console.log(`ID to be removed : ${id}`);
         // reminders.forEach((reminder) => {
         //     console.log(reminder.prescriptionId)
         // })
 
-        const filteredReminders = reminders.filter((reminder) => reminder.prescriptionId !== id)
+        const filteredReminders = reminders.filter((reminder) => reminder._id !== id)
 
         // filteredReminders.forEach((reminder) => {
         //     console.log(reminder.prescriptionId)
@@ -70,6 +69,7 @@ const MedicineReminderDisplay: React.FC<{ patientId: string }> = ({ patientId })
             const resp = await client.get(`/patients/reminders`, { headers });
             if (resp.data.status === 'success') {
                 const fetchedReminders = resp.data.reminders;
+                console.log(fetchedReminders);
                 setReminders(fetchedReminders);
                 fetchedReminders.forEach(scheduleReminder); // Use fetchedReminders directly
             }
@@ -81,7 +81,7 @@ const MedicineReminderDisplay: React.FC<{ patientId: string }> = ({ patientId })
     return (
         <ScrollView style={styles.scrollViewStyle}>
             {reminders && reminders.map((item, index) => (
-                <MedicineReminderCard key={item.prescriptionId} reminder={item} onRemoveReminder={removeReminder} />
+                <MedicineReminderCard key={item._id} reminder={item} onRemoveReminder={removeReminder} />
             ))}
         </ScrollView>
     );

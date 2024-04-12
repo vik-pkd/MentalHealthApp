@@ -8,6 +8,7 @@ const canvas = require('canvas');
 const faceapi = require('@vladmandic/face-api');
 const Prescription = require('../models/prescription');
 const DoseHistory = require('../models/doseHistory');
+const { areDatesOnSameDay } = require('../utils/date');
 
 module.exports.getPatients = async (req, res) => {
     // console.log('Inside search patients!')
@@ -25,7 +26,6 @@ module.exports.getPatients = async (req, res) => {
 }
 
 module.exports.addPatient = async (req, res) => {
-    console.log('Inside add patients!')
     try {
         const doctorId = req.user._id;
         const doctor = await Doctor.findOne({ _id: doctorId });
@@ -173,7 +173,7 @@ module.exports.getPrescriptions = async (req, res) => {
         const doctorId = req.user._id;
         const patientId = new ObjectId(req.params._id);
         // console.log(doctorId, patientId);
-        const prescriptions = (await Prescription.find({patient: patientId})).map(item => ({
+        const prescriptions = (await Prescription.find({ patient: patientId })).map(item => ({
             _id: item._id,
             patient: item.patient,
             medicine: item.medicine,
@@ -194,50 +194,45 @@ module.exports.getReminders = async (req, res) => {
     // get all prescriptions of patient
     // const query = { $and: [ {patient: patientId}, ] };
     // , {start_date: { $lte : current_date}}, {end_date: { $gt: current_date}}
-    const condition1 = {patient: patientId};
-    const condition2 = {start_date: { $lte : current_date}};
-    const condition3 = {end_date: { $gt: current_date}};
-    const prescriptions = (await Prescription.find({ $and: [condition1, condition2, condition3] })).map(item => ({
-        _id: item._id,
-        patient: item.patient,
-        medicine: item.medicine,
-        quantity: item.quantity,
-        doseTimings: item.doseTimings
-    }));
-    const reminders = [];
-    for (let i = 0; i < prescriptions.length; i++) {
-        const ele = prescriptions[i];
-        for (let j = 0; j < ele.doseTimings.length; j++) {
-            const doseTime = ele.doseTimings[j];
-            reminders.push({
-                prescriptionId: ele._id,
-                medicine: ele.medicine,
-                quantity: ele.quantity,
-                time: doseTime,
-                doseIndex: j
-            });            
-        }
+    // const condition1 = { patient: patientId };
+    const reminders = (await DoseHistory.find({ patient: patientId, istaken: false }))
+        .filter(history => areDatesOnSameDay(history.date, new Date()));
+    const remindersWithDetails = [];
+    for (let i = 0; i < reminders.length; i++) {
+        const reminder = reminders[i];
+        const prescription = await Prescription.findOne({_id: reminder.prescription});
+        // const reminderDate = new Date(reminder.time);
+        const doseTime = new Date(prescription.doseTimings[reminder.slot]);
+        // reminderDate.setHours(doseTime.getHours());
+        // reminderDate.setMinutes(doseTime.getMinutes());
+        remindersWithDetails.push({
+            _id: reminder._id,
+            prescriptionId: reminder.prescription,
+            patient: reminder.patient,
+            medicine: prescription.medicine,
+            quantity: prescription.quantity,
+            slot: reminder.slot,
+            istaken: reminder.istaken,
+            date: reminder.time,
+            edited: reminder.edited
+        });
     }
-    reminders.sort((a, b) => a.time.getTime() - b.time.getTime());
-    res.send({status: "success", reminders: reminders});
+    remindersWithDetails.sort((a, b) => a.date.getTime() - b.date.getTime());
+    res.send({ status: "success", reminders: remindersWithDetails });
 };
 
 module.exports.takeMedicine = async (req, res) => {
     try {
         const patientId = req.user._id;
-        const { prescriptionId, doseIndex } = req.body;
-
+        const { _id } = req.body;
         // TODO time validation
-        const doseHistory = new DoseHistory({
-            patient: patientId,
-            prescription: prescriptionId,
-            date: new Date(),
-            slot: doseIndex,
-            istaken: true
-        });
+        const doseHistory = await DoseHistory.findOne({_id: new ObjectId(_id)});
+        doseHistory.istaken = true;
+        doseHistory.edited = false;
         await doseHistory.save();
-        res.send({status: "success"});        
+        res.send({ status: "success" });
     } catch (error) {
-        res.send({status: "failure"});
+        console.log(error);
+        res.send({ status: "failure" });
     }
 }

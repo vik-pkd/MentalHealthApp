@@ -10,12 +10,25 @@ import BasicButton from "../BasicButton";
 import globalStyles from "../../constants/styles";
 import CustomDatePicker from "../CustomDatePicker";
 import { usePrescription } from "./PrescriptionProvider";
+import { setMidNight } from "../../utils/date";
 
 type StartEndDateScreenProps = NativeStackScreenProps<AddPrescriptionStackParamList, 'DateInfo'>;
 
 const StartEndDate = ({ navigation, route }: StartEndDateScreenProps) => {
     const { startDate, setStartDate, endDate, setEndDate } = usePrescription();
     const params = route.params;
+
+    const handleChangeStartDate = (date: Date) => {
+        const dateObj = setMidNight(date);
+        console.log('Start Date', dateObj);
+        setStartDate(dateObj);
+    };
+
+    const handleChangeEndDate = (date: Date) => {
+        const dateObj = setMidNight(date);
+        console.log('End Date', dateObj);
+        setEndDate(dateObj);
+    };
 
     const handleNext = () => {
         navigation.navigate('TimeInfo');
@@ -27,13 +40,13 @@ const StartEndDate = ({ navigation, route }: StartEndDateScreenProps) => {
                 mode="date"
                 label="Start Date"
                 date={startDate}
-                onDateChange={(date) => setStartDate(date)}
+                onDateChange={handleChangeStartDate}
             />
             <CustomDatePicker
                 mode="date"
                 label="End Date"
                 date={endDate}
-                onDateChange={(date) => setEndDate(date)}
+                onDateChange={handleChangeEndDate}
             />
             <BasicButton
                 title="Next"
@@ -47,6 +60,6 @@ export default StartEndDate;
 
 const styles = StyleSheet.create({
     datePicker: {
-        backgroundColor: 'grey',
+        // backgroundColor: 'grey',
     },
 });
