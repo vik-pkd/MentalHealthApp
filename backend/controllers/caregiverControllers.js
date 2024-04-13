@@ -1,6 +1,7 @@
 const Caregiver = require('../models/caregiver')
 const jwt = require('jsonwebtoken');
 const Prescription = require('../models/prescription');
+const Alert = require('../models/alert');
 const ObjectId = require('mongoose').Types.ObjectId;
 
 module.exports.getCaregivers = async (req, res) => {
@@ -87,7 +88,26 @@ module.exports.getPatientsCaregiver = async (req, res) => {
         reminders.sort((a, b) => a.time.getTime() - b.time.getTime());
         reminder_list.push(reminders)
     }
-    console.log(reminder_list)
+    // console.log(reminder_list)
     res.send({ status: "success", patients: patients, reminders: reminder_list });
+}
 
+module.exports.addIssueAlert = async (req, res) => {
+    console.log('Inside Issue Alert!');
+    try {
+        const prescriptionid = new ObjectId(req.body.prescriptionId);
+        const patientid = new ObjectId(req.body.patientId);
+        const caregiverid = new ObjectId(req.body.caregiverId);
+
+        const alert = new Alert({
+            patient: patientid,
+            caregiver: caregiverid,
+            prescription: prescriptionid
+        });
+        await alert.save();
+        res.send({ status: 'success' });
+    }
+    catch (error) {
+        res.send({ status: 'failure' });
+    }
 }

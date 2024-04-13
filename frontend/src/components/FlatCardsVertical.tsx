@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, Alert, TouchableOpacity, ScrollView } from 'react-native';
+import client from '../api/client';
 
 const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -12,11 +13,15 @@ const formatDate = (dateString: string) => {
 };
 
 
+interface CaregiverInfo {
+    _id: string;
+}
+
 interface PatientInfo {
+    _id: string;
     name: string;
     age: number;
     condition: string;
-    profileImageUri: string;
 }
 
 interface MedicineInfo {
@@ -28,11 +33,18 @@ interface MedicineInfo {
 }
 
 interface FlatCardsVerticalProps {
+    caregiverInfo: CaregiverInfo;
     patientInfo: PatientInfo;
     medicineInfo: MedicineInfo[];
 }
 
-const FlatCardsVertical: React.FC<FlatCardsVerticalProps> = ({ patientInfo, medicineInfo }) => {
+interface AlertState {
+    [key: string]: boolean;
+}
+
+const FlatCardsVertical: React.FC<FlatCardsVerticalProps> = ({ caregiverInfo, patientInfo, medicineInfo }) => {
+    const [alertSent, setAlertSent] = useState<boolean[]>(new Array(medicineInfo.length).fill(false));
+
     const getTimeDetails = (time: Date) => {
         const currentTime = new Date();
         // Convert the reminder time from the reminder object to a Date object
@@ -41,10 +53,32 @@ const FlatCardsVertical: React.FC<FlatCardsVerticalProps> = ({ patientInfo, medi
         const timeColor = currentTime < reminderTime ? 'green' : 'red';
         const alertEnabled = currentTime > reminderTime;
 
+        // setAlertEnabled(alertEnabled);
         return { timeColor, alertEnabled };
     };
 
-    const handleAlert = (medName: any) => {
+    const addAlert = async (prescriptionId: any, patientId: any, caregiverId: any, index: number) => {
+        console.log('Prescription ID : ', prescriptionId);
+        console.log('Patient ID : ', patientId);
+        console.log('Caregiver ID : ', caregiverId);
+
+        const data = {
+            prescriptionId: prescriptionId,
+            patientId: patientId,
+            caregiverId: caregiverId
+        }
+
+        const response = await client.post('/caregivers/add-alert', data);
+        console.log(response.data);
+
+        if (response.data.status == 'success') {
+            const updatedAlerts = [...alertSent];
+            updatedAlerts[index] = true;
+            setAlertSent(updatedAlerts);
+        }
+    }
+
+    const handleAlert = (prescriptionId: any, patientId: any, caregiverId: any, index: number) => {
         // Handle alert logic here
         Alert.alert('Submit', 'Are you sure to submit the medicine', [
             {
@@ -52,7 +86,7 @@ const FlatCardsVertical: React.FC<FlatCardsVerticalProps> = ({ patientInfo, medi
                 onPress: () => console.log('Cancel Pressed'),
                 style: 'cancel',
             },
-            { text: 'Yes', onPress: () => console.log(`Alert for medicine: ${medName}`) },
+            { text: 'Yes', onPress: () => addAlert(prescriptionId, patientId, caregiverId, index) },
         ]);
     };
 
@@ -71,6 +105,7 @@ const FlatCardsVertical: React.FC<FlatCardsVerticalProps> = ({ patientInfo, medi
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={true}>
                 {medicineInfo.map((med, index) => {
                     const { timeColor, alertEnabled } = getTimeDetails(med.time); // Logic for time color and alert
+                    const isAlerted = alertSent[index];
 
                     return (
                         <View key={index} style={[styles.card, styles.medicationCard]}>
@@ -79,8 +114,9 @@ const FlatCardsVertical: React.FC<FlatCardsVerticalProps> = ({ patientInfo, medi
                                 Time: {formatDate(med.time)}
                             </Text>
                             {alertEnabled && (
-                                <TouchableOpacity style={styles.alertButton} onPress={() => handleAlert(med.medicine)}>
-                                    <Text style={styles.alertButtonText}>Alert</Text>
+                                <TouchableOpacity style={isAlerted ? styles.greenAlertButton : styles.alertButton}
+                                    onPress={() => !isAlerted && handleAlert(med.prescriptionId, patientInfo._id, caregiverInfo._id, index)}>
+                                    <Text style={styles.alertButtonText}>{isAlerted ? 'Alerted' : 'Alert'}</Text>
                                 </TouchableOpacity>
                             )}
                         </View>
@@ -158,6 +194,12 @@ const styles = StyleSheet.create({
     },
     alertButton: {
         backgroundColor: 'red', // Or your theme color for buttons
+        padding: 10,
+        borderRadius: 5,
+        marginTop: 10,
+    },
+    greenAlertButton: {
+        backgroundColor: 'green',
         padding: 10,
         borderRadius: 5,
         marginTop: 10,

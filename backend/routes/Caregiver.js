@@ -16,8 +16,9 @@ router.post('/add-caregiver', validateCaregiverSignUp, caregiverValidation, care
 router.post('/sign-in', validateCaregiverSignIn, caregiverValidation, caregiverControllers.caregiverSignIn);
 
 // get all patients for a particular caregiver
-router.post('/get-patients', caregiverControllers.getPatientsCaregiver)
+router.post('/get-patients', caregiverControllers.getPatientsCaregiver);
 
 // check prescription pathway for the caregiver
+router.post('/add-alert', caregiverControllers.addIssueAlert);
 
 module.exports = router;

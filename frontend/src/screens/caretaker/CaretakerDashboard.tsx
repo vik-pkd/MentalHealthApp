@@ -73,7 +73,7 @@ export default function CaretakerDashboard() {
                     caregiverid: profile._id,
                 }
                 const response = await client.post('/caregivers/get-patients', data);
-                console.log('data : ', response.data.reminders[0]);
+                console.log('data : ', response.data.patients[0]);
                 setPatients(response.data.patients);
                 setReminders(response.data.reminders);
             } catch (err) {
@@ -120,6 +120,7 @@ export default function CaretakerDashboard() {
                     return (
                         <FlatCardsVertical
                             key={index} // Assuming each patient has a unique _id
+                            caregiverInfo={profile}
                             patientInfo={patient}
                             medicineInfo={patientReminders}
                         />
