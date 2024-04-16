@@ -54,7 +54,7 @@ const TimeInfo = ({ route, navigation }: TimeInfoProps) => {
         console.log('running2');
         const response = await client.post(`/doctors/add-prescription/patient/${route.params.patientId}`, prescriptionData, { headers });
         console.log('response.data in timeinfo', response.data);
-
+        
         Alert.alert('Submit', 'Are you sure to submit the medicine', [
             {
                 text: 'Cancel',

@@ -37,6 +37,7 @@ const PatientProfile = ({navigation, route}: ProfileScreenProps) => {
             const response = await client.get(`/patients/patient/${params!._id}`, { headers });
             // console.log(response.data);
             const data = response.data.data;
+            
             if (data) {
                 setName(data.name);
                 setEmail(data.email);
