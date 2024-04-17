@@ -1,6 +1,7 @@
 const express = require('express');
 
 const gameControllers = require('../controllers/gameControllers');
+const upload = require('../utils/multer');
 
 const router = express.Router();
 
@@ -15,5 +16,7 @@ router.get('/game-names', gameControllers.getAllGameNames);
 router.get('/gameCategory-names', gameControllers.getAllCategoriesNames);
 
 router.get('/gameCategroy/:gameCategroy', gameControllers.getGamesOfCategory);
+
+router.post('/upload-game', gameControllers.uploadGame);
 
 module.exports = router;

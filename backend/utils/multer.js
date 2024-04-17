@@ -1,7 +1,11 @@
 const multer = require('multer');
 
 const fileFilter = (req, file, cb) => {
+    // console.log('reached in multer', file.mimetype);
     if (file.mimetype.startsWith('image')) {
+        cb(null, true);
+    } else if (file.mimetype.startsWith('application/zip')) {
+        console.log('zip will be uploaded');
         cb(null, true);
     } else {
         cb('invalid image file!', false);

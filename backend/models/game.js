@@ -5,6 +5,9 @@ const gameSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    description: {
+        type: String,
+    },
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'GameCategory'
@@ -20,5 +23,19 @@ const gameSchema = new mongoose.Schema({
         type: String,
     }
 });
+
+gameSchema.statics.isThisTitleInUse = async function (title) {
+    if (!title) {
+        throw new Error('Invalid email!');
+    }
+    try {
+        const game = await this.findOne({ title: title })
+        if (game) return false;
+        return true;
+    } catch (error) {
+        console.log(error.message);
+        return false;
+    }
+}
 
 module.exports = mongoose.model('Game', gameSchema);

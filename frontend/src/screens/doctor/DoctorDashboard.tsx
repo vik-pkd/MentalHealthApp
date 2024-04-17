@@ -8,6 +8,7 @@ import FlatCardsVertical from '../../components/FlatCardsVertical'
 import client from '../../api/client';
 import AddMedicine from '../../components/AddMedicine';
 import { Picker } from '@react-native-picker/picker';
+import GameUploader from '../../components/doctor/GameUpload';
 
 type UserObj = {
     name: String;
@@ -134,6 +135,9 @@ export default function DoctorDashboard() {
                         <Text style={styles.cardDescription}>Tap here to add a new patient to your records.</Text>
                     </View>
                 </TouchableOpacity>
+                <View>
+                    <GameUploader />
+                </View>
 
                 {/* Add Patient Modal */}
                 <Modal

@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import client from '../api/client';
 // import { GameStackParamList } from '../routes/PatientStack';
@@ -25,11 +25,6 @@ export const fetchGames = createAsyncThunk<IGame[], string>(
         } catch (error) {
             return [] as IGame[];
         }
-        // /games/gameCategroy/661badf580903e930a0fbb3a
-        // /games/gameCategroy/661badf580903e930a0fbb3a
-        // console.log(`/games/gameCategroy/${gameCategoryId}`);
-        // console.log('response.data', response.data);
-        // console.log('gamesData', games);
     }
 );
 
@@ -40,7 +35,11 @@ const gamesSlice = createSlice({
         isLoading: false,
         error: undefined as string | undefined,
     },
-    reducers: {},
+    reducers: {
+        addGame(state, action:PayloadAction<IGame>) {
+            state.games = [...state.games, action.payload];
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchGames.pending, (state) => {
