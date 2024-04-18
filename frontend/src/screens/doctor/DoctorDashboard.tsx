@@ -9,6 +9,7 @@ import client from '../../api/client';
 import AddMedicine from '../../components/AddMedicine';
 import { Picker } from '@react-native-picker/picker';
 import GameUploader from '../../components/doctor/GameUpload';
+import AddGameCategory from '../../components/AddGameCategory';
 
 type UserObj = {
     name: String;
@@ -38,6 +39,7 @@ export default function DoctorDashboard() {
     // Existing code...
     const [isAddPatientModalVisible, setAddPatientModalVisible] = useState(false);
     const [isAddMedicineModalVisible, setAddMedicineModalVisible] = useState(false);
+    const [isAddGameCategoryModalVisible, setAddGameCategoryModalVisible] = useState(false);
     const [patientName, setPatientName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -135,6 +137,13 @@ export default function DoctorDashboard() {
                         <Text style={styles.cardDescription}>Tap here to add a new patient to your records.</Text>
                     </View>
                 </TouchableOpacity>
+                <TouchableOpacity onPress={() => setAddGameCategoryModalVisible(true)} style={styles.card}>
+                    <Image source={require('../../patient.jpg')} style={styles.cardImage} />
+                    <View style={styles.cardContent}>
+                        <Text style={styles.cardTitle}>Add Game Category</Text>
+                        <Text style={styles.cardDescription}>Tap here to add a new game category.</Text>
+                    </View>
+                </TouchableOpacity>
                 <View>
                     <GameUploader />
                 </View>
@@ -207,6 +216,10 @@ export default function DoctorDashboard() {
                 <AddMedicine
                     isVisible={isAddMedicineModalVisible}
                     onRequestClose={() => setAddMedicineModalVisible(false)}
+                />
+                <AddGameCategory
+                    isVisible={isAddGameCategoryModalVisible}
+                    onRequestClose={() => setAddGameCategoryModalVisible(false)}
                 />
 
                 {/* <Text style={styles.cardTitle}>Past Appointments</Text> */}
