@@ -27,6 +27,7 @@ const gameSchema = new mongoose.Schema({
 gameSchema.statics.isThisTitleInUse = async function (title) {
     if (!title) {
         throw new Error('Invalid email!');
+        return;
     }
     try {
         const game = await this.findOne({ title: title })

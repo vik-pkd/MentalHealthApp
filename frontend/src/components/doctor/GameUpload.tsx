@@ -30,6 +30,7 @@ const GameUploader = () => {
   const resolveContentUri = async (uri: string) => {
     try {
       const filePath = `${RNFS.TemporaryDirectoryPath}/temp.zip`; // Temporary path to store the copied file
+      console.log('filePath', filePath);
       if (Platform.OS === 'android') {
         await RNFS.copyFile(uri, filePath);
         return filePath;
@@ -49,7 +50,9 @@ const GameUploader = () => {
         type: [DocumentPicker.types.zip],
       });
       const filePath = await resolveContentUri(res.uri);
-      const content = await readFiles(filePath);
+      console.log('virtual', res);
+      console.log('actual', filePath);
+      const content = await readFiles(filePath, gameName);
       console.log('cotent', content);
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
@@ -59,9 +62,11 @@ const GameUploader = () => {
     }
   };
 
-  const readFiles = async (fileUri: string) => {
+  const readFiles = async (fileUri: string, gameTitle: string) => {
     try {
-      const unzipPath: string = `${RNFS.DocumentDirectoryPath}/unzippedFiles`;
+      const direcotryName = gameTitle.split(' ').join('');
+      const unzipPath: string = `${RNFS.DocumentDirectoryPath}/unzippedFiles/${direcotryName}`;
+      console.log('unzipPath', unzipPath);
       await unzip(fileUri, unzipPath);
       const directory = (await RNFS.readDir(unzipPath))[0];
       const directoryPath = directory.path;
@@ -88,11 +93,12 @@ const GameUploader = () => {
   };
 
   const handleUpload = async() => {
+    console.log(htmlContent, 'htmlContent');
     const payload = {
       htmlContent,
       cssContent,
       javascriptContent,
-      name: gameName,
+      title: gameName,
       description: gameDescription,
       category
     };

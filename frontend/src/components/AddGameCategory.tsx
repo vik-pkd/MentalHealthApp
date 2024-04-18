@@ -10,7 +10,7 @@ export default function AddGameCategory({isVisible, onRequestClose}: {isVisible:
 
     const handleSubmit = async () => {
         const gameCategoryData = {
-            name: name,
+            title: name,
             description: description,
         };
         const headers = {
