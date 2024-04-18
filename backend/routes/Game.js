@@ -11,10 +11,6 @@ router.post('/add-game-category', gameControllers.addGameCategory);
 
 router.get('/game-categories', gameControllers.getGameCategories);
 
-router.get('/game-names', gameControllers.getAllGameNames);
-
-router.get('/gameCategory-names', gameControllers.getAllCategoriesNames);
-
 router.get('/gameCategroy/:gameCategroy', gameControllers.getGamesOfCategory);
 
 router.post('/upload-game', gameControllers.uploadGame);
