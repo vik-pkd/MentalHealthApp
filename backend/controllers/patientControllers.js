@@ -1,6 +1,7 @@
 const Patient = require('../models/patient');
 const Doctor = require('../models/doctor')
 const Caregiver = require('../models/caregiver')
+const Alert = require('../models/alert')
 const ObjectId = require('mongoose').Types.ObjectId;
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -8,6 +9,7 @@ const canvas = require('canvas');
 const faceapi = require('@vladmandic/face-api');
 const Prescription = require('../models/prescription');
 const DoseHistory = require('../models/doseHistory');
+const caregiver = require('../models/caregiver');
 const { areDatesOnSameDay } = require('../utils/date');
 
 module.exports.getPatients = async (req, res) => {
@@ -186,6 +188,47 @@ module.exports.getPrescriptions = async (req, res) => {
         res.send({ status: "failure" });
     }
 };
+
+
+module.exports.getAlerts = async (req, res) => {
+
+    try {
+        const patientId = req.user._id;
+        console.log('alerts fetching...', patientId);
+        const alerts = (await Alert.find({ patient: patientId }));
+        // console.log(alerts);
+
+        reminders = []
+        for (let i = 0; i < alerts.length; i++) {
+            const prescriptionId = alerts[i].prescription;
+            const caregiverId = alerts[i].caregiver;
+
+            const caregiver = (await Caregiver.findOne({ _id: caregiverId }));
+            const ele = (await Prescription.findOne({ _id: prescriptionId }));
+
+            console.log(caregiver);
+            console.log(ele);
+
+            for (let j = 0; j < ele.doseTimings.length; j++) {
+                const doseTime = ele.doseTimings[j];
+
+                reminders.push({
+                    prescriptionId: ele._id,
+                    medicine: ele.medicine,
+                    quantity: ele.quantity,
+                    time: doseTime,
+                    doseIndex: j,
+                    caregiver: caregiver.name
+                });
+            }
+        }
+        reminders.sort((a, b) => a.time.getTime() - b.time.getTime());
+        res.send({ status: "success", alerts: reminders });
+    }
+    catch (err) {
+        res.send({ status: "failure" });
+    }
+}
 
 module.exports.getReminders = async (req, res) => {
     const patientId = req.user._id;

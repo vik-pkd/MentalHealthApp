@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, Image, Animated, Modal, TouchableOpacity, FlatList, Platform } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, Image, Animated, Modal, TouchableOpacity, FlatList, Platform, Alert } from 'react-native'
 import FancyCard from '../../components/FancyCard'
 import BasicCard from '../../components/BasicCard'
 import HistoryCard from '../../components/HistoryCards'
@@ -36,6 +36,17 @@ interface BadgeProps {
     badge: Badge;
     isCurrent: boolean;
 }
+
+const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const formattedTime = date.toLocaleString('en-US', {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+    });
+    return formattedTime;
+};
+
 
 
 // Define your badges and points somewhere in your component or data file
@@ -77,6 +88,8 @@ export default function Home() {
 
     const isCurrentRank = (badge: Badge): boolean => userPoints >= badge.minPoints && userPoints <= badge.maxPoints;
     const [numReminders, setNumReminders] = useState(0);
+    const [alerts, setAlerts] = useState([]);
+
     const handleLogout = () => {
 
         setIsLoggedIn(false);
@@ -131,7 +144,50 @@ export default function Home() {
                 setNumReminders(resp.data.reminders.length);
             }
         };
+
+        const fetchAlerts = async () => {
+            const resp = await client.get(`/patients/alerts`, { headers });
+            if (resp.data.status === 'success' && resp.data.alerts.length > 0) {
+                console.log('Alerts : ', resp.data.alerts);
+                setAlerts(resp.data.alerts);  // Assume setAlerts updates state correctly
+
+                // Function to recursively show alerts one by one
+                const showAlertsSequentially = (index = 0) => {
+                    if (index < resp.data.alerts.length) {
+                        const alert = resp.data.alerts[index];
+                        const formattedTime = formatDate(alert.time); // Make sure formatDate is defined to format date strings
+
+                        Alert.alert(
+                            'Medication Reminder', // Title of the alert
+                            `It's time to take your medicine:\n\nMedicine: ${alert.medicine}\nDose: ${alert.quantity}\nCaregiver: ${alert.caregiver}\nTime: ${formattedTime}`, // Message showing details
+                            [
+                                {
+                                    text: 'Remind Me Later',
+                                    onPress: () => console.log('Reminder Delayed'),
+                                    style: 'cancel',
+                                },
+                                {
+                                    text: 'Taken',
+                                    onPress: () => {
+                                        console.log('Medicine Taken');
+                                        showAlertsSequentially(index + 1); // Show next alert after this one is dismissed
+                                    }
+                                },
+                            ],
+                            { cancelable: false } // This ensures the alert must be interacted with
+                        );
+                    }
+                };
+
+                showAlertsSequentially(); // Start showing alerts from the first one
+            } else if (resp.data.alerts.length === 0) {
+                console.log("No alerts to show.");
+            } else {
+                console.log("Failed to fetch alerts:", resp.data);
+            }
+        };
         fetchPrescriptions();
+        fetchAlerts();
     }, [profile._id]);
 
 

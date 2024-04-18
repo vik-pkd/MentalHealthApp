@@ -28,6 +28,7 @@ router.get('/:patientId/points/:point', patientControllers.getPoints);
 router.get('/prescriptions/patient/:_id', isDoctorOrPatientAuth, patientControllers.getPrescriptions);
 
 router.get('/reminders', isPatientAuth, patientControllers.getReminders);
+router.get('/alerts', isPatientAuth, patientControllers.getAlerts);
 
 router.put('/taken-medicine', isPatientAuth, patientControllers.takeMedicine);
 
