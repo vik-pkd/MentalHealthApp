@@ -239,7 +239,7 @@ export default function Home() {
                 <FancyCard />
                 <BasicCard />
                 {/* <HistoryCard /> */}
-                {/* <MedicineReminderDisplay patientId={profile._id} /> */}
+                <MedicineReminderDisplay patientId={profile._id} />
             </ScrollView>
 
             <FAB

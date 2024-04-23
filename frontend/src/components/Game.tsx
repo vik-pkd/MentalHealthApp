@@ -8,7 +8,7 @@ const screenWidth = Dimensions.get("window").width;
 interface GameCardProps {
     title: string;
     description: string;
-    imageUrl: number;
+    imageUrl?: number;
 }
 
 
@@ -23,10 +23,10 @@ const Game: React.FC<GameCardProps> = ({ title, description, imageUrl }) => {
                         <Text style={styles.cardTitle}>{title}</Text>
                         <Text style={styles.cardDescription}>{description}</Text>
                     </View>
-                    <Image
+                    {/* <Image
                         style={styles.cardImage}
                         source={imageUrl}
-                    />
+                    /> */}
                 </View>
             </View >
         </View  >

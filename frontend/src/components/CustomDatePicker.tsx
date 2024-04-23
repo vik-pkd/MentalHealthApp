@@ -34,6 +34,7 @@ export default CustomDatePicker;
 
 const styles = StyleSheet.create({
     datePicker: {
-        
+        backgroundColor: '#6A1B9A',
+        opacity: 0.7
     },
 });

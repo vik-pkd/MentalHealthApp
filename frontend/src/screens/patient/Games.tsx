@@ -1,15 +1,29 @@
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import GameCard from '../../components/GameCard';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { NativeStackScreenProps, createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GameStackParamList } from '../../routes/PatientStack';
 import { useLogin } from '../../context/LoginProvider';
 import * as Progress from 'react-native-progress';
+import client from '../../api/client';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchGameCategories } from '../../store/gameCategories-slice';
+import { AppDispatch } from '../../store';
+import { RootState } from '../../store/rootReducer';
 
 type GameScreenProps = NativeStackScreenProps<GameStackParamList, 'Games'>
 
+// interface GameCategory {
+//     title: string;
+//     description: string;
+// };
+
 const Games = ({ navigation }: GameScreenProps) => {
     const { sectionPoints, setSectionPoints, userPoints, profile } = useLogin();
+    const [cardData, setCardData] = useState([]);
+    const gameCategories = useSelector((state: RootState) => state.gameCategories.gameCategories);
+    const dispatch = useDispatch<AppDispatch>();
+
     const cards = [
         { id: '1', title: 'Puzzle', description: 'Engage with games that challenge your problem-solving and pattern recognition skills.', imageUrl: require('../../../assets/game_types/puzzle.png'), navigate: 'Puzzle' as keyof GameStackParamList, imageList: [require('../../../assets/icons/2048.png'), require('../../../assets/icons/tetris.png'), require('../../../assets/icons/minesweeper.png')] },
         { id: '2', title: 'Focus', description: 'Hone your concentration and precision with games that require sharp attention and accuracy.', imageUrl: require('../../../assets/game_types/focus.png'), navigate: 'Focus' as keyof GameStackParamList, imageList: [require('../../../assets/icons/typing.png'), require('../../../assets/icons/maze.png'), require('../../../assets/icons/slicer.png')] },
@@ -22,6 +36,19 @@ const Games = ({ navigation }: GameScreenProps) => {
         progress: sectionPoints && sectionPoints[card.title] ? sectionPoints[card.title] : 0,
     }));
 
+
+    useEffect(() => {
+        dispatch(fetchGameCategories());
+    
+    }, []);
+    
+    useEffect(() => {
+        // console.log('gameCategories in games', gameCategories);
+    
+    }, [gameCategories]);
+    
+
+
     return (
         <View style={{ flex: 1 }}>
 
@@ -32,16 +59,16 @@ const Games = ({ navigation }: GameScreenProps) => {
             </View>
 
             <ScrollView>
-                {cards.map((card) => (
+                {gameCategories.map((card) => (
 
-                    <TouchableOpacity onPress={() => navigation.navigate(card.navigate)} key={card.id}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Category', {_id: card._id})} key={card._id}>
 
                         <GameCard
                             title={card.title}
                             description={card.description}
-                            imageUrl={card.imageUrl}
-                            progress={card.progress}
-                            imageList={card.imageList}
+                            // imageUrl={card.imageUrl}
+                            progress={0}
+                        // imageList={card.imageList}
                         />
                     </TouchableOpacity>
                 ))}

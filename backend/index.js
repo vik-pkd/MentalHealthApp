@@ -6,9 +6,11 @@ const connectToMongo = require('./utils/db');
 const patientRoutes = require('./routes/Patient');
 const doctorRoutes = require('./routes/Doctor');
 const caregiverRoutes = require('./routes/Caregiver')
+const gameRoutes = require('./routes/Game');
 
 const tf = require('@tensorflow/tfjs-node')
 const faceapi = require('@vladmandic/face-api');
+const { markMissedReminders } = require('./schedulers/cronjob');
 
 require('dotenv').config()
 
@@ -31,20 +33,25 @@ connectToMongo();
 
 app.use(bodyParser.json());
 
+// run cron job to mark missed reminders from patients
+
 app.use('/patients', patientRoutes);
 app.use('/doctors', doctorRoutes);
 app.use('/caregivers', caregiverRoutes)
+app.use('/games', gameRoutes);
 
 app.use('/', (req, res) => {
   res.send({ status: 'success', message: 'Welcome to backend zone!' })
 })
 
-// const test = async (email, password) => {
-//   const doctor = await Doctor.findOne({ email: email });
-//   console.log(await doctor.comparePassword(password));
-// }
+markMissedReminders();
 
-// test("sanjh@gmail.com", "1234");
+// const test = async (email, password) => {
+  //   const doctor = await Doctor.findOne({ email: email });
+  //   console.log(await doctor.comparePassword(password));
+  // }
+
+  // test("sanjh@gmail.com", "1234");
 // test("sanjh@gmail.com", "12345");
 
 app.listen(PORT, () => {

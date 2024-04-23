@@ -7,6 +7,8 @@ import { useSelector } from "react-redux";
 
 const screenWidth = Dimensions.get("window").width;
 
+const timeWindow = 120;
+
 const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const formattedTime = date.toLocaleString('en-US', {
@@ -17,10 +19,27 @@ const formatDate = (dateString: string) => {
     return formattedTime;
 };
 
+const checkWithinWindow = (date: Date) => {
+    // both dates are of today, will be only comparing times (2 hours)
+    const currDate = new Date();
+
+    // making sure doseTime is of today
+    const dateObj = new Date(date);
+    dateObj.setDate(currDate.getDate());
+    dateObj.setMonth(currDate.getMonth());
+    dateObj.setFullYear(currDate.getFullYear());
+
+    // Get the difference in milliseconds
+    const differenceMs = Math.abs(currDate.getTime() - dateObj.getTime());
+
+    return differenceMs <= 2 * 1000 * 60 * 60;
+};
+
 const MedicineReminderCard = ({ reminder, onRemoveReminder }: { reminder: any, onRemoveReminder: any }) => {
     const [activityButtonsVisible, setActivityButtonsVisible] = useState(false);
     const authToken = useSelector((state: Record<string, { token: string }>) => state.authToken.token);
     const position = useRef(new Animated.Value(0)).current;
+    const isWithinWindow = checkWithinWindow(reminder.date);
     // Get the current time as a Date object
     const currentTime = new Date();
     // Convert the reminder time from the reminder object to a Date object
@@ -34,11 +53,10 @@ const MedicineReminderCard = ({ reminder, onRemoveReminder }: { reminder: any, o
             'Authorization': `Bearer ${authToken}`,
         };
         const payload = {
-            prescriptionId: reminder.prescriptionId,
-            doseIndex: reminder.doseIndex
+            _id: reminder._id,
         };
-        // const resp = await client.post('patients/taken-medicine', payload, { headers });
-        // console.log(resp.data)
+        const resp = await client.put('patients/taken-medicine', payload, { headers });
+        console.log(resp.data)
 
         // Start the animation
         Animated.timing(position, {
@@ -52,34 +70,37 @@ const MedicineReminderCard = ({ reminder, onRemoveReminder }: { reminder: any, o
 
     return (
         <Animated.View style={[styles.card, { transform: [{ translateX: position }] }]}>
-            <View style={[styles.card, styles.cardElevated]}>
+            <View style={[styles.card, styles.cardElevated, !isWithinWindow ? styles.greyBackGround : {}]}>
                 <View style={styles.cardBody}>
                     <View style={styles.details}>
 
                         <Text style={styles.cardDescription}>
-                            Time: <Text style={[styles.timeValue, { color: timeColor }]}>{formatDate(reminder.time)}</Text>
+                            Time: <Text style={[styles.timeValue, { color: timeColor }]}>{formatDate(reminder.date)}</Text>
                         </Text>
                         <Text style={styles.cardDescription}>Name: {reminder.medicine}</Text>
                         <Text style={styles.cardDescription}>Quantity: {reminder.quantity}</Text>
                     </View>
-                    <View style={styles.actions}>
-                        <Pressable
-                            style={styles.markTakenButton}
-                            onPress={() => setActivityButtonsVisible(!activityButtonsVisible)}
-                        >
-                            <Text style={styles.markTakenButtonText}>Mark Taken</Text>
-                        </Pressable>
-                        {activityButtonsVisible && (
-                            <View style={styles.confirmationButtons}>
-                                <Pressable style={styles.yesButton} onPress={handleMarkTaken}>
-                                    <Text style={styles.confirmationButtonText}>Yes</Text>
-                                </Pressable>
-                                <Pressable style={styles.noButton} onPress={() => setActivityButtonsVisible(false)}>
-                                    <Text style={styles.confirmationButtonText}>No</Text>
-                                </Pressable>
-                            </View>
-                        )}
-                    </View>
+                    {
+                        isWithinWindow &&
+                        <View style={styles.actions}>
+                            <Pressable
+                                style={styles.markTakenButton}
+                                onPress={() => setActivityButtonsVisible(!activityButtonsVisible)}
+                            >
+                                <Text style={styles.markTakenButtonText}>Mark Taken</Text>
+                            </Pressable>
+                            {activityButtonsVisible && (
+                                <View style={styles.confirmationButtons}>
+                                    <Pressable style={styles.yesButton} onPress={handleMarkTaken}>
+                                        <Text style={styles.confirmationButtonText}>Yes</Text>
+                                    </Pressable>
+                                    <Pressable style={styles.noButton} onPress={() => setActivityButtonsVisible(false)}>
+                                        <Text style={styles.confirmationButtonText}>No</Text>
+                                    </Pressable>
+                                </View>
+                            )}
+                        </View>
+                    }
                 </View>
             </View>
         </Animated.View>
@@ -105,6 +126,9 @@ const styles = StyleSheet.create({
         shadowOpacity: 1,
         shadowRadius: 8,
         elevation: 5,
+    },
+    greyBackGround: {
+        backgroundColor: 'grey'
     },
     cardElevated: {
         backgroundColor: '#FFFFFF',
