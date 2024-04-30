@@ -21,4 +21,6 @@ router.post('/sign-in', validateDoctorSignIn, doctorValidation, doctorController
 router.post('/add-prescription/patient/:_id', isDoctorAuth, upload.single('image'), doctorControllers.addPrescription);
 router.post('/add-medicine', isDoctorAuth, upload.single('image'), doctorControllers.addMedicine);
 
+router.post('/assign-games', isDoctorAuth, doctorControllers.assignGames);
+
 module.exports = router;

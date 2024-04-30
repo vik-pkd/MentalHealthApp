@@ -9,18 +9,21 @@ interface GameCardProps {
     title: string;
     description: string;
     imageUrl?: number;
+    cardStyle?: any;
+    categoryTitle?: string;
 }
 
 
-const Game: React.FC<GameCardProps> = ({ title, description, imageUrl }) => {
+const Game: React.FC<GameCardProps> = ({ title, description, imageUrl, cardStyle, categoryTitle }) => {
     return (
         // Main card starts here
         <View style={[styles.card, styles.cardElevated]}>
-            <View style={styles.cardBody}>
+            <View style={[styles.cardBody, cardStyle]}>
                 <View style={styles.cardContent}>
 
                     <View style={styles.cardBody}>
                         <Text style={styles.cardTitle}>{title}</Text>
+                        {categoryTitle && <Text style={styles.cardSubTitle}>{categoryTitle}</Text>}
                         <Text style={styles.cardDescription}>{description}</Text>
                     </View>
                     {/* <Image
@@ -81,6 +84,11 @@ const styles = StyleSheet.create({
     cardDescription: {
         color: '#57606f',
         fontSize: 13,
+    },
+    cardSubTitle: {
+        color: '#000000',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
     progressContainer: {
         marginTop: 0,
