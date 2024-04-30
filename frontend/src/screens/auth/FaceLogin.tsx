@@ -1,18 +1,17 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { StyleSheet, Text, View, Button, Image, Pressable } from 'react-native';
 import { Camera, useCameraDevice, useCameraDevices } from 'react-native-vision-camera';
-import client from '../api/client';
-import { useLogin } from '../context/LoginProvider';
+import client from '../../api/client';
+import { useLogin } from '../../context/LoginProvider';
 import Snackbar from 'react-native-snackbar'
-import ImageResizer from 'react-native-image-resizer';
 
-const FaceSignup = () => {
+const FaceLogin = () => {
     const [cameraPermission, setCameraPermission] = useState(null);
     const device = useCameraDevice('back'); // Set the initial camera device
     const camera = useRef<Camera>(null);
     const [capturedPhoto, setCapturedPhoto] = useState(null);
     const [showPreview, setShowPreview] = useState(false);
-    const { setIsLoggedIn, profile } = useLogin();
+    const { setIsLoggedIn, setProfile } = useLogin();
 
     const checkCameraPermission = async () => {
         const status = await Camera.getCameraPermissionStatus();
@@ -49,8 +48,8 @@ const FaceSignup = () => {
                 return;
             }
 
-            // const options = { 'orientation': "landscape-right" }
-            const photo = await camera.current.takePhoto();
+            const options = { 'orientation': "landscape-right" }
+            const photo = await camera.current.takePhoto(options);
             console.log(photo);
 
             if (photo) {
@@ -67,15 +66,13 @@ const FaceSignup = () => {
     const uploadPhoto = async (photoUri) => {
         try {
             const formData = new FormData();
-
-            formData.append('userId', profile._id);
             formData.append('profile', {
                 uri: photoUri,
                 type: 'image/jpeg', // or the correct type of your photo
                 name: 'photo.jpg',
             });
 
-            const response = await client.post('/doctors/add-photo', formData, {
+            const response = await client.post('/doctors/verify-photo', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -96,14 +93,18 @@ const FaceSignup = () => {
         console.log(response);
         if (response.status === 'success') {
             Snackbar.show({
-                text: 'FaceID Added!',
-                duration: Snackbar.LENGTH_SHORT
+                text: 'Login Successful!',
+                duration: Snackbar.LENGTH_SHORT,
+                backgroundColor: '#63BAAA'
             })
+            setProfile(response.message);
             setIsLoggedIn(true);
+
         } else {
             Snackbar.show({
-                text: 'Please Click Again With Face More Visible!',
-                duration: Snackbar.LENGTH_SHORT
+                text: 'Please Try Again!',
+                duration: Snackbar.LENGTH_SHORT,
+                backgroundColor: '#FF3E85'
             })
             setShowPreview(false);
         }
@@ -158,7 +159,7 @@ const FaceSignup = () => {
                     <Pressable
                         onPress={takePhoto}
                         style={[styles.btn, { marginTop: 20 }]}>
-                        <Text style={styles.btnText}>Click Photo</Text>
+                        <Text style={styles.btnText}>Verify Face</Text>
                     </Pressable>
                 </View>
             )}
@@ -260,4 +261,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default FaceSignup;
+export default FaceLogin;

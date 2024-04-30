@@ -10,6 +10,7 @@ const faceapi = require('@vladmandic/face-api');
 const Prescription = require('../models/prescription');
 const DoseHistory = require('../models/doseHistory');
 const caregiver = require('../models/caregiver');
+const Activity = require('../models/activity')
 
 module.exports.getPatients = async (req, res) => {
     // console.log('Inside search patients!')
@@ -206,8 +207,8 @@ module.exports.getAlerts = async (req, res) => {
             const caregiver = (await Caregiver.findOne({ _id: caregiverId }));
             const ele = (await Prescription.findOne({ _id: prescriptionId }));
 
-            console.log(caregiver);
-            console.log(ele);
+            // console.log(caregiver);
+            // console.log(ele);
 
             for (let j = 0; j < ele.doseTimings.length; j++) {
                 const doseTime = ele.doseTimings[j];
@@ -284,3 +285,31 @@ module.exports.takeMedicine = async (req, res) => {
         res.send({ status: "failure" });
     }
 }
+
+// A function to get all activities and their associated game names for a given patient
+module.exports.getActivities = async (req, res) => {
+
+    try {
+        // Find all activities for the given patient and populate the 'game' field to get game details
+        const patientId = req.user._id;
+        console.log('activities fetching...', patientId);
+        const activities = await Activity.find({ patient: patientId })
+            .populate('game', 'name')
+            .exec();
+
+        // Transform the data to include only necessary information
+        const activitiesInfo = activities.map(activity => ({
+            gameName: activity.game.name, // Assumes game is populated
+            points: activity.points,
+            startDate: activity.start_date,
+            endDate: activity.end_date,
+        }));
+
+        console.log(activitiesInfo);
+
+        res.send({ status: "success", activities: activitiesInfo });
+    } catch (error) {
+        console.error('Error getting activities for patient:', error);
+        res.send({ status: "failure" });
+    }
+};

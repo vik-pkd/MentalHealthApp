@@ -28,6 +28,9 @@ import Quiz from '../screens/patient/Games/Quiz';
 import Slot from '../screens/patient/Games/Slot';
 import Tower from '../screens/patient/Games/Tower';
 import Meditation from '../screens/patient/Meditation';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Journey from '../screens/patient/Journey/Journey';
+import Journal from '../screens/patient/Journal/Journal';
 // Import other game screens here
 
 // navigation/types.ts
@@ -125,32 +128,47 @@ const MindStack: React.FC = () => {
   );
 };
 
+
 export const PatientStack: React.FC = () => {
   return (
-    <NavigationContainer independent={true}>
-      <Tab.Navigator
-        initialRouteName="Home"
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName: string = '';
-            if (route.name === "Home") {
-              iconName = focused ? 'home' : 'home-outline';
-            } else if (route.name === "Quest Hub") {
-              iconName = focused ? 'game-controller' : 'game-controller-outline';
-            } else if (route.name === "Zen") {
-              iconName = focused ? 'happy' : 'happy-outline';
-            }
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-          tabBarActiveTintColor: 'rgba(106,27,154, 1)',
-          tabBarInactiveTintColor: 'gray',
-          headerShown: false
-        })}
-      >
-        <Tab.Screen name="Quest Hub" component={GameStack} />
-        <Tab.Screen name="Home" component={Home} />
-        <Tab.Screen name="Zen" component={MindStack} />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <SafeAreaView style={{ flex: 1 }}>
+      <NavigationContainer independent={true}>
+        <Tab.Navigator
+          initialRouteName="Profile"
+
+          screenOptions={({ route }) => ({
+            tabBarIcon: ({ focused, color, size }) => {
+              let iconName: string = '';
+              if (route.name === "Profile") {
+                iconName = focused ? 'accessibility' : 'accessibility-outline';
+              } else if (route.name === "Games Hub") {
+                iconName = focused ? 'game-controller' : 'game-controller-outline';
+              } else if (route.name === "Journey") {
+                iconName = focused ? 'map' : 'map-outline';
+              } else if (route.name === "Zen") {
+                iconName = focused ? 'happy' : 'happy-outline';
+              } else if (route.name === "Log") {
+                iconName = focused ? 'pencil' : 'pencil-outline';
+              }
+
+              return <Ionicons name={iconName} size={size} color={color} />;
+            },
+            tabBarActiveTintColor: '#cc4dbd',
+            tabBarInactiveTintColor: 'white',
+            headerShown: false,
+            tabBarStyle: {
+              backgroundColor: '#6a1b9a', // Background color of the tab bar
+              paddingBottom: 2,
+            },
+          })}
+        >
+          <Tab.Screen name="Games Hub" component={GameStack} />
+          <Tab.Screen name="Journey" component={Journey} />
+          <Tab.Screen name="Profile" component={Home} />
+          <Tab.Screen name="Zen" component={MindStack} />
+          <Tab.Screen name="Log" component={Journal} />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </SafeAreaView>
   );
 };

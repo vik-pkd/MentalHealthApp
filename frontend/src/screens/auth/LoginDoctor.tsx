@@ -1,17 +1,17 @@
 import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, Pressable, Platform, Alert, Image } from 'react-native'
 import React, { useContext, useState } from 'react'
-import client from '../api/client';
+import client from '../../api/client';
 
 //Snackbar
 import Snackbar from 'react-native-snackbar'
 
 // Navigation
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { AuthStackParamList } from '../routes/AuthStack';
-import { useLogin } from '../context/LoginProvider';
+import { AuthStackParamList } from '../../routes/AuthStack';
+import { useLogin } from '../../context/LoginProvider';
 
 import { useDispatch } from 'react-redux';
-import { authTokenActions } from '../store/authToken-slice';
+import { authTokenActions } from '../../store/authToken-slice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type LoginScreenProps = NativeStackScreenProps<AuthStackParamList, 'LoginDoctor'>
@@ -152,7 +152,7 @@ const LoginDoctor = ({ navigation }: LoginScreenProps) => {
 
                 <Image
                     style={styles.logo}
-                    source={require('../logo.png')}
+                    source={require('../../../assets/common/logo.png')}
                 />
                 <Text style={styles.appName}>Game Mind</Text>
                 <Text style={styles.welcome}>

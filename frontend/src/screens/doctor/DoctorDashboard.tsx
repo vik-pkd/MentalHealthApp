@@ -121,14 +121,14 @@ export default function DoctorDashboard() {
                     </View>
                 )}
                 <TouchableOpacity onPress={() => setAddMedicineModalVisible(true)} style={styles.card}>
-                    <Image source={require('../../add_medicine.png')} style={styles.cardImage} />
+                    <Image source={require('../../../assets/doctor/add_medicine.png')} style={styles.cardImage} />
                     <View style={styles.cardContent}>
                         <Text style={styles.cardTitle}>Add Medicine</Text>
                         <Text style={styles.cardDescription}>Tap here to add a new medicine for future prescriptions.</Text>
                     </View>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={openAddPatientModal} style={styles.card}>
-                    <Image source={require('../../patient.jpg')} style={styles.cardImage} />
+                    <Image source={require('../../../assets/common/patient.jpg')} style={styles.cardImage} />
                     <View style={styles.cardContent}>
                         <Text style={styles.cardTitle}>Add Patient</Text>
                         <Text style={styles.cardDescription}>Tap here to add a new patient to your records.</Text>

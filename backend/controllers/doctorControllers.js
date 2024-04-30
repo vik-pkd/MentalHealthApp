@@ -2,6 +2,8 @@ const fs = require('fs');
 
 const Patient = require('../models/patient');
 const Doctor = require('../models/doctor');
+const Game = require('../models/game');
+const Activity = require('../models/activity');
 const Medicine = require('../models/medicine');
 const ObjectId = require('mongoose').Types.ObjectId;
 const jwt = require('jsonwebtoken');
@@ -12,6 +14,15 @@ module.exports.getDoctors = async (req, res) => {
     try {
         const doctors = await Doctor.find({});
         res.send(doctors);
+    } catch (err) {
+        res.send(err);
+    }
+}
+
+module.exports.getGames = async (req, res) => {
+    try {
+        const games = await Game.find({});
+        res.send(games);
     } catch (err) {
         res.send(err);
     }
@@ -135,10 +146,29 @@ module.exports.addMedicine = async (req, res) => {
             name: name,
             foodTiming: foodTiming,
             image: medicinePhotoData
-        });        
+        });
         await medicine.save();
-        res.send({status: "success"});
+        res.send({ status: "success" });
     } catch (error) {
-        res.send({status: "failure"});
+        res.send({ status: "failure" });
+    }
+}
+
+module.exports.addActivity = async (req, res) => {
+    try {
+        console.log('Inside Add Activity!');
+        const { patientId, gameId, points, start_date, end_date } = req.body;
+
+        const activity = new Activity({
+            patient: patientId,
+            game: gameId,
+            points: points,
+            start_date: start_date,
+            end_date: end_date
+        });
+        await activity.save();
+        res.send({ status: "success" });
+    } catch (error) {
+        res.send({ status: "failure" });
     }
 }

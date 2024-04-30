@@ -31,19 +31,19 @@ export default function Launch({ navigation }: LaunchScreenProps) {
             <TouchableOpacity style={styles.container} onPress={handleDoctorPress}>
                 <Image
                     style={styles.logo}
-                    source={require('../doctor.jpg')}
+                    source={require('../../assets/common/doctor.jpg')}
                 />
             </TouchableOpacity>
             <TouchableOpacity style={styles.container} onPress={handlePatientPress}>
                 <Image
                     style={styles.logo}
-                    source={require('../patient.jpg')}
+                    source={require('../../assets/common/patient.jpg')}
                 />
             </TouchableOpacity>
             <TouchableOpacity style={styles.container} onPress={handleCaretakerPress}>
                 <Image
                     style={styles.logo}
-                    source={require('../caretaker.jpg')}
+                    source={require('../../assets/common/caretaker.jpg')}
                 />
             </TouchableOpacity>
 

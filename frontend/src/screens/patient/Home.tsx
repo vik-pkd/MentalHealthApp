@@ -16,6 +16,7 @@ import MedicinePrescriptionDisplay from '../../components/doctor/MedicinePrescri
 import MedicineReminderDisplay from '../../components/patient/MedicineReminderDisplay'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import PushNotification from 'react-native-push-notification'
+import CharacterCard from '../../components/patient/CharacterCard'
 
 type UserObj = {
     name: String;
@@ -236,8 +237,14 @@ export default function Home() {
                         </View>
                     )}
                 </View>
+
                 <FancyCard />
-                <BasicCard />
+
+                <View style={styles.characterContainer}>
+                    <CharacterCard />
+                </View>
+
+                {/* <BasicCard /> */}
                 {/* <HistoryCard /> */}
                 {/* <MedicineReminderDisplay patientId={profile._id} /> */}
             </ScrollView>
@@ -429,4 +436,7 @@ const styles = StyleSheet.create({
         borderRadius: 5, // Half the size of the width to make it round
         backgroundColor: 'red',
     },
+    characterContainer: {
+        margin: 8
+    }
 });

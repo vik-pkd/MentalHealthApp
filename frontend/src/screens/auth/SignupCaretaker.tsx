@@ -1,25 +1,19 @@
 import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, Pressable, Platform, Image } from 'react-native'
 import React, { useContext, useState } from 'react'
 
-//react native elements
-import { FAB } from '@rneui/themed'
 //Snackbar
 import Snackbar from 'react-native-snackbar'
 
-//context API
-import { AppwriteContext } from '../appwrite/AppwriteContext'
-
 // Navigation
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { AuthStackParamList } from '../routes/AuthStack';
-import client from '../api/client';
-import { useLogin } from '../context/LoginProvider';
+import { AuthStackParamList } from '../../routes/AuthStack';
+import client from '../../api/client';
+import { useLogin } from '../../context/LoginProvider';
 
-type SignupScreenProps = NativeStackScreenProps<AuthStackParamList, 'SignupDoctor'>
+type SignupScreenProps = NativeStackScreenProps<AuthStackParamList, 'SignupCaretaker'>
 
-const SignupDoctor = ({ navigation }: SignupScreenProps) => {
+const SignupCaretaker = ({ navigation }: SignupScreenProps) => {
     const { setIsLoggedIn, setProfile } = useLogin();
-
     const [error, setError] = useState<string>('')
     const [name, setName] = useState<string>('')
     const [email, setEmail] = useState<string>('')
@@ -47,12 +41,11 @@ const SignupDoctor = ({ navigation }: SignupScreenProps) => {
                 age
             };
 
-
-            const res = await client.post('/doctors/add-doctor', { ...user })
+            const res = await client.post('/caregivers/add-caregiver', { ...user })
             if (res) {
-                const resp = await client.post('/doctors/sign-in', { email, password })
+                const resp = await client.post('/caregivers/sign-in', { email, password })
                 if (resp) {
-                    setProfile(resp.data.doctor);
+                    setProfile(resp.data.caregiver);
                     setIsLoggedIn(true);
                     Snackbar.show({
                         text: 'Login success',
@@ -62,6 +55,7 @@ const SignupDoctor = ({ navigation }: SignupScreenProps) => {
             }
         }
     }
+
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -70,7 +64,7 @@ const SignupDoctor = ({ navigation }: SignupScreenProps) => {
 
                 <Image
                     style={styles.logo}
-                    source={require('../logo.png')}
+                    source={require('../../../assets/common/logo.png')}
                 />
                 <Text style={styles.appName}>Game Mind</Text>
                 <Text style={styles.welcome}>
@@ -248,4 +242,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default SignupDoctor;
+export default SignupCaretaker;

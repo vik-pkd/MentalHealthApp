@@ -25,7 +25,7 @@ type PatientProfileParamsList = NativeStackScreenProps<PatientSerachStackParamLi
 
 const Tab = createMaterialTopTabNavigator();
 
-const PatientProfile = ({navigation}: PatientProfileParamsList) => {
+const PatientProfile = ({ navigation }: PatientProfileParamsList) => {
     const route = useRoute<RouteProp<PatientSerachStackParamList>>();
     const params = route.params;
     const authToken = useSelector((state: Record<string, { token: string | null }>) => state.authToken.token);
@@ -55,7 +55,6 @@ const PatientProfile = ({navigation}: PatientProfileParamsList) => {
 
     return (
         <View style={styles.container}>
-            <ScrollView>
             <View style={styles.userInfo}>
                 <View style={styles.userInfoItem}>
                     <Text style={styles.infoKey}>Name:</Text>
@@ -74,21 +73,22 @@ const PatientProfile = ({navigation}: PatientProfileParamsList) => {
             </View>
             <View style={styles.buttonContainer}>
                 <Pressable
-                    onPress={() => navigation.navigate('Prescription', {_id: params!._id})}
+                    onPress={() => navigation.navigate('Prescription', { _id: params!._id })}
                     style={styles.addModalButton}
                 >
                     <Text style={styles.buttonText}>Add Medicine</Text>
                 </Pressable>
 
                 <Pressable
-                    onPress={() => setIsMedicineModalVisible(true)}
+                    onPress={() => navigation.navigate('Activities', { _id: params!._id })}
                     style={styles.addModalButton}
                 >
                     <Text style={styles.buttonText}>Add Activities</Text>
                 </Pressable>
             </View>
-            <MedicinePrescriptionDisplay patientId={params!._id}/>
-            </ScrollView>
+            <View style={styles.prescriptionContainer}>
+                <MedicinePrescriptionDisplay patientId={params!._id} />
+            </View>
         </View>
     );
 };
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#f4f4f8', // Light background color
         alignItems: 'center',
-        justifyContent: 'center',
+        // justifyContent: 'center',
     },
     infoKey: {
         fontSize: 16,
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
         width: '90%',
         padding: 10,
         borderRadius: 8,
-        marginBottom: 20,
+        margin: 16,
         backgroundColor: 'white', // White card background
         shadowColor: '#000', // Shadow for the card
         shadowOffset: {
@@ -147,7 +147,22 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-evenly',
         width: '100%',
-        marginBottom: 10,
+        // marginBottom: 8,
         marginHorizontal: 8
     },
+    prescriptionContainer: {
+        width: '90%',
+        padding: 10,
+        borderRadius: 8,
+        margin: 16,
+        backgroundColor: 'white', // White card background
+        shadowColor: '#000', // Shadow for the card
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    }
 });

@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, Pressable, Platform, Alert, Image } from 'react-native'
 import React, { useContext, useState } from 'react'
-import client from '../api/client';
+import client from '../../api/client';
 
 //react native elements
 import { FAB } from '@rneui/themed'
@@ -8,16 +8,16 @@ import { FAB } from '@rneui/themed'
 import Snackbar from 'react-native-snackbar'
 
 //context API
-import { AppwriteContext } from '../appwrite/AppwriteContext'
+import { AppwriteContext } from '../../appwrite/AppwriteContext'
 
 // Navigation
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { AuthStackParamList } from '../routes/AuthStack';
-import { useLogin } from '../context/LoginProvider';
+import { AuthStackParamList } from '../../routes/AuthStack';
+import { useLogin } from '../../context/LoginProvider';
 import ReactNativeBiometrics, { BiometryTypes } from 'react-native-biometrics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch } from 'react-redux';
-import { authTokenActions } from '../store/authToken-slice';
+import { authTokenActions } from '../../store/authToken-slice';
 
 type LoginScreenProps = NativeStackScreenProps<AuthStackParamList, 'Login'>
 
@@ -106,7 +106,7 @@ const Login = ({ navigation }: LoginScreenProps) => {
       if (resp.data && resp.data.token) {
         dispatch(authTokenActions.set(resp.data.token));
         await AsyncStorage.setItem('authorizationToken', resp.data.token);
-    }
+      }
       const userId = resp.data.patient._id;
 
       if (resp) {
@@ -158,7 +158,7 @@ const Login = ({ navigation }: LoginScreenProps) => {
 
         <Image
           style={styles.logo}
-          source={require('../logo.png')}
+          source={require('../../../assets/common/logo.png')}
         />
         <Text style={styles.appName}>Game Mind</Text>
         <Text style={styles.welcome}>
