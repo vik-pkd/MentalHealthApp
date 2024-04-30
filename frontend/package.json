@@ -37,6 +37,7 @@
     "react-native-image-picker": "^7.1.0",
     "react-native-image-resizer": "^1.4.5",
     "react-native-linear-gradient": "^2.8.3",
+    "react-native-pager-view": "^6.3.0",
     "react-native-paper": "^5.12.3",
     "react-native-progress": "^5.0.1",
     "react-native-push-notification": "^8.1.1",

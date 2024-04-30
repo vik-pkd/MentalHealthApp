@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const ObjectId = require('mongoose').Types.ObjectId;
 
 const patientSchema = new mongoose.Schema({
     name: {
@@ -33,7 +34,13 @@ const patientSchema = new mongoose.Schema({
     {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Doctor'
-    }
+    },
+    games: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Game'
+        }
+    ]
 });
 
 patientSchema.pre('save', function (next) {
@@ -69,6 +76,24 @@ patientSchema.statics.isThisEmailInUse = async function (email) {
         console.log(error.message)
         return false;
     }
+}
+
+patientSchema.methods.addGames = async function (gameIds) {
+    try {
+        // gameIds: string[]
+        console.log('gameIds', gameIds);
+        for (const gameId of gameIds) {
+            console.log('gameId', gameId);
+            const id = new ObjectId(gameId);
+            if (!this.games.includes(id)) {
+                this.games.push(id);
+            }
+        }
+        await this.save();
+    } catch (error) {
+        console.log(error.message);
+    }
+    return;
 }
 
 module.exports = mongoose.model('Patient', patientSchema);

@@ -64,7 +64,7 @@ export const DoctorStack = () => {
 
                 <Tab.Screen name='Patients' component={PatientStack} />
                 <Tab.Screen name='Dashboard' component={DoctorDashboard} />
-                <Tab.Screen name='Medication' component={PatientProfile} />
+                {/* <Tab.Screen name='Medication' component={PatientProfile} /> */}
             </Tab.Navigator>
         </NavigationContainer>
     )

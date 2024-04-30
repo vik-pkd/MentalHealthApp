@@ -25,8 +25,7 @@ const MedicinePrescriptionDisplay: React.FC<{ patientId: string }> = ({ patientI
 
 
     return (
-        <View>
-            <Text style={{ color: 'black' }}>Medicine Prescriptions</Text>
+        <ScrollView>
             {/* <FlatList
                 data={prescriptions}
                 keyExtractor={(item, index) => index.toString()}
@@ -35,7 +34,7 @@ const MedicinePrescriptionDisplay: React.FC<{ patientId: string }> = ({ patientI
             {prescriptions && prescriptions.map((item, index) => (
                 <MedPresCard key={index} prescription={item} />
             ))}
-        </View>
+        </ScrollView>
     );
 }
 
