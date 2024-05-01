@@ -31,6 +31,6 @@ router.get('/reminders', isPatientAuth, patientControllers.getReminders);
 router.get('/alerts', isPatientAuth, patientControllers.getAlerts);
 router.get('/activities', isPatientAuth, patientControllers.getActivities);
 
-router.post('/taken-medicine', isPatientAuth, patientControllers.takeMedicine);
+router.put('/taken-medicine', isPatientAuth, patientControllers.takeMedicine);
 
 module.exports = router;

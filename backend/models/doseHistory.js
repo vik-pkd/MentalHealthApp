@@ -12,10 +12,16 @@ const doseHistorySchema = new mongoose.Schema({
     date: {
         type: Date
     },
+    time: {
+        type: Date,
+    },
     slot: {
         type: Number,
     },
     istaken: {
+        type: Boolean
+    },
+    edited: {
         type: Boolean
     }
 });

@@ -23,4 +23,6 @@ router.post('/add-prescription/patient/:_id', isDoctorAuth, upload.single('image
 router.post('/add-medicine', isDoctorAuth, upload.single('image'), doctorControllers.addMedicine);
 router.post('/add-activity', isDoctorAuth, doctorControllers.addActivity);
 
+router.post('/assign-games', isDoctorAuth, doctorControllers.assignGames);
+
 module.exports = router;

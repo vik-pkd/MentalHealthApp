@@ -8,6 +8,12 @@ import { GameStackParamList } from '../../../routes/PatientStack';
 import * as Progress from 'react-native-progress';
 import client from '../../../api/client';
 import { useSelector } from 'react-redux';
+import { white } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CheckBox } from '@rneui/base';
+import Chapter1 from './Chapter1';
+import Chapter2 from './Chapter2';
+
 
 type GameScreenProps = NativeStackScreenProps<GameStackParamList, 'TicTacToe'>
 
@@ -37,20 +43,56 @@ interface Activity {
     endDate: Date;
 }
 
+const getData = async (key: string) => {
+    // get Data from Storage
+    try {
+        const data = await AsyncStorage.getItem(key);
+        if (data !== null) {
+            // console.log(data);
+            return data;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+// const images: Activity[] = [
+//     { source: require('../../../assets/mindfullness/yoga.jpg'), title: 'Yoga', description: 'Relax and find balance with yoga.', navigation: 'TicTacToe', img: require('../../../assets/mindfullness/yoga.jpg') },
+//     { source: require('../../../assets/mindfullness/game.jpg'), title: 'Tic Tac Toe', description: 'Stimulate your brain with fun strategy games.', navigation: 'TicTacToe', img: require('../../../assets/games/tic-tac-toe.png') },
+//     { source: require('../../../assets/mindfullness/medicine.jpg'), title: 'Medication Reminder', description: 'Keep up with your medication.', navigation: 'Casual', img: require('../../../assets/mindfullness/yoga.jpg') },
+// ];
+
+// Chapters data - this could be expanded with more properties as needed
+const chapters = [
+    {
+        id: 'chapter1',
+        title: 'Chapter 1',
+        component: Chapter1, // Import and use actual component
+    },
+    {
+        id: 'chapter2',
+        title: 'Chapter 2',
+        component: Chapter2, // Make sure to create and import this component
+    },
+    // Add more chapters as needed
+];
+
 const Journey: React.FC = () => {
 
     const navigation = useNavigation<GameScreenProps>();
     const isFocused = useIsFocused();
     const { extraPoints, profile } = useLogin();
     const authToken = useSelector((state: Record<string, { token: string | null }>) => state.authToken.token);
-    // const images: Activity[] = [
-    //     { source: require('../../../assets/mindfullness/yoga.jpg'), title: 'Yoga', description: 'Relax and find balance with yoga.', navigation: 'TicTacToe', img: require('../../../assets/mindfullness/yoga.jpg') },
-    //     { source: require('../../../assets/mindfullness/game.jpg'), title: 'Tic Tac Toe', description: 'Stimulate your brain with fun strategy games.', navigation: 'TicTacToe', img: require('../../../assets/games/tic-tac-toe.png') },
-    //     { source: require('../../../assets/mindfullness/medicine.jpg'), title: 'Medication Reminder', description: 'Keep up with your medication.', navigation: 'Casual', img: require('../../../assets/mindfullness/yoga.jpg') },
-    // ];
 
     const [modalVisible, setModalVisible] = useState(false);
+    const [introModalVisible, setIntroModalVisible] = useState(false);
+    const [instModalVisible, setInstModalVisible] = useState(false);
+    const [isSelected, setSelection] = useState(false);
     const [currentActivity, setCurrentActivity] = useState<Activity | null>(null);
+
+    const [currentChapter, setCurrentChapter] = useState(chapters[0]); // Default to the first chapter
 
     const openModal = () => {
         setModalVisible(true);
@@ -58,6 +100,14 @@ const Journey: React.FC = () => {
 
     const closeModal = () => {
         setModalVisible(false);
+    };
+
+    const openIntroModal = () => {
+        setIntroModalVisible(true);
+    };
+
+    const closeIntroModal = () => {
+        setIntroModalVisible(false);
     };
 
     React.useEffect(() => {
@@ -80,35 +130,100 @@ const Journey: React.FC = () => {
             }
         };
 
+
+        const checkIntroModal = async () => {
+            if (isFocused) {
+                const statusIntroModal = await getData('pop_status'); // Await the async function
+                if (statusIntroModal === null) {
+                    openIntroModal();
+                    AsyncStorage.setItem('pop_status', '1');
+                } else {
+                    setInstModalVisible(true);
+                }
+            } else {
+                closeModal();
+            }
+        };
+
+        checkIntroModal();
+
         if (!isFocused) {
             closeModal();
         }
-        fetchActivities();
+
+        // fetchActivities();
     }, [isFocused]);
 
     return (
         <View style={styles.container}>
-            <LinearGradient
-                colors={['#483D8B', '#6A5ACD', '#7B68EE']} // Adjust colors to match your design
-                style={styles.backgroundGradient}
-            >
-                <ImageBackground source={require('../../../../assets/common/forest.jpg')} style={styles.backgroundImage}>
-                    {/* Navigation Paths */}
-                    <View style={styles.pathContainer}>
-                        {/* Example path item */}
-                        <TouchableOpacity style={styles.pathItem} onPress={() => openModal()}>
-                            <Text style={styles.pathText}>The Shadows Within</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.pathItem2}>
-                            <Text style={styles.pathText2}>The Hidden Light</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.pathItem3}>
-                            <Text style={styles.pathText3}>Mastering Oneself</Text>
-                        </TouchableOpacity>
-                        {/* You can add more path items here */}
+
+            {/* Chapter selection buttons */}
+            <View style={styles.chapterSelector}>
+                {chapters.map((chapter) => (
+                    <TouchableOpacity key={chapter.id} style={styles.button} onPress={() => setCurrentChapter(chapter)}>
+                        <Text style={styles.buttonText}>{chapter.title}</Text>
+                    </TouchableOpacity>
+                ))}
+            </View>
+
+            {/* Render the selected chapter's component */}
+            <View style={styles.chapterContainer}>
+                <currentChapter.component />
+            </View>
+
+            {/* Introduction Model */}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={introModalVisible}
+                onRequestClose={closeIntroModal}>
+                <TouchableOpacity
+                    style={styles.container}
+                    activeOpacity={1}
+                    onPressOut={() => { setIntroModalVisible(false); }}
+                >
+                    <View style={styles.centeredView}>
+                        <View style={styles.introModalView}>
+                            <Text>Dear Seeker,</Text>
+                            <Text></Text>
+                            <Text style={styles.letterText}>Welcome to the Sanctuary of Self, where your journey of self-discovery begins. This place, born from the struggles we all face, offers a path to peace and understanding.</Text>
+                            <Text></Text>
+                            <Text style={styles.letterText}>As you wander its paths, you'll encounter various aspects of yourself, aiding in your healing. Let the Sanctuary's whispers guide you, as they echo your inner voice, steering you towards inner balance.</Text>
+                            <Text></Text>
+                            <Text>Warm regards,</Text>
+                            <Text>A Guide of the Sanctuary</Text>
+                        </View>
                     </View>
-                </ImageBackground>
-            </LinearGradient>
+                </TouchableOpacity>
+            </Modal>
+
+            {/* Instruction Model */}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={instModalVisible}
+                onRequestClose={() => {
+                    setInstModalVisible(!instModalVisible);
+                }}>
+
+                <View style={styles.centeredView}>
+                    <View style={styles.introModalView}>
+                        <Text>Dear Seeker,</Text>
+                        <Text></Text>
+                        <Text style={styles.letterText}>You will encounter various quests at each step, you need to complete them to progress in your journey to free yourself.</Text>
+                        <Text></Text>
+                        <Text style={styles.letterText}>Also, if you complete multiple steps you will progress through many chapters.</Text>
+                        <Text></Text>
+                        <Text style={styles.letterText}>Are you ready ?</Text>
+                        <Text></Text>
+                        {/* <Text>Warm regards,</Text>
+                        <Text>A Guide of the Sanctuary</Text> */}
+                        <TouchableOpacity style={styles.buttonProceed} onPress={() => { setInstModalVisible(!instModalVisible); }}>
+                            <Text style={styles.textStyle}>Proceed</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
 
             <Modal
                 animationType="slide"
@@ -121,7 +236,7 @@ const Journey: React.FC = () => {
                         <View style={styles.userContainer}>
                             <Image source={require('../../../../assets/mindfullness/game.jpg')} style={styles.badgeImage} />
                             <View style={styles.detailsAndProgress}>
-                                <Text style={styles.TitleText}>{currentActivity.gameName}</Text>
+                                <Text style={styles.TitleText}>Tic Tac Toe</Text>
                                 <Progress.Bar
                                     style={styles.progress}
                                     progress={extraPoints} // Assuming 1000 is the max points
@@ -130,7 +245,7 @@ const Journey: React.FC = () => {
                                     unfilledColor="rgba(255, 255, 255, 0.5)"
                                     borderColor="black"
                                 />
-                                <Text style={styles.pointsText}>Points Collected : {extraPoints} / {currentActivity.points}</Text>
+                                <Text style={styles.pointsText}>Points Collected : {extraPoints} / 5</Text>
                                 <Text style={styles.detailsText}>Stimulate your brain with fun strategy games.</Text>
                             </View>
                         </View>
@@ -147,7 +262,7 @@ const Journey: React.FC = () => {
                     </View>
                 </View>
             </Modal>
-        </View>
+        </View >
 
 
     );
@@ -157,68 +272,25 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    backgroundGradient: {
+    checkboxContainer: {
+        flexDirection: 'row',
+    },
+    chapterSelector: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginBottom: 20,
+    },
+    button: {
+        backgroundColor: '#4e9ec5',
+        padding: 10,
+    },
+    buttonText: {
+        color: '#fff',
+    },
+    chapterContainer: {
         flex: 1,
-    },
-    backgroundImage: {
-        flex: 1,
-        resizeMode: 'cover', // or 'stretch'
-    },
-    pathContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        // Additional styles if needed for positioning
-    },
-    pathItem: {
-        backgroundColor: 'rgba(206,147,216, 0.8)', // Semi-transparent red background
-        paddingVertical: 8,
-        paddingHorizontal: 24,
-        borderRadius: 50,
-        marginVertical: 10,
-        position: 'absolute',
-        left: 70,
-        top: 600,
-        // Add shadow or other styles as needed
-    },
-    pathItem2: {
-        backgroundColor: 'rgba(206,147,216, 0.8)', // Semi-transparent red background
-        paddingVertical: 8,
-        paddingHorizontal: 24,
-        borderRadius: 50,
-        marginVertical: 10,
-        position: 'absolute',
-        left: 115,
-        top: 540,
-        // Add shadow or other styles as needed
-    },
-    pathItem3: {
-        backgroundColor: 'rgba(106,27,154, 0.8)', // Semi-transparent red background
-        paddingVertical: 8,
-        paddingHorizontal: 24,
-        borderRadius: 50,
-        marginVertical: 10,
-        position: 'absolute',
-        left: 130,
-        top: 480,
-        // Add shadow or other styles as needed
     },
 
-    pathText: {
-        color: '#fff',
-        fontSize: 18,
-        // Additional text styling if needed
-    },
-    pathText2: {
-        color: '#fff',
-        fontSize: 10,
-        // Additional text styling if needed
-    },
-    pathText3: {
-        color: '#fff',
-        fontSize: 6,
-        // Additional text styling if needed
-    },
     tabBarContainer: {
         position: 'absolute',
         bottom: 0,
@@ -240,6 +312,21 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 20,
         alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+    introModalView: {
+        margin: 20,
+        backgroundColor: '#38006b',
+        borderRadius: 20,
+        padding: 30,
+        alignItems: 'flex-start',
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
@@ -294,10 +381,21 @@ const styles = StyleSheet.create({
         padding: 10,
         elevation: 2
     },
+    buttonProceed: {
+        backgroundColor: '#9c4dcc',
+        borderRadius: 10,
+        padding: 10,
+        elevation: 2,
+        alignSelf: 'stretch'
+    },
     textStyle: {
         color: 'white',
         fontWeight: 'bold',
         textAlign: 'center'
+    },
+    letterText: {
+        color: 'white',
+        fontWeight: 'normal'
     },
     buttonContainer: {
         flexDirection: 'row',

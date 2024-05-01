@@ -1,5 +1,5 @@
 import { Text, StyleSheet, View, Image, ScrollView, TouchableOpacity } from 'react-native'
-import React, { Component } from 'react'
+import React, { Component, useEffect } from 'react'
 import { Dimensions } from "react-native";
 import * as Progress from 'react-native-progress';
 const screenWidth = Dimensions.get("window").width;
@@ -16,6 +16,8 @@ interface GameCardProps {
 
 
 const GameCard: React.FC<GameCardProps> = ({ title, description, imageUrl, progress, imageList }) => {
+
+
     return (
         // Main card starts here
         <View style={[styles.card, styles.cardElevated]}>

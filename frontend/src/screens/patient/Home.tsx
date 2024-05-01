@@ -246,7 +246,7 @@ export default function Home() {
 
                 {/* <BasicCard /> */}
                 {/* <HistoryCard /> */}
-                {/* <MedicineReminderDisplay patientId={profile._id} /> */}
+                <MedicineReminderDisplay patientId={profile._id} />
             </ScrollView>
 
             <FAB

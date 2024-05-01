@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -28,6 +28,12 @@ import Quiz from '../screens/patient/Games/Quiz';
 import Slot from '../screens/patient/Games/Slot';
 import Tower from '../screens/patient/Games/Tower';
 import Meditation from '../screens/patient/Meditation';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../store';
+import { fetchGameCategories } from '../store/gameCategories-slice';
+import { RootState } from '../store/rootReducer';
+import GameItem from '../screens/patient/Games/GameItem';
+import GameCategory from '../screens/patient/Games/GameCategory';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Journey from '../screens/patient/Journey/Journey';
 import Journal from '../screens/patient/Journal/Journal';
@@ -36,29 +42,29 @@ import Journal from '../screens/patient/Journal/Journal';
 // navigation/types.ts
 export type GameStackParamList = {
   Games: undefined;
+  Category: { _id: string };
+  GameItem: { _id: string };
+  //   // Game Types Here
+  //   Puzzle: undefined;
+  //   Focus: undefined;
+  //   Strategy: undefined;
+  //   Memory: undefined;
+  //   Coordination: undefined;
+  //   Casual: undefined;
 
-  // Game Types Here
-  Puzzle: undefined;
-  Focus: undefined;
-  Strategy: undefined;
-  Memory: undefined;
-  Coordination: undefined;
-  Casual: undefined;
-
-  // Games screens, this stack can be moved to individual screens
-  TicTacToe: undefined;
-  CardMatch: undefined;
-  Quiz: undefined;
-  FruitSlicer: undefined;
-  RockPaperScissors: undefined;
-  TwoZero: undefined;
-  Hangman: undefined;
-  PingPong: undefined;
-  CrossRoad: undefined;
-  Snake: undefined;
-  Slot: undefined;
-  Tower: undefined;
-
+  //   // Games screens, this stack can be moved to individual screens
+  //   TicTacToe: undefined;
+  //   CardMatch: undefined;
+  //   Quiz: undefined;
+  //   FruitSlicer: undefined;
+  //   RockPaperScissors: undefined;
+  //   TwoZero: undefined;
+  //   Hangman: undefined;
+  //   PingPong: undefined;
+  //   CrossRoad: undefined;
+  //   Snake: undefined;
+  //   Slot: undefined;
+  //   Tower: undefined;
 };
 
 export type MindStackParamList = {
@@ -71,45 +77,53 @@ const Stack = createNativeStackNavigator<GameStackParamList>();
 const MStack = createNativeStackNavigator<MindStackParamList>();
 
 const GameStack: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+
   return (
     <Stack.Navigator screenOptions={{
       headerTitleAlign: 'center',
       headerBackTitleVisible: false,
-      headerShown: false
+      headerShown: false,
     }}>
       <Stack.Screen name="Games" component={Games} />
+      <Stack.Screen name='GameItem' component={GameItem} />
+      <Stack.Screen name='Category' component={GameCategory} />
+      {/* <Stack.Screen name="Games" component={Games} /> */}
 
-      <Stack.Screen name="Puzzle" component={Puzzle} />
-      <Stack.Screen name="Focus" component={Focus} />
-      <Stack.Screen name="Strategy" component={Strategy} />
-      <Stack.Screen name="Memory" component={Memory} />
-      <Stack.Screen name="Coordination" component={Coordination} />
-      <Stack.Screen name="Casual" component={Casual} />
+      {/* <Stack.Screen name="Puzzle" component={Puzzle} /> */}
+      {/* <Stack.Screen name="Focus" component={Focus} /> */}
+      {/* <Stack.Screen name="Strategy" component={Strategy} /> */}
+      {/* {gameCategories && gameCategories.map(gameCategory => (
+        <Stack.Screen key={gameCategory._id} name={gameCategory.title} component={Focus} />
+      ))} */}
+      {/* <Stack.Screen name="Memory" component={Memory} /> */}
+      {/* <Stack.Screen name="Coordination" component={Coordination} /> */}
+      {/* <Stack.Screen name="Casual" component={Casual} /> */}
 
       {/* Puzzle */}
-      <Stack.Screen name="Slot" component={Slot} />
-      <Stack.Screen name="Tower" component={Tower} />
+      {/* <Stack.Screen name="Slot" component={Slot} /> */}
+      {/* <Stack.Screen name="Tower" component={Tower} /> */}
 
       {/* Focus */}
 
       {/* Strategy */}
-      <Stack.Screen name="TicTacToe" component={TicTacToe} />
-      <Stack.Screen name="TwoZero" component={TwoZero} />
-      <Stack.Screen name="Hangman" component={Hangman} />
+      {/* <Stack.Screen name="TicTacToe" component={TicTacToe} /> */}
+      {/* <Stack.Screen name="TwoZero" component={TwoZero} /> */}
+      {/* <Stack.Screen name="Hangman" component={Hangman} /> */}
       {/* Can add sudoku here! */}
 
       {/* Memory */}
-      <Stack.Screen name="CardMatch" component={CardMatch} />
-      <Stack.Screen name="Quiz" component={Quiz} />
+      {/* <Stack.Screen name="CardMatch" component={CardMatch} /> */}
+      {/* <Stack.Screen name="Quiz" component={Quiz} /> */}
 
       {/* Coordination */}
-      <Stack.Screen name="PingPong" component={PingPong} />
-      <Stack.Screen name="CrossRoad" component={CrossRoad} />
-      <Stack.Screen name="Snake" component={Snake} />
+      {/* <Stack.Screen name="PingPong" component={PingPong} /> */}
+      {/* <Stack.Screen name="CrossRoad" component={CrossRoad} /> */}
+      {/* <Stack.Screen name="Snake" component={Snake} /> */}
 
       {/* Casual */}
-      <Stack.Screen name="FruitSlicer" component={FruitSlicer} />
-      <Stack.Screen name="RockPaperScissors" component={RockPaperScissors} />
+      {/* <Stack.Screen name="FruitSlicer" component={FruitSlicer} /> */}
+      {/* <Stack.Screen name="RockPaperScissors" component={RockPaperScissors} /> */}
     </Stack.Navigator>
   );
 };
