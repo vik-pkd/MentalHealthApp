@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, Modal, Image } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient'; // Assuming you have this installed
+import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { useLogin } from '../../../context/LoginProvider';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { GameStackParamList } from '../../../routes/PatientStack';
-import * as Progress from 'react-native-progress';
 import client from '../../../api/client';
 import { useSelector } from 'react-redux';
-import { white } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CheckBox } from '@rneui/base';
+
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import Chapter1 from './Chapter1';
 import Chapter2 from './Chapter2';
+import Chapter3 from './Chapter3';
+import Chapter4 from './Chapter4';
+
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 
-type GameScreenProps = NativeStackScreenProps<GameStackParamList, 'TicTacToe'>
+// type GameScreenProps = NativeStackScreenProps<GameStackParamList, 'TicTacToe'>
 
 // interface Activity {
 //     source: ReturnType<typeof require>;
@@ -66,41 +66,71 @@ const getData = async (key: string) => {
 
 // Chapters data - this could be expanded with more properties as needed
 const chapters = [
-    {
-        id: 'chapter1',
-        title: 'Chapter 1',
-        component: Chapter1, // Import and use actual component
-    },
-    {
-        id: 'chapter2',
-        title: 'Chapter 2',
-        component: Chapter2, // Make sure to create and import this component
-    },
-    // Add more chapters as needed
+    { id: 'chapter1', title: '1. The Shadows Within', component: Chapter1, objective: 'Explore the inner shadows of your mind, confront your hidden fears, and start the journey towards understanding your own mental landscape. You will encounter various quests at each step, you need to complete them to progress in your journey to free yourself.' },
+    { id: 'chapter2', title: '2. The Hidden Light', component: Chapter2, objective: 'Discover the hidden light within yourself. Learn to find positivity and hope even in the darkest times. Also, if you complete multiple steps you will progress through many chapters.' },
+    { id: 'chapter3', title: '3. Mastering Oneself', component: Chapter3, objective: 'Master your emotions and thoughts to gain control over your mental state. Develop self-discipline and resilience to face any challenge. Are you ready?' },
+    { id: 'chapter4', title: '4. Emerging Enlightened', component: Chapter4, objective: 'Emerge enlightened from your journey with a deeper understanding and wisdom about yourself and your mental health. Use the insights gained to foster a lasting state of peace and fulfillment.' },
 ];
+
 
 const Journey: React.FC = () => {
 
-    const navigation = useNavigation<GameScreenProps>();
+    // const navigation = useNavigation<GameScreenProps>();
     const isFocused = useIsFocused();
     const { extraPoints, profile } = useLogin();
     const authToken = useSelector((state: Record<string, { token: string | null }>) => state.authToken.token);
 
-    const [modalVisible, setModalVisible] = useState(false);
+    // const [modalVisible, setModalVisible] = useState(false);
     const [introModalVisible, setIntroModalVisible] = useState(false);
-    const [instModalVisible, setInstModalVisible] = useState(false);
     const [isSelected, setSelection] = useState(false);
-    const [currentActivity, setCurrentActivity] = useState<Activity | null>(null);
+    // const [currentActivity, setCurrentActivity] = useState<Activity | null>(null);
 
-    const [currentChapter, setCurrentChapter] = useState(chapters[0]); // Default to the first chapter
+    const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
+    const [unlockedChapters, setUnlockedChapters] = useState([0, 1]); // Initially, only the first chapter is unlocked
+    const [chapterModalVisible, setChapterModalVisible] = useState(false); // Show modal on first entry
+    const currentChapter = chapters[currentChapterIndex];
 
-    const openModal = () => {
-        setModalVisible(true);
+    const opacity = useSharedValue(1);
+
+    const goToNextChapter = async () => {
+        if (currentChapterIndex < chapters.length - 1 && unlockedChapters.includes(currentChapterIndex + 1)) {
+            opacity.value = 0;
+            setTimeout(() => {
+                setCurrentChapterIndex(currentChapterIndex + 1);
+                opacity.value = 1;
+                setChapterModalVisible(true);
+                AsyncStorage.setItem('currentChapterIndex', (currentChapterIndex + 1).toString());
+            }, 300);
+        } else if (currentChapterIndex < chapters.length - 1 && !unlockedChapters.includes(currentChapterIndex + 1)) {
+            setUnlockedChapters([...unlockedChapters, currentChapterIndex + 1]); // Unlock next chapter
+            goToNextChapter(); // Automatically navigate to next chapter
+        }
     };
 
-    const closeModal = () => {
-        setModalVisible(false);
+    const goToPreviousChapter = () => {
+        if (currentChapterIndex > 0) {
+            opacity.value = 0;
+            setTimeout(() => {
+                setCurrentChapterIndex(currentChapterIndex - 1);
+                opacity.value = 1;
+                setChapterModalVisible(true);
+            }, 300);
+        }
     };
+
+    const animatedStyles = useAnimatedStyle(() => {
+        return {
+            opacity: withTiming(opacity.value, { duration: 300 }),
+        };
+    });
+
+    // const openModal = () => {
+    //     setModalVisible(true);
+    // };
+
+    // const closeModal = () => {
+    //     setModalVisible(false);
+    // };
 
     const openIntroModal = () => {
         setIntroModalVisible(true);
@@ -116,19 +146,19 @@ const Journey: React.FC = () => {
             'Authorization': `Bearer ${authToken}`
         };
 
-        const fetchActivities = async () => {
+        // const fetchActivities = async () => {
 
-            const resp = await client.get(`/patients/activities`, { headers });
-            if (resp.data.status === 'success') {
-                // console.log(resp.data);
-                console.log('Activities : ', resp.data.activities);
-                setCurrentActivity(resp.data.activities[0]);  // Assume setAlerts updates state correctly
-            } else if (resp.data.alerts.length === 0) {
-                console.log("No Activities to show.");
-            } else {
-                console.log("Failed to fetch Activties:", resp.data);
-            }
-        };
+        //     const resp = await client.get(`/patients/activities`, { headers });
+        //     if (resp.data.status === 'success') {
+        //         // console.log(resp.data);
+        //         console.log('Activities : ', resp.data.activities);
+        //         setCurrentActivity(resp.data.activities[0]);  // Assume setAlerts updates state correctly
+        //     } else if (resp.data.alerts.length === 0) {
+        //         console.log("No Activities to show.");
+        //     } else {
+        //         console.log("Failed to fetch Activties:", resp.data);
+        //     }
+        // };
 
 
         const checkIntroModal = async () => {
@@ -138,18 +168,27 @@ const Journey: React.FC = () => {
                     openIntroModal();
                     AsyncStorage.setItem('pop_status', '1');
                 } else {
-                    setInstModalVisible(true);
+                    setChapterModalVisible(true);
                 }
-            } else {
-                closeModal();
             }
         };
 
+        const loadProgression = async () => {
+            const storedIndex = await AsyncStorage.getItem('currentChapterIndex');
+            if (storedIndex) {
+                setCurrentChapterIndex(parseInt(storedIndex));
+                setUnlockedChapters(Array.from({ length: parseInt(storedIndex) + 1 }, (_, i) => i));
+            }
+        };
+
+
+        AsyncStorage.clear();
+        loadProgression();
         checkIntroModal();
 
-        if (!isFocused) {
-            closeModal();
-        }
+        // if (!isFocused) {
+        //     closeModal();
+        // }
 
         // fetchActivities();
     }, [isFocused]);
@@ -159,28 +198,37 @@ const Journey: React.FC = () => {
 
             {/* Chapter selection buttons */}
             <View style={styles.chapterSelector}>
-                {chapters.map((chapter) => (
-                    <TouchableOpacity key={chapter.id} style={styles.button} onPress={() => setCurrentChapter(chapter)}>
-                        <Text style={styles.buttonText}>{chapter.title}</Text>
+                {currentChapterIndex > 0 && (
+                    <TouchableOpacity style={styles.button} onPress={goToPreviousChapter}>
+                        <Ionicons name="caret-back-outline" size={25} color="#fff" />
                     </TouchableOpacity>
-                ))}
+                )}
+                {currentChapterIndex < chapters.length - 1 && unlockedChapters.includes(currentChapterIndex + 1) ? (
+                    <TouchableOpacity style={styles.button} onPress={goToNextChapter}>
+                        <Ionicons name="caret-forward-outline" size={25} color="#fff" />
+                    </TouchableOpacity>
+                ) : (
+                    <View style={[styles.button, styles.locked]}>
+                        <Ionicons name="lock-closed-outline" size={25} color="#fff" />
+                    </View>
+                )}
             </View>
 
             {/* Render the selected chapter's component */}
-            <View style={styles.chapterContainer}>
+            <Animated.View style={[styles.chapterContainer, animatedStyles]}>
                 <currentChapter.component />
-            </View>
+            </Animated.View>
 
             {/* Introduction Model */}
             <Modal
-                animationType="slide"
+                animationType="fade"
                 transparent={true}
                 visible={introModalVisible}
                 onRequestClose={closeIntroModal}>
                 <TouchableOpacity
                     style={styles.container}
                     activeOpacity={1}
-                    onPressOut={() => { setIntroModalVisible(false); }}
+                    onPressOut={() => { setIntroModalVisible(false); setChapterModalVisible(true); }}
                 >
                     <View style={styles.centeredView}>
                         <View style={styles.introModalView}>
@@ -197,98 +245,77 @@ const Journey: React.FC = () => {
                 </TouchableOpacity>
             </Modal>
 
-            {/* Instruction Model */}
             <Modal
-                animationType="slide"
+                visible={chapterModalVisible}
                 transparent={true}
-                visible={instModalVisible}
-                onRequestClose={() => {
-                    setInstModalVisible(!instModalVisible);
-                }}>
-
+                animationType="fade"
+                onRequestClose={() => setChapterModalVisible(false)}
+            >
                 <View style={styles.centeredView}>
-                    <View style={styles.introModalView}>
-                        <Text>Dear Seeker,</Text>
+                    <View style={styles.modalView}>
+                        <Text style={styles.titleText}>{chapters[currentChapterIndex].title}</Text>
                         <Text></Text>
-                        <Text style={styles.letterText}>You will encounter various quests at each step, you need to complete them to progress in your journey to free yourself.</Text>
+                        <Text style={styles.chapterText}>{chapters[currentChapterIndex].objective}</Text>
                         <Text></Text>
-                        <Text style={styles.letterText}>Also, if you complete multiple steps you will progress through many chapters.</Text>
+                        <Text style={styles.chapterText}>Also, if you complete multiple quests you will progress through chapters.</Text>
                         <Text></Text>
-                        <Text style={styles.letterText}>Are you ready ?</Text>
+                        <Text style={styles.chapterText}>Are you ready ?</Text>
                         <Text></Text>
-                        {/* <Text>Warm regards,</Text>
-                        <Text>A Guide of the Sanctuary</Text> */}
-                        <TouchableOpacity style={styles.buttonProceed} onPress={() => { setInstModalVisible(!instModalVisible); }}>
-                            <Text style={styles.textStyle}>Proceed</Text>
+
+
+                        <TouchableOpacity
+                            style={styles.buttonClose}
+                            onPress={() => setChapterModalVisible(false)}
+                        >
+                            <Text style={styles.textStyle}>Begin</Text>
+
                         </TouchableOpacity>
                     </View>
                 </View>
             </Modal>
 
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={closeModal}
-            >
-                <View style={styles.centeredView}>
-                    <View style={styles.modalView}>
-                        <View style={styles.userContainer}>
-                            <Image source={require('../../../../assets/mindfullness/game.jpg')} style={styles.badgeImage} />
-                            <View style={styles.detailsAndProgress}>
-                                <Text style={styles.TitleText}>Tic Tac Toe</Text>
-                                <Progress.Bar
-                                    style={styles.progress}
-                                    progress={extraPoints} // Assuming 1000 is the max points
-                                    width={200}
-                                    color={'#9c4dcc'}
-                                    unfilledColor="rgba(255, 255, 255, 0.5)"
-                                    borderColor="black"
-                                />
-                                <Text style={styles.pointsText}>Points Collected : {extraPoints} / 5</Text>
-                                <Text style={styles.detailsText}>Stimulate your brain with fun strategy games.</Text>
-                            </View>
-                        </View>
 
-                        <View style={styles.buttonContainer}>
-                            <TouchableOpacity style={styles.buttonStart} onPress={() => navigation.navigate('Games', { screen: 'TicTacToe', params: { extraPoints: 5 } })}>
-                                <Text style={styles.textStyle}>Start</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.buttonClose} onPress={closeModal}>
-                                <Text style={styles.textStyle}>Close</Text>
-                            </TouchableOpacity>
-                        </View>
-
-                    </View>
-                </View>
-            </Modal>
         </View >
-
-
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        position: 'relative'
     },
     checkboxContainer: {
         flexDirection: 'row',
     },
     chapterSelector: {
+        position: 'absolute',
         flexDirection: 'row',
         justifyContent: 'space-around',
-        marginBottom: 20,
+        top: 20,
+        left: 0,
+        zIndex: 2,
+        // height: '100%',
+        width: '100%',
     },
     button: {
-        backgroundColor: '#4e9ec5',
+        backgroundColor: '#9c4dcc',
         padding: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderColor: 'rgba(0,0,0,0.2)',
+        borderRadius: 50,
     },
     buttonText: {
         color: '#fff',
     },
     chapterContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
         flex: 1,
+        zIndex: 1,
+        height: '100%',
+        width: '100%'
     },
 
     tabBarContainer: {
@@ -308,10 +335,10 @@ const styles = StyleSheet.create({
     },
     modalView: {
         margin: 20,
-        backgroundColor: '#f4f1f4',
+        backgroundColor: '#38006b',
         borderRadius: 20,
-        padding: 20,
-        alignItems: 'center',
+        padding: 28,
+        // alignItems: 'center',
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
@@ -370,10 +397,11 @@ const styles = StyleSheet.create({
     },
     buttonClose: {
         backgroundColor: '#6a1b9a',
-        borderRadius: 20,
+        borderRadius: 10,
         padding: 10,
         elevation: 2,
-        marginHorizontal: 8
+        // marginHorizontal: 8,
+        alignSelf: 'stretch'
     },
     buttonStart: {
         backgroundColor: '#38006b',
@@ -393,16 +421,29 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center'
     },
+    titleText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 16,
+        textAlign: 'center'
+    },
     letterText: {
         color: 'white',
         fontWeight: 'normal'
+    },
+    chapterText: {
+        color: 'white',
+        fontWeight: 'normal',
+        // textAlign: 'center'
     },
     buttonContainer: {
         flexDirection: 'row',
         padding: 4,
         alignItems: 'center',
-        justifyContent: 'space-evenly'
-    }
+    },
+    locked: {
+        backgroundColor: '#666', // Darken button to indicate locked
+    },
 });
 
 export default Journey;

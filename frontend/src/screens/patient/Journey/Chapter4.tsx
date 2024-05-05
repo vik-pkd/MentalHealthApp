@@ -2,13 +2,13 @@ import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react
 import React from 'react'
 import LinearGradient from 'react-native-linear-gradient'
 
-export default function Chapter3() {
+export default function Chapter4() {
     return (
         <LinearGradient
             colors={['#483D8B', '#6A5ACD', '#7B68EE']} // Adjust colors to match your design
             style={styles.backgroundGradient}
         >
-            <ImageBackground source={require('../../../../assets/common/chapter3.jpg')} style={styles.backgroundImage}>
+            <ImageBackground source={require('../../../../assets/common/chapter4.jpg')} style={styles.backgroundImage}>
                 {/* Navigation Paths */}
                 <View style={styles.pathContainer}>
                     {/* Example path item */}
@@ -19,7 +19,7 @@ export default function Chapter3() {
                         <Text style={styles.pathText2}>The Hidden Light</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.pathItem3}>
-                        <Text style={styles.pathText3}>Mastering Oneself</Text>
+                        <Text style={styles.pathText3}>Finale</Text>
                     </TouchableOpacity>
                     {/* You can add more path items here */}
                 </View>
@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
     backgroundImage: {
         flex: 1,
         resizeMode: 'cover', // or 'stretch'
+
     },
     pathContainer: {
         flex: 1,
@@ -52,36 +53,37 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         marginVertical: 10,
         position: 'absolute',
-        left: 40,
+        left: 80,
         top: 600,
         // Add shadow or other styles as needed
     },
     pathItem2: {
-        backgroundColor: 'rgba(106,27,154, 0.8)', // Semi-transparent red background
+        backgroundColor: 'rgba(206,147,216, 0.8)', // Semi-transparent red background
         paddingVertical: 8,
-        paddingHorizontal: 15,
+        paddingHorizontal: 24,
         borderRadius: 50,
         marginVertical: 10,
         position: 'absolute',
-        left: 138,
-        top: 520,
+        left: 130,
+        top: 540,
         // Add shadow or other styles as needed
     },
     pathItem3: {
-        backgroundColor: 'rgba(106,27,154, 0.8)', // Semi-transparent red background
+        backgroundColor: 'rgba(206,147,216, 0.8)', // Semi-transparent red background
         paddingVertical: 8,
         paddingHorizontal: 10,
         borderRadius: 50,
         marginVertical: 10,
         position: 'absolute',
-        left: 132,
-        top: 450,
+        left: 165,
+        top: 490,
+        // transform: [{ rotate: '-2deg' }],
         // Add shadow or other styles as needed
     },
 
     pathText: {
         color: '#fff',
-        fontSize: 16,
+        fontSize: 18,
         // Additional text styling if needed
     },
     pathText2: {
@@ -91,7 +93,7 @@ const styles = StyleSheet.create({
     },
     pathText3: {
         color: '#fff',
-        fontSize: 8,
+        fontSize: 10,
         // Additional text styling if needed
     },
 })
