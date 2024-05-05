@@ -24,7 +24,7 @@ const Tab = createBottomTabNavigator();
 export type PatientSerachStackParamList = {
   PatientSearch: undefined;
   PatientProfile: { _id: string };
-  Prescription: { _id : string };
+  Prescription: { _id: string };
 }
 
 const Stack = createNativeStackNavigator<PatientSerachStackParamList>();

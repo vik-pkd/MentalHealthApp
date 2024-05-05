@@ -35,23 +35,19 @@ const CharacterCard: React.FC = () => {
         <View style={styles.cardContainer}>
 
             {/* Character details section */}
-            <View style={styles.characterDetailsSection}>
-                {/* <View style={styles.header}>
-                    <Icon name="crown" size={20} color="#FFD700" />
-                    <Icon name="pencil-outline" size={20} color="#FFFFFF" />
-                </View> */}
+            {/* <View style={styles.characterDetailsSection}>
                 <Image
                     source={require('../../../assets/avatars/test.png')} // Replace with your image
                     resizeMode="contain"
                     style={styles.image}
                 />
                 <Text style={styles.name}>Amy</Text>
-                {/* <Text style={styles.title}>Forest Fighter</Text> */}
+                <Text style={styles.title}>Forest Fighter</Text>
                 <View style={styles.footer}>
                     <Icon name="flash" size={20} color="#FFD700" />
                     <Text style={styles.xp}>150 MP</Text>
                 </View>
-            </View>
+            </View> */}
 
             {/* Stats section */}
             <View style={styles.statsSection}>
@@ -67,7 +63,7 @@ const styles = StyleSheet.create({
     cardContainer: {
         flexDirection: 'row',
         backgroundColor: '#6A1B9A', // Deep purple background color
-        borderRadius: 10,
+        borderRadius: 6,
         padding: 20,
         width: 345, // Adjust width as needed for the wider card look
         justifyContent: 'flex-start', // Align to the start of the container
@@ -77,6 +73,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
+        marginHorizontal: 8
     },
     characterDetailsSection: {
         alignItems: 'center',
