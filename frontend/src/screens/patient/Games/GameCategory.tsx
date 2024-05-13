@@ -19,11 +19,11 @@ import Game from '../../../components/Game';
 // type GameScreenProps = NativeStackScreenProps<GameStackParamList, 'Slot'>;
 type GameCategoryScreenProps = NativeStackScreenProps<GameStackParamList, 'Category'>;
 
-const GameCategory = ({route, navigation}: GameCategoryScreenProps) => {
+const GameCategory = ({ route, navigation }: GameCategoryScreenProps) => {
     const dispatch = useDispatch<AppDispatch>();
     const games = useSelector((state: RootState) => state.games.games);
     const categoryId = route.params._id;
-    const [categoryGames, setCategoryGames ] = useState<typeof games>([]);
+    const [categoryGames, setCategoryGames] = useState<typeof games>([]);
     useEffect(() => {
         console.log('categoryId', categoryId);
         console.log('games', games);
@@ -43,8 +43,12 @@ const GameCategory = ({route, navigation}: GameCategoryScreenProps) => {
     useEffect(() => {
         console.log('categoryGames', categoryGames);
     }, [categoryGames]);
-    
-    
+
+    const gameImages: { [key: string]: any } = {
+        'Crossy Road': require('../../../../assets/games/cross.png'),
+        'Tic Tac Toe': require('../../../../assets/games/tic-tac-toe.png'),
+    };
+
     // const [dialogVisible, setDialogVisible] = useState(false);
     // const [pointEarned, setpointEarned] = useState(false);
     // const { updateUserPoints } = useLogin();
@@ -69,11 +73,11 @@ const GameCategory = ({route, navigation}: GameCategoryScreenProps) => {
         <ScrollView>
             {
                 categoryGames && categoryGames.map((card) => (
-                    <TouchableOpacity key={card._id} onPress={() => navigation.navigate('GameItem', {_id: card._id})}>
+                    <TouchableOpacity key={card._id} onPress={() => navigation.navigate('GameItem', { _id: card._id })}>
                         <Game
                             title={card.title}
                             description={card.description}
-                            // imageUrl={card.imageUrl}
+                            imageUrl={gameImages[card.title]}
                         />
                     </TouchableOpacity>
                 ))}

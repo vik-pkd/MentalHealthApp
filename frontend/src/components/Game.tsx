@@ -1,5 +1,5 @@
 import { Text, StyleSheet, View, Image, ScrollView, TouchableOpacity } from 'react-native'
-import React, { Component } from 'react'
+import React, { Component, useEffect } from 'react'
 import { Dimensions } from "react-native";
 import * as Progress from 'react-native-progress';
 const screenWidth = Dimensions.get("window").width;
@@ -8,13 +8,18 @@ const screenWidth = Dimensions.get("window").width;
 interface GameCardProps {
     title: string;
     description: string;
-    imageUrl?: number;
+    imageUrl: number;
     cardStyle?: any;
     categoryTitle?: string;
 }
 
 
 const Game: React.FC<GameCardProps> = ({ title, description, imageUrl, cardStyle, categoryTitle }) => {
+
+    useEffect(() => {
+        console.log('image URL : ', imageUrl);
+    });
+
     return (
         // Main card starts here
         <View style={[styles.card, styles.cardElevated]}>
@@ -26,10 +31,10 @@ const Game: React.FC<GameCardProps> = ({ title, description, imageUrl, cardStyle
                         {categoryTitle && <Text style={styles.cardSubTitle}>{categoryTitle}</Text>}
                         <Text style={styles.cardDescription}>{description}</Text>
                     </View>
-                    {/* <Image
+                    <Image
                         style={styles.cardImage}
                         source={imageUrl}
-                    /> */}
+                    />
                 </View>
             </View >
         </View  >
@@ -38,7 +43,7 @@ const Game: React.FC<GameCardProps> = ({ title, description, imageUrl, cardStyle
 
 const styles = StyleSheet.create({
     card: {
-        width: screenWidth - 16,
+        // width: '100%',
         height: 150,
         borderRadius: 6,
         marginHorizontal: 8,
@@ -75,10 +80,9 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     cardTitle: {
-        color: '#000000',
+        color: '#38006b',
         fontSize: 22,
         fontWeight: 'bold',
-        marginBottom: 4,
         marginTop: 8
     },
     cardDescription: {
@@ -86,7 +90,7 @@ const styles = StyleSheet.create({
         fontSize: 13,
     },
     cardSubTitle: {
-        color: '#000000',
+        color: '#6a1b9a',
         fontSize: 16,
         fontWeight: 'bold',
     },

@@ -26,10 +26,11 @@ router.post('/verify-photo', upload.single('profile'), patientControllers.patien
 router.get('/:patientId/points/:point', patientControllers.getPoints);
 
 router.get('/prescriptions/patient/:_id', isDoctorOrPatientAuth, patientControllers.getPrescriptions);
+router.get('/games/patient/:_id', isDoctorOrPatientAuth, patientControllers.getGames);
 
 router.get('/reminders', isPatientAuth, patientControllers.getReminders);
 router.get('/alerts', isPatientAuth, patientControllers.getAlerts);
-
+router.get('/activities', isPatientAuth, patientControllers.getActivities);
 router.put('/taken-medicine', isPatientAuth, patientControllers.takeMedicine);
 
 module.exports = router;

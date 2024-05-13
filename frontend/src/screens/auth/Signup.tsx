@@ -7,13 +7,13 @@ import { FAB } from '@rneui/themed'
 import Snackbar from 'react-native-snackbar'
 
 //context API
-import { AppwriteContext } from '../appwrite/AppwriteContext'
+import { AppwriteContext } from '../../appwrite/AppwriteContext'
 
 // Navigation
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { AuthStackParamList } from '../routes/AuthStack';
-import client from '../api/client';
-import { useLogin } from '../context/LoginProvider';
+import { AuthStackParamList } from '../../routes/AuthStack';
+import client from '../../api/client';
+import { useLogin } from '../../context/LoginProvider';
 
 type SignupScreenProps = NativeStackScreenProps<AuthStackParamList, 'Signup'>
 
@@ -70,7 +70,7 @@ const Signup = ({ navigation }: SignupScreenProps) => {
 
         <Image
           style={styles.logo}
-          source={require('../logo.png')}
+          source={require('../../../assets/common/logo.png')}
         />
         <Text style={styles.appName}>Game Mind</Text>
         <Text style={styles.welcome}>

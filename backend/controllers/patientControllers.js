@@ -10,6 +10,8 @@ const faceapi = require('@vladmandic/face-api');
 const Prescription = require('../models/prescription');
 const DoseHistory = require('../models/doseHistory');
 const caregiver = require('../models/caregiver');
+const Activity = require('../models/activity');
+const Game = require('../models/game');
 const { areDatesOnSameDay } = require('../utils/date');
 
 module.exports.getPatients = async (req, res) => {
@@ -190,6 +192,42 @@ module.exports.getPrescriptions = async (req, res) => {
 };
 
 
+
+module.exports.getGames = async (req, res) => {
+    try {
+        const patientId = new ObjectId(req.params._id);
+        if (!ObjectId.isValid(patientId)) {
+            return res.status(400).send({ status: "failure", message: "Invalid patient ID" });
+        }
+
+        const patient = await Patient.findById(patientId)
+            .populate({
+                path: 'games',
+                select: 'title description category',
+                populate: {
+                    path: 'category',
+                    select: 'name'
+                }
+            });
+
+        if (!patient) {
+            return res.status(404).send({ status: "failure", message: "Patient not found" });
+        }
+
+        const games = patient.games.map(game => ({
+            title: game.title,
+            description: game.description,
+            category: game.category.name
+        }));
+
+        res.send({ status: "success", games });
+    } catch (err) {
+        console.error("Error fetching games: ", err);
+        res.status(500).send({ status: "failure", message: err.message });
+    }
+};
+
+
 module.exports.getAlerts = async (req, res) => {
 
     try {
@@ -206,8 +244,8 @@ module.exports.getAlerts = async (req, res) => {
             const caregiver = (await Caregiver.findOne({ _id: caregiverId }));
             const ele = (await Prescription.findOne({ _id: prescriptionId }));
 
-            console.log(caregiver);
-            console.log(ele);
+            // console.log(caregiver);
+            // console.log(ele);
 
             for (let j = 0; j < ele.doseTimings.length; j++) {
                 const doseTime = ele.doseTimings[j];
@@ -231,37 +269,43 @@ module.exports.getAlerts = async (req, res) => {
 }
 
 module.exports.getReminders = async (req, res) => {
-    const patientId = req.user._id;
-    console.log('reminders fetching...', patientId);
-    const current_date = new Date();
-    // get all prescriptions of patient
-    // const query = { $and: [ {patient: patientId}, ] };
-    // , {start_date: { $lte : current_date}}, {end_date: { $gt: current_date}}
-    // const condition1 = { patient: patientId };
-    const reminders = (await DoseHistory.find({ patient: patientId, istaken: false }))
-        .filter(history => areDatesOnSameDay(history.date, new Date()));
-    const remindersWithDetails = [];
-    for (let i = 0; i < reminders.length; i++) {
-        const reminder = reminders[i];
-        const prescription = await Prescription.findOne({_id: reminder.prescription});
-        // const reminderDate = new Date(reminder.time);
-        const doseTime = new Date(prescription.doseTimings[reminder.slot]);
-        // reminderDate.setHours(doseTime.getHours());
-        // reminderDate.setMinutes(doseTime.getMinutes());
-        remindersWithDetails.push({
-            _id: reminder._id,
-            prescriptionId: reminder.prescription,
-            patient: reminder.patient,
-            medicine: prescription.medicine,
-            quantity: prescription.quantity,
-            slot: reminder.slot,
-            istaken: reminder.istaken,
-            date: reminder.time,
-            edited: reminder.edited
-        });
+
+    try {
+        const patientId = req.user._id;
+        console.log('reminders fetching...', patientId);
+        const current_date = new Date();
+        // get all prescriptions of patient
+        // const query = { $and: [ {patient: patientId}, ] };
+        // , {start_date: { $lte : current_date}}, {end_date: { $gt: current_date}}
+        // const condition1 = { patient: patientId };
+        const reminders = (await DoseHistory.find({ patient: patientId, istaken: false }))
+            .filter(history => areDatesOnSameDay(history.date, new Date()));
+        const remindersWithDetails = [];
+        for (let i = 0; i < reminders.length; i++) {
+            const reminder = reminders[i];
+            const prescription = await Prescription.findOne({ _id: reminder.prescription });
+            // const reminderDate = new Date(reminder.time);
+            // reminderDate.setHours(doseTime.getHours());
+            // reminderDate.setMinutes(doseTime.getMinutes());
+            remindersWithDetails.push({
+                _id: reminder._id,
+                prescriptionId: reminder.prescription,
+                patient: reminder.patient,
+                medicine: prescription.medicine,
+                quantity: prescription.quantity,
+                slot: reminder.slot,
+                istaken: reminder.istaken,
+                date: reminder.time,
+                edited: reminder.edited
+            });
+        }
+        remindersWithDetails.sort((a, b) => a.date.getTime() - b.date.getTime());
+        res.send({ status: "success", reminders: remindersWithDetails });
     }
-    remindersWithDetails.sort((a, b) => a.date.getTime() - b.date.getTime());
-    res.send({ status: "success", reminders: remindersWithDetails });
+    catch (error) {
+        console.log('error fetching reminders : ', error);
+        res.send({ status: "failure" });
+    }
 };
 
 module.exports.takeMedicine = async (req, res) => {
@@ -269,7 +313,7 @@ module.exports.takeMedicine = async (req, res) => {
         const patientId = req.user._id;
         const { _id } = req.body;
         // TODO time validation
-        const doseHistory = await DoseHistory.findOne({_id: new ObjectId(_id)});
+        const doseHistory = await DoseHistory.findOne({ _id: new ObjectId(_id) });
         doseHistory.istaken = true;
         doseHistory.edited = false;
         await doseHistory.save();
@@ -279,3 +323,31 @@ module.exports.takeMedicine = async (req, res) => {
         res.send({ status: "failure" });
     }
 }
+
+// A function to get all activities and their associated game names for a given patient
+module.exports.getActivities = async (req, res) => {
+
+    try {
+        // Find all activities for the given patient and populate the 'game' field to get game details
+        const patientId = req.user._id;
+        console.log('activities fetching...', patientId);
+        const activities = await Activity.find({ patient: patientId })
+            .populate('game', 'name')
+            .exec();
+
+        // Transform the data to include only necessary information
+        const activitiesInfo = activities.map(activity => ({
+            gameName: activity.game.name, // Assumes game is populated
+            points: activity.points,
+            startDate: activity.start_date,
+            endDate: activity.end_date,
+        }));
+
+        console.log(activitiesInfo);
+
+        res.send({ status: "success", activities: activitiesInfo });
+    } catch (error) {
+        console.error('Error getting activities for patient:', error);
+        res.send({ status: "failure" });
+    }
+};

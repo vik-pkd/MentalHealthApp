@@ -24,29 +24,48 @@ const Games = ({ navigation }: GameScreenProps) => {
     const gameCategories = useSelector((state: RootState) => state.gameCategories.gameCategories);
     const dispatch = useDispatch<AppDispatch>();
 
-    const cards = [
-        { id: '1', title: 'Puzzle', description: 'Engage with games that challenge your problem-solving and pattern recognition skills.', imageUrl: require('../../../assets/game_types/puzzle.png'), navigate: 'Puzzle' as keyof GameStackParamList, imageList: [require('../../../assets/icons/2048.png'), require('../../../assets/icons/tetris.png'), require('../../../assets/icons/minesweeper.png')] },
-        { id: '2', title: 'Focus', description: 'Hone your concentration and precision with games that require sharp attention and accuracy.', imageUrl: require('../../../assets/game_types/focus.png'), navigate: 'Focus' as keyof GameStackParamList, imageList: [require('../../../assets/icons/typing.png'), require('../../../assets/icons/maze.png'), require('../../../assets/icons/slicer.png')] },
-        { id: '3', title: 'Strategy', description: 'Test and enhance your cognitive abilities with games that require strategic thinking and foresight.', imageUrl: require('../../../assets/game_types/strategy.png'), navigate: 'Strategy' as keyof GameStackParamList, imageList: [require('../../../assets/icons/2048.png'), require('../../tic-tac-toe.png'), require('../../puzzle.png')] },
-        { id: '4', title: 'Memory', description: 'Boost your memory  prowess with games designed to test recall abilities and cognitive skills.', imageUrl: require('../../../assets/game_types/memory.png'), navigate: 'Memory' as keyof GameStackParamList, imageList: [require('../../../assets/icons/cardmatch.png'), require('../../../assets/icons/quiz.png')] },
-        { id: '5', title: 'Coordination', description: 'Sharpen your  coordination with games that challenge your reaction speed and precision.', imageUrl: require('../../../assets/game_types/coordination.png'), navigate: 'Coordination' as keyof GameStackParamList, imageList: [require('../../../assets/icons/snake.png'), require('../../../assets/icons/crossroad.png'), require('../../../assets/icons/pingpong.png')] },
-        { id: '6', title: 'Casual', description: 'Relax and unwind with games that provide entertainment and the challenge to beat your high score.', imageUrl: require('../../../assets/game_types/casual.png'), navigate: 'Casual' as keyof GameStackParamList, imageList: [require('../../../assets/icons/rock.png'), require('../../../assets/icons/slicer.png')] },
-    ].map(card => ({
-        ...card,
-        progress: sectionPoints && sectionPoints[card.title] ? sectionPoints[card.title] : 0,
-    }));
+    // const cards = [
+    //     { id: '1', title: 'Puzzle', description: 'Engage with games that challenge your problem-solving and pattern recognition skills.', imageUrl: require('../../../assets/game_types/puzzle.png'), navigate: 'Puzzle' as keyof GameStackParamList, imageList: [require('../../../assets/icons/2048.png'), require('../../../assets/icons/tetris.png'), require('../../../assets/icons/minesweeper.png')] },
+    //     { id: '2', title: 'Focus', description: 'Hone your concentration and precision with games that require sharp attention and accuracy.', imageUrl: require('../../../assets/game_types/focus.png'), navigate: 'Focus' as keyof GameStackParamList, imageList: [require('../../../assets/icons/typing.png'), require('../../../assets/icons/maze.png'), require('../../../assets/icons/slicer.png')] },
+    //     { id: '3', title: 'Strategy', description: 'Test and enhance your cognitive abilities with games that require strategic thinking and foresight.', imageUrl: require('../../../assets/game_types/strategy.png'), navigate: 'Strategy' as keyof GameStackParamList, imageList: [require('../../../assets/icons/2048.png'), require('../../../assets/icons/tic-tac-toe.png'), require('../../../assets/icons/puzzle.png')] },
+    //     { id: '4', title: 'Memory', description: 'Boost your memory  prowess with games designed to test recall abilities and cognitive skills.', imageUrl: require('../../../assets/game_types/memory.png'), navigate: 'Memory' as keyof GameStackParamList, imageList: [require('../../../assets/icons/cardmatch.png'), require('../../../assets/icons/quiz.png')] },
+    //     { id: '5', title: 'Coordination', description: 'Sharpen your  coordination with games that challenge your reaction speed and precision.', imageUrl: require('../../../assets/game_types/coordination.png'), navigate: 'Coordination' as keyof GameStackParamList, imageList: [require('../../../assets/icons/snake.png'), require('../../../assets/icons/crossroad.png'), require('../../../assets/icons/pingpong.png')] },
+    //     { id: '6', title: 'Casual', description: 'Relax and unwind with games that provide entertainment and the challenge to beat your high score.', imageUrl: require('../../../assets/game_types/casual.png'), navigate: 'Casual' as keyof GameStackParamList, imageList: [require('../../../assets/icons/rock.png'), require('../../../assets/icons/slicer.png')] },
+    // ].map(card => ({
+    //     ...card,
+    //     progress: sectionPoints && sectionPoints[card.title] ? sectionPoints[card.title] : 0,
+    // }));
+
+
+    const localImages: { [key: string]: any } = {
+        Puzzle: require('../../../assets/game_types/puzzle.png'),
+        Focus: require('../../../assets/game_types/focus.png'),
+        Strategy: require('../../../assets/game_types/strategy.png'),
+        Memory: require('../../../assets/game_types/memory.png'),
+        Coordination: require('../../../assets/game_types/coordination.png'),
+        Casual: require('../../../assets/game_types/casual.png'),
+    };
+
+    const localImageLists: { [key: string]: any[] } = {
+        Puzzle: [require('../../../assets/icons/2048.png'), require('../../../assets/icons/tetris.png'), require('../../../assets/icons/minesweeper.png')],
+        Focus: [require('../../../assets/icons/typing.png'), require('../../../assets/icons/maze.png'), require('../../../assets/icons/slicer.png')],
+        Strategy: [require('../../../assets/icons/2048.png'), require('../../../assets/icons/tic-tac-toe.png'), require('../../../assets/icons/puzzle.png')],
+        Memory: [require('../../../assets/icons/cardmatch.png'), require('../../../assets/icons/quiz.png')],
+        Coordination: [require('../../../assets/icons/snake.png'), require('../../../assets/icons/crossroad.png'), require('../../../assets/icons/pingpong.png')],
+        Casual: [require('../../../assets/icons/rock.png'), require('../../../assets/icons/slicer.png')],
+    };
 
 
     useEffect(() => {
         dispatch(fetchGameCategories());
-    
+
     }, []);
-    
+
     useEffect(() => {
         // console.log('gameCategories in games', gameCategories);
-    
+
     }, [gameCategories]);
-    
+
 
 
     return (
@@ -61,14 +80,14 @@ const Games = ({ navigation }: GameScreenProps) => {
             <ScrollView>
                 {gameCategories.map((card) => (
 
-                    <TouchableOpacity onPress={() => navigation.navigate('Category', {_id: card._id})} key={card._id}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Category', { _id: card._id })} key={card._id}>
 
                         <GameCard
                             title={card.title}
                             description={card.description}
-                            // imageUrl={card.imageUrl}
+                            imageUrl={localImages[card.title]}
                             progress={0}
-                        // imageList={card.imageList}
+                            imageList={localImageLists[card.title]}
                         />
                     </TouchableOpacity>
                 ))}

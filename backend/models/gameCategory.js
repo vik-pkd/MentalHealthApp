@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+// TODO : Change this to binary files
 const gameCategorySchema = new mongoose.Schema({
     title: {
         type: String,

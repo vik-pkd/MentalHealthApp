@@ -8,6 +8,7 @@ import PatientProfile from '../screens/doctor/PatientProfile';
 import PatientSearch from '../screens/doctor/PatientSearch';
 import DoctorDashboard from '../screens/doctor/DoctorDashboard';
 import AddPrescription from '../components/addPrescription';
+import Activities from '../components/doctor/Activities';
 
 const homeName = "Dashboard";
 const detailsName = "Patients";
@@ -18,17 +19,23 @@ const Tab = createBottomTabNavigator();
 export type PatientSerachStackParamList = {
     PatientSearch: undefined;
     PatientProfile: { _id: string };
-    Prescription: { _id : string };
+    Prescription: { _id: string };
+    Activities: { _id: string };
 }
 
 const Stack = createNativeStackNavigator<PatientSerachStackParamList>();
 
 const PatientStack = () => {
     return (
-        <Stack.Navigator>
+        <Stack.Navigator screenOptions={{
+            headerTitleAlign: 'center',
+            headerBackTitleVisible: false,
+            headerShown: false
+        }}>
             <Stack.Screen name='PatientSearch' component={PatientSearch} />
             <Stack.Screen name='PatientProfile' component={PatientProfile} />
             <Stack.Screen name='Prescription' component={AddPrescription} />
+            <Stack.Screen name='Activities' component={Activities} />
         </Stack.Navigator>
     );
 };
@@ -56,9 +63,13 @@ export const DoctorStack = () => {
                         // You can return any component that you like here!
                         return <Ionicons name={iconName} size={size} color={color} />;
                     },
-                    tabBarActiveTintColor: 'rgba(134, 65, 244, 1)',
-                    tabBarInactiveTintColor: 'gray',
-                    headerShown: false
+                    tabBarActiveTintColor: '#cc4dbd',
+                    tabBarInactiveTintColor: 'white',
+                    headerShown: false,
+                    tabBarStyle: {
+                        backgroundColor: '#6a1b9a', // Background color of the tab bar
+                        paddingBottom: 2,
+                    },
                 })}
             >
 

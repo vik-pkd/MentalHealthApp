@@ -14,11 +14,11 @@ export type PrescriptionTabsParamList = {
 
 const Tab = createMaterialTopTabNavigator<PrescriptionTabsParamList>();
 
-const PrescriptionTabs = ({patientId}: {patientId: string}) => {
+const PrescriptionTabs = ({ patientId }: { patientId: string }) => {
     return (
         <Tab.Navigator>
-            <Tab.Screen name="Medicine" component={MedicinePrescriptionTab} initialParams={{patientId: patientId}}/>
-            <Tab.Screen name="Games" component={GamePrescriptionTab} />
+            <Tab.Screen name="Medicine" component={MedicinePrescriptionTab} initialParams={{ patientId: patientId }} />
+            <Tab.Screen name="Games" component={GamePrescriptionTab} initialParams={{ patientId: patientId }} />
             <Tab.Screen name="Content" component={ContentPrescriptionTab} />
         </Tab.Navigator>
     );

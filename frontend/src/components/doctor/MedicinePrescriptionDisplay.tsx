@@ -25,12 +25,8 @@ const MedicinePrescriptionDisplay: React.FC<{ patientId: string }> = ({ patientI
 
 
     return (
-        <ScrollView>
-            {/* <FlatList
-                data={prescriptions}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({item, index}) => (<MedPresCard key={index} prescription={item}></MedPresCard>) }
-            /> */}
+        <ScrollView style={styles.scrollViewStyle}>
+            <Text style={{ color: '#38006b', alignSelf: 'center', marginTop: 8 }}>Medicine Prescriptions</Text>
             {prescriptions && prescriptions.map((item, index) => (
                 <MedPresCard key={index} prescription={item} />
             ))}
@@ -41,5 +37,9 @@ const MedicinePrescriptionDisplay: React.FC<{ patientId: string }> = ({ patientI
 export default MedicinePrescriptionDisplay;
 
 const styles = StyleSheet.create({
-
+    scrollViewStyle: {
+        // height: '5%', // Or a fixed value like 300
+        alignSelf: 'center', // This will center the ScrollView
+        width: '100%'
+    },
 });

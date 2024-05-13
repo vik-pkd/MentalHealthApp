@@ -16,17 +16,18 @@ const CustomDatePicker = ({
 }) => {
     return (
         <View>
-        <Text style={[globalStyles.blackText]}>{label}</Text>
-        <DatePicker
-            style={[styles.datePicker]}
-            date={date}
-            mode={mode}
-            confirmText='Confirm'
-            cancelText='Cancel'
-            onDateChange={(date) => onDateChange(date)}
-            minimumDate={new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())}
-        />
-    </View>
+            <Text style={[globalStyles.themeColor, globalStyles.formLabel]}>{label}</Text>
+            <DatePicker
+                style={[styles.datePicker]}
+                date={date}
+                mode={mode}
+                textColor="black"
+                confirmText='Confirm'
+                cancelText='Cancel'
+                onDateChange={(date) => onDateChange(date)}
+                minimumDate={new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())}
+            />
+        </View>
     );
 };
 

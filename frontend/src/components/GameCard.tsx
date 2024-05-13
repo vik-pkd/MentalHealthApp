@@ -1,5 +1,5 @@
 import { Text, StyleSheet, View, Image, ScrollView, TouchableOpacity } from 'react-native'
-import React, { Component } from 'react'
+import React, { Component, useEffect } from 'react'
 import { Dimensions } from "react-native";
 import * as Progress from 'react-native-progress';
 const screenWidth = Dimensions.get("window").width;
@@ -9,13 +9,15 @@ const screenHeight = Dimensions.get("window").height;
 interface GameCardProps {
     title: string;
     description: string;
-    // imageUrl: number;
+    imageUrl: number;
     progress: number;
-    // imageList: number[];
+    imageList: number[];
 }
 
 
-const GameCard: React.FC<GameCardProps> = ({ title, description, progress}) => {
+const GameCard: React.FC<GameCardProps> = ({ title, description, imageUrl, progress, imageList }) => {
+
+
     return (
         // Main card starts here
         <View style={[styles.card, styles.cardElevated]}>
@@ -25,16 +27,16 @@ const GameCard: React.FC<GameCardProps> = ({ title, description, progress}) => {
                     <View style={styles.cardBody}>
                         <Text style={styles.cardTitle}>{title}</Text>
                         <Text style={styles.cardDescription}>{description}</Text>
-                        {/* <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imagesList}>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imagesList}>
                             {imageList.map((img, index) => (
                                 <Image key={index} source={img} style={styles.listImage} />
                             ))}
-                        </ScrollView> */}
+                        </ScrollView>
                     </View>
-                    {/* <Image
+                    <Image
                         style={styles.cardImage}
                         source={imageUrl}
-                    /> */}
+                    />
                 </View>
 
                 <View style={styles.progressContainer}>

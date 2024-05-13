@@ -5,18 +5,20 @@ import { RadioButton } from "react-native-paper";
 import { useSelector } from "react-redux";
 import client from "../api/client";
 import Snackbar from "react-native-snackbar";
+import globalStyles from "../constants/styles";
+import { color } from "@rneui/base";
 
-const AddMedicine = ({isVisible, onRequestClose}: {isVisible: boolean, onRequestClose: () => void}) => {
+const AddMedicine = ({ isVisible, onRequestClose }: { isVisible: boolean, onRequestClose: () => void }) => {
     const [medicineName, setMedicineName] = useState('');
     const [image, setImage] = useState({ uri: '', type: '', name: '' });
     const [foodTiming, setFoodTiming] = useState('AfterFood');
-    const authToken = useSelector((state: Record<string, { token: string}>) => state.authToken.token);
+    const authToken = useSelector((state: Record<string, { token: string }>) => state.authToken.token);
     const [error, setError] = useState<string>('');
 
     const handleAddMedicine = async () => {
         const prescriptionData = new FormData();
 
-        prescriptionData.append('details',JSON.stringify({
+        prescriptionData.append('details', JSON.stringify({
             name: medicineName,
             foodTiming: foodTiming,
         }));
@@ -53,9 +55,9 @@ const AddMedicine = ({isVisible, onRequestClose}: {isVisible: boolean, onRequest
         >
             <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
-                    <Text style={styles.modalTitle}>Write Medicine Details</Text>
+                    <Text style={[globalStyles.lightText, styles.modalTitle]}>Write Medicine Details</Text>
                     <TextInput
-                        style={styles.input}
+                        style={[globalStyles.lightText, styles.input]}
                         placeholder="Name"
                         value={medicineName}
                         onChangeText={text => setMedicineName(text)}
@@ -68,10 +70,11 @@ const AddMedicine = ({isVisible, onRequestClose}: {isVisible: boolean, onRequest
                         onValueChange={(foodTime) => setFoodTiming(foodTime)}
                         value={foodTiming}
                     >
-                        <RadioButton.Item label='Before food' value='BeforeFood'/>
-                        <RadioButton.Item label='After food' value='AfterFood'/>
-                        <RadioButton.Item label='Anything is fine' value='AnythingFine'/>
+                        <RadioButton.Item label='Before food' value='BeforeFood' color="#9c4dcc" labelStyle={globalStyles.lightText} />
+                        <RadioButton.Item label='After food' value='AfterFood' color="#9c4dcc" labelStyle={globalStyles.lightText} />
+                        <RadioButton.Item label='Anything is fine' value='AnythingFine' color="#9c4dcc" labelStyle={globalStyles.lightText} />
                     </RadioButton.Group>
+
                     <Pressable
                         onPress={handleAddMedicine}
                         style={[styles.btn, { marginTop: 20 }]}>
@@ -100,7 +103,7 @@ const styles = StyleSheet.create({
     },
     input: {
         height: 40,
-        borderColor: 'gray',
+        borderColor: '#f4f1f4',
         borderWidth: 1,
         marginBottom: 12,
         paddingHorizontal: 8,
@@ -112,7 +115,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center'
     },
     btn: {
-        backgroundColor: 'rgba(134, 65, 244, 1)',
+        backgroundColor: '#9c4dcc',
         padding: 10,
         height: 45,
         alignSelf: 'center',
@@ -134,4 +137,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 18,
     },
+    lightText: {
+        // backgroundColor: 'white',.
+        textShadowColor: 'white'
+    }
 });

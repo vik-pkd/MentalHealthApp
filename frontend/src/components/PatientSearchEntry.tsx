@@ -2,9 +2,9 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 
-const PatientSearchEntry: React.FC<{_id :string; name: string; email: string; onPress: (_id: string) => void}> = ({_id, name, email, onPress}) => {
+const PatientSearchEntry: React.FC<{ _id: string; name: string; email: string; onPress: (_id: string) => void }> = ({ _id, name, email, onPress }) => {
     return (
-        <Pressable onPress={() => onPress(_id) }>
+        <Pressable onPress={() => onPress(_id)}>
             <View style={styles.container}>
                 <Text style={styles.text}>
                     {name}
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
         marginVertical: 3
     },
     text: {
-        color: 'black',
+        color: '#f4f1f4',
     }
 });
 

@@ -83,12 +83,12 @@ export default function FancyCard() {
             <LineChart
                 data={data}
                 width={styles.card.width}
-                height={styles.card.height - 130}
+                height={styles.card.height - 100}
                 chartConfig={chartConfig}
                 fromZero={true}
             />
             <View style={styles.cardBody}>
-                <Text style={styles.cardTitle}>Score Record</Text>
+                {/* <Text style={styles.cardTitle}>Score Record</Text> */}
                 <Text style={styles.cardDescription}>This is the track of your congnitive assessment from past few days, you can get a more detailed analysis by training more.</Text>
             </View>
         </View>
@@ -126,7 +126,8 @@ const styles = StyleSheet.create({
     cardBody: {
         flex: 1,
         flexGrow: 1,
-        paddingHorizontal: 12
+        paddingHorizontal: 12,
+        marginTop: 6
     },
     cardTitle: {
         color: '#000000',
@@ -141,7 +142,7 @@ const styles = StyleSheet.create({
         marginBottom: 4
     },
     cardDescription: {
-        color: '#57606f',
+        color: '#38006b',
         fontSize: 13,
         marginTop: 4
     },

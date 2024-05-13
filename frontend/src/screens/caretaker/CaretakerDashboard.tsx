@@ -116,7 +116,7 @@ export default function CaretakerDashboard() {
                 {patients && reminders && patients.map((patient, index) => {
                     // Get the corresponding reminders for this patient
                     const patientReminders = reminders[index];
-                    // console.log(patientReminders);
+                    console.log(patientReminders);
                     return (
                         <FlatCardsVertical
                             key={index} // Assuming each patient has a unique _id

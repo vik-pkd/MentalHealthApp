@@ -7,6 +7,8 @@ interface GameCategory {
   _id: string;
   title: string;
   description: string;
+  imageUrl: number;
+  imageList: number[];
 
 }
 export const fetchGameCategories = createAsyncThunk<GameCategory[], void>(

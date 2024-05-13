@@ -21,7 +21,7 @@ export const fetchGames = createAsyncThunk<IGame[], string>(
             console.log('category in function', response.data.games[0].category);
             const games: IGame[] = response.data.games;
             return games;
-            
+
         } catch (error) {
             return [] as IGame[];
         }
@@ -36,7 +36,7 @@ const gamesSlice = createSlice({
         error: undefined as string | undefined,
     },
     reducers: {
-        addGame(state, action:PayloadAction<IGame>) {
+        addGame(state, action: PayloadAction<IGame>) {
             state.games = [...state.games, action.payload];
         }
     },

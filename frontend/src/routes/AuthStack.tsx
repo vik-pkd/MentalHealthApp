@@ -2,15 +2,15 @@ import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
-import Signup from '../screens/Signup'
-import Login from '../screens/Login'
-import SignupDoctor from '../screens/SignupDoctor';
-import LoginDoctor from '../screens/LoginDoctor';
-import FaceLogin from '../screens/FaceLogin'
-import FaceSignup from '../screens/FaceSignup'
+import Signup from '../screens/auth/Signup'
+import Login from '../screens/auth/Login'
+import SignupDoctor from '../screens/auth/SignupDoctor';
+import LoginDoctor from '../screens/auth/LoginDoctor';
+import FaceLogin from '../screens/auth/FaceLogin'
+import FaceSignup from '../screens/auth/FaceSignup'
 import Launch from '../screens/Launch'
-import LoginCaretaker from '../screens/LoginCaretaker'
-import SignupCaretaker from '../screens/SignupCaretaker'
+import LoginCaretaker from '../screens/auth/LoginCaretaker'
+import SignupCaretaker from '../screens/auth/SignupCaretaker'
 
 export type AuthStackParamList = {
   Launch: undefined;

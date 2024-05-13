@@ -16,12 +16,24 @@ import MedicinePrescriptionDisplay from '../../components/doctor/MedicinePrescri
 import MedicineReminderDisplay from '../../components/patient/MedicineReminderDisplay'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import PushNotification from 'react-native-push-notification'
+import CharacterCard from '../../components/patient/CharacterCard'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import AlertModal from '../../components/patient/AlertModal'
 
 type UserObj = {
     name: String;
     email: String;
     id: String;
 }
+
+
+interface AlertDetails {
+    medicine: string;
+    quantity: string;
+    caregiver: string;
+    time: string; // This should be a date string
+}
+
 
 interface Badge {
     id: number;
@@ -90,6 +102,9 @@ export default function Home() {
     const [numReminders, setNumReminders] = useState(0);
     const [alerts, setAlerts] = useState([]);
 
+    const [alertModalVisible, setAlertModalVisible] = useState<boolean>(false);
+    const [currentAlertIndex, setCurrentAlertIndex] = useState<number>(0);
+
     const handleLogout = () => {
 
         setIsLoggedIn(false);
@@ -106,6 +121,18 @@ export default function Home() {
 
     const togglePresModal = () => {
         setPresModalVisible(!isPresModalVisible);
+    };
+
+    const showAlertsSequentially = (alerts: AlertDetails[], index: number = 0) => {
+
+        if (index < alerts.length) {
+            setCurrentAlertIndex(index);
+            setAlertModalVisible(true);
+        } else {
+            // Handle the case where no more alerts are left or index is out of range
+            setCurrentAlertIndex(0);
+            setAlertModalVisible(false);
+        }
     };
 
     // Define the animation sequence
@@ -150,37 +177,8 @@ export default function Home() {
             if (resp.data.status === 'success' && resp.data.alerts.length > 0) {
                 console.log('Alerts : ', resp.data.alerts);
                 setAlerts(resp.data.alerts);  // Assume setAlerts updates state correctly
-
-                // Function to recursively show alerts one by one
-                const showAlertsSequentially = (index = 0) => {
-                    if (index < resp.data.alerts.length) {
-                        const alert = resp.data.alerts[index];
-                        const formattedTime = formatDate(alert.time); // Make sure formatDate is defined to format date strings
-
-                        Alert.alert(
-                            'Medication Reminder', // Title of the alert
-                            `It's time to take your medicine:\n\nMedicine: ${alert.medicine}\nDose: ${alert.quantity}\nCaregiver: ${alert.caregiver}\nTime: ${formattedTime}`, // Message showing details
-                            [
-                                {
-                                    text: 'Remind Me Later',
-                                    onPress: () => console.log('Reminder Delayed'),
-                                    style: 'cancel',
-                                },
-                                {
-                                    text: 'Taken',
-                                    onPress: () => {
-                                        console.log('Medicine Taken');
-                                        showAlertsSequentially(index + 1); // Show next alert after this one is dismissed
-                                    }
-                                },
-                            ],
-                            { cancelable: false } // This ensures the alert must be interacted with
-                        );
-                    }
-                };
-
-                showAlertsSequentially(); // Start showing alerts from the first one
-            } else if (resp.data.alerts.length === 0) {
+                showAlertsSequentially(resp.data.alerts);
+            } else if (resp.data.status === 'success' && resp.data.alerts.length === 0) {
                 console.log("No alerts to show.");
             } else {
                 console.log("Failed to fetch alerts:", resp.data);
@@ -193,53 +191,84 @@ export default function Home() {
 
 
     return (
-        <View style={styles.container}>
-            <ScrollView stickyHeaderIndices={[0]}>
+        <LinearGradient
+            colors={['#C485F7', '#C485F7', '#9459C6', '#9459C6', '#662F97']} // Adjust colors to match your design
+            style={styles.backgroundGradient}
+        >
+            <ScrollView>
+                <Text style={styles.header}>Profile</Text>
                 <View style={styles.stickyHeader}>
                     {profile && (
+                        <View style={styles.container}>
+                            <View style={styles.userContainer}>
+                                <TouchableOpacity onPress={toggleModal}>
+                                    <Animated.View style={[styles.userContainer, { transform: [{ translateY: moveAnim }] }]}>
+                                        <Image source={require('../../../assets/badges/1.png')} style={styles.badgeImage} />
+                                        {/* ... */}
+                                    </Animated.View>
+                                </TouchableOpacity>
 
 
-                        <View style={styles.userContainer}>
+                                <View style={styles.detailsAndProgress}>
+                                    <Text style={styles.detailsText}>Welcome Traveller!</Text>
+                                </View>
 
+                                <TouchableOpacity onPress={togglePresModal}>
+                                    <View style={styles.notificationContainer}>
+                                        <Ionicons name="notifications-circle-outline" color="#f4f1f4" size={40} />
+                                        {numReminders > 0 && (
+                                            <View style={styles.notificationDot} />
+                                        )}
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
 
-                            <TouchableOpacity onPress={toggleModal}>
-                                <Animated.View style={[styles.userContainer, { transform: [{ translateY: moveAnim }] }]}>
-                                    <Image source={require('../../../assets/badges/1.png')} style={styles.badgeImage} />
-                                    {/* ... */}
-                                </Animated.View>
-                            </TouchableOpacity>
-
-
-                            <View style={styles.detailsAndProgress}>
-                                <Text style={styles.detailsText}>Welcome {profile.name}!</Text>
-                                <Progress.Bar
-                                    style={styles.progress}
-                                    progress={userPoints / 100} // Assuming 1000 is the max points
-                                    width={185}
-                                    color="red"
-                                    unfilledColor="rgba(255, 255, 255, 0.5)"
-                                    borderColor="rgba(255, 255, 255, 0)"
+                            <View style={styles.imageContainer}>
+                                <Image
+                                    source={require('../../../assets/avatars/test.png')} // Replace with your image
+                                    resizeMode="contain"
+                                    style={styles.image}
                                 />
-
-                                <Text style={styles.pointsText}>Points: {userPoints} / 100 </Text>
 
                             </View>
 
-                            <TouchableOpacity onPress={togglePresModal}>
-                                <View style={styles.notificationContainer}>
-                                    <Ionicons name="notifications-circle-outline" color="#f4f1f4" size={60} />
-                                    {numReminders > 0 && (
-                                        <View style={styles.notificationDot} />
-                                    )}
+                            <View style={styles.scoreContainer}>
+                                <View style={styles.footer1}>
+                                    <Text style={styles.name}>{profile.name}</Text>
+                                    <Text style={styles.title}>Newbie</Text>
                                 </View>
-                            </TouchableOpacity>
+
+
+                                <View style={styles.footer2}>
+                                    <Progress.Bar
+                                        style={styles.progress}
+                                        progress={6 / 100} // Assuming 1000 is the max points
+                                        width={105}
+                                        color="#FFD700"
+                                        unfilledColor="rgba(255, 255, 255, 0.5)"
+                                        borderColor="rgba(255, 255, 255, 0)"
+                                    />
+                                    <View style={styles.footer3}>
+                                        <Icon name="flash" size={20} color="#FFD700" style={styles.icon} />
+                                        <Text style={styles.pointsText}>MP: {6} / 100 </Text>
+                                    </View>
+                                </View>
+
+                            </View>
                         </View>
+
                     )}
                 </View>
+
+                <Text style={styles.header}>Stats</Text>
+                <CharacterCard />
+
+                <Text style={styles.header}>Records</Text>
                 <FancyCard />
-                <BasicCard />
-                {/* <HistoryCard /> */}
-                <MedicineReminderDisplay patientId={profile._id} />
+
+                <Text style={styles.header}></Text>
+
+                {/* <MedicineReminderDisplay patientId={profile._id} /> */}
             </ScrollView>
 
             <FAB
@@ -284,43 +313,134 @@ export default function Home() {
                     </TouchableOpacity>
                 </View>
             </Modal>
-        </View>
+
+            <AlertModal
+                isVisible={alertModalVisible}
+                onClose={() => setAlertModalVisible(false)}
+                alert={alerts[currentAlertIndex]}
+                onRemindLater={() => {
+                    console.log('Reminder Delayed');
+                    setAlertModalVisible(false);
+                    // Optionally, handle rescheduling here
+                }}
+                onTaken={() => {
+                    console.log('Medicine Taken');
+                    setAlertModalVisible(false);
+                    // Move to the next alert or close if no more alerts
+                    if (currentAlertIndex) {
+                        // console.log('here');
+                        const nextIndex = currentAlertIndex + 1;
+                        showAlertsSequentially(alerts, nextIndex);
+                    }
+                }}
+            />
+        </LinearGradient>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f4f4f8', // Or any other color matching your theme
+    },
+    backgroundGradient: {
+        flex: 1,
     },
     stickyHeader: {
-        backgroundColor: '#6A1B9A', // Or any other color matching your theme
-        marginBottom: 8
+        flexDirection: 'row',
+        backgroundColor: '#6A1B9A', // Deep purple background color
+        borderRadius: 6,
+        padding: 10,
+        // width: 345, // Adjust width as needed for the wider card look
+        justifyContent: 'flex-start', // Align to the start of the container
+        alignItems: 'center', // Center items vertically
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        marginHorizontal: 8,
+        // marginBottom: 4,
+    },
+    header: {
+        color: '#FFFFFF',
+        fontWeight: 'bold',
+        fontSize: 20,
+        marginHorizontal: 8,
+        marginVertical: 8,
     },
     userContainer: {
+        marginTop: 8,
+        marginHorizontal: 8,
         flexDirection: 'row',
-        padding: 8,
+        // padding: 8,
+        alignItems: 'stretch',
+        justifyContent: 'space-between',
+        backgroundColor: '#6A1B9A', // Or any other color matching your theme
+    },
+    imageContainer: {
+        // flexDirection: 'row',
+        // padding: 4,
         alignItems: 'center',
+        justifyContent: 'space-between',
+        backgroundColor: '#6A1B9A', // Or any other color matching your theme
+        marginBottom: 8,
+    },
+    scoreContainer: {
+        // marginTop: 8,
+        marginBottom: 8,
+        marginHorizontal: 16,
+        flexDirection: 'row',
+        // padding: 8,
+        alignItems: 'stretch',
+        justifyContent: 'space-between',
         backgroundColor: '#6A1B9A', // Or any other color matching your theme
     },
     badgeImage: {
-        width: 50,
-        height: 60,
-        marginRight: 16, // Space between the badge image and the details
+        width: 35,
+        height: 40,
+    },
+    image: {
+        width: 120,
+        height: 120,
+    },
+    name: {
+        color: '#FFFFFF',
+        fontSize: 22,
+        fontWeight: 'bold',
+    },
+    title: {
+        color: '#FFFFFF',
+        fontSize: 14,
     },
     detailsAndProgress: {
-        flex: 1,
-        justifyContent: 'space-evenly', // Evenly distribute space around items
+        marginTop: 8,
+    },
+    footer1: {
+        flexDirection: 'column',
+        // alignItems: 'center',
+    },
+    footer2: {
+        marginTop: 6,
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+    footer3: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    icon: {
+        marginTop: 8,
     },
     detailsText: {
         fontSize: 18,
         color: '#FFFFFF',
         marginBottom: 4,
+        fontWeight: 'bold'
     },
     pointsText: {
         fontSize: 16,
         color: '#FFFFFF',
-        marginTop: 4,
+        marginTop: 8,
     },
     progress: {
         marginTop: 4,
@@ -417,7 +537,7 @@ const styles = StyleSheet.create({
     notificationContainer: {
         // Container to position the dot relative to the icon
         position: 'relative',
-        marginRight: 4
+        // marginRight: 4
     },
     notificationDot: {
         // Red dot style

@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View, ScrollView, Button, Modal, TextInput, TouchableOpacity, Image, Pressable } from 'react-native'
 import { FAB } from '@rneui/themed'
 import Snackbar from 'react-native-snackbar'
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
+import globalStyles from '../../constants/styles'
 import { useSelector } from 'react-redux';
 import { useLogin } from '../../context/LoginProvider';
 import FlatCardsVertical from '../../components/FlatCardsVertical'
@@ -10,6 +11,7 @@ import AddMedicine from '../../components/AddMedicine';
 import { Picker } from '@react-native-picker/picker';
 import GameUploader from '../../components/doctor/GameUpload';
 import AddGameCategory from '../../components/AddGameCategory';
+import LinearGradient from 'react-native-linear-gradient';
 
 type UserObj = {
     name: String;
@@ -114,39 +116,61 @@ export default function DoctorDashboard() {
     }
 
     return (
-        <View>
-            <ScrollView>
-                {profile && (
-                    <View style={styles.userContainer}>
-                        <Text style={styles.userDetails}>Type: {userCategory}</Text>
-                        <Text style={styles.userDetails}>Name: {profile.name}</Text>
-                        <Text style={styles.userDetails}>Email: {profile.email}</Text>
-                    </View>
-                )}
+        <LinearGradient
+            colors={['#C485F7', '#C485F7', '#9459C6', '#9459C6', '#38006b']} // Adjust colors to match your design
+            style={styles.backgroundGradient}
+        >
+            <ScrollView stickyHeaderIndices={[0]}>
+                <View style={styles.stickyHeader}>
+                    {profile && (
+                        <View style={styles.userContainer}>
+                            <Text style={styles.header}>Welcome {userCategory}!</Text>
+                            <Text style={styles.userDetails}>How are you doing today, {profile.name}?</Text>
+                            {/* <Text style={styles.userDetails}></Text> */}
+                        </View>
+                    )}
+                </View>
+
+                <Text style={styles.header}>Add Medicine</Text>
                 <TouchableOpacity onPress={() => setAddMedicineModalVisible(true)} style={styles.card}>
-                    <Image source={require('../../add_medicine.png')} style={styles.cardImage} />
+                    <Image source={require('../../../assets/doctor/add_medicine.png')} style={styles.cardImage} />
                     <View style={styles.cardContent}>
-                        <Text style={styles.cardTitle}>Add Medicine</Text>
+                        {/* <Text style={styles.cardTitle}>Add Medicine</Text> */}
                         <Text style={styles.cardDescription}>Tap here to add a new medicine for future prescriptions.</Text>
                     </View>
                 </TouchableOpacity>
+
+                <Text style={styles.header}>Register Patient</Text>
                 <TouchableOpacity onPress={openAddPatientModal} style={styles.card}>
-                    <Image source={require('../../patient.jpg')} style={styles.cardImage} />
+                    <Image source={require('../../../assets/doctor/add_patient.png')} style={styles.cardImage} />
                     <View style={styles.cardContent}>
-                        <Text style={styles.cardTitle}>Add Patient</Text>
+
                         <Text style={styles.cardDescription}>Tap here to add a new patient to your records.</Text>
                     </View>
                 </TouchableOpacity>
+
+                <Text style={styles.header}>Add Game Category</Text>
                 <TouchableOpacity onPress={() => setAddGameCategoryModalVisible(true)} style={styles.card}>
-                    <Image source={require('../../patient.jpg')} style={styles.cardImage} />
+                    <Image source={require('../../../assets/doctor/add_category.png')} style={styles.cardImage} />
                     <View style={styles.cardContent}>
-                        <Text style={styles.cardTitle}>Add Game Category</Text>
+
                         <Text style={styles.cardDescription}>Tap here to add a new game category.</Text>
                     </View>
                 </TouchableOpacity>
-                <View>
+
+                <Text style={styles.header}>Add Game</Text>
+                <TouchableOpacity onPress={() => setAddGameCategoryModalVisible(true)} style={styles.card}>
+                    <Image source={require('../../../assets/doctor/add_game.png')} style={styles.cardImage} />
+                    <View style={styles.cardContent}>
+
+                        <Text style={styles.cardDescription}>Tap here to upload a new game.</Text>
+                    </View>
+                </TouchableOpacity>
+
+
+                {/* <View>
                     <GameUploader />
-                </View>
+                </View> */}
 
                 {/* Add Patient Modal */}
                 <Modal
@@ -157,7 +181,7 @@ export default function DoctorDashboard() {
                 >
                     <View style={styles.modalContainer}>
                         <View style={styles.modalContent}>
-                            <Text style={styles.modalTitle}>Write Patient Details</Text>
+                            <Text style={[globalStyles.lightText, styles.modalTitle]}>Write Patient Details</Text>
 
                             {/* Medication Inputs */}
                             <TextInput
@@ -213,6 +237,7 @@ export default function DoctorDashboard() {
                         </View>
                     </View>
                 </Modal>
+
                 <AddMedicine
                     isVisible={isAddMedicineModalVisible}
                     onRequestClose={() => setAddMedicineModalVisible(false)}
@@ -233,37 +258,48 @@ export default function DoctorDashboard() {
             </ScrollView>
             <FAB
                 placement="right"
-                color='rgba(134, 65, 244, 1)'
+                color='#6A1B9A'
                 size="large"
                 title="Logout"
                 icon={{ name: 'logout', color: '#FFFFFF' }}
                 onPress={handleLogout}
             />
-        </View>
+        </LinearGradient>
     )
 }
 
 const styles = StyleSheet.create({
+    backgroundGradient: {
+        flex: 1,
+    },
     continer: {
         flex: 1,
         alignItems: "center",
         justifyContent: "center"
     },
+    stickyHeader: {
+        backgroundColor: '#6A1B9A', // Or any other color matching your theme
+        marginBottom: 8
+    },
+    header: {
+        color: '#FFFFFF',
+        fontWeight: 'bold',
+        fontSize: 20,
+        marginHorizontal: 8,
+        marginVertical: 4,
+    },
     smallText: {
         color: '#000000'
     },
     userContainer: {
-        flex: 1,
-        borderRadius: 4,
-        margin: 8,
         padding: 8,
         alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'rgba(134, 65, 244, 1)'
+        backgroundColor: '#6A1B9A', // Or any other color matching your theme
     },
     userDetails: {
         fontSize: 14,
-        color: '#FFFFFF',
+        color: '#f4f1f4',
+        marginBottom: 8
     },
     cardTitle: {
         color: '#000000',
@@ -291,29 +327,35 @@ const styles = StyleSheet.create({
     },
     input: {
         height: 40,
-        borderColor: 'gray',
+        borderColor: '#f4f1f4',
         borderWidth: 1,
         marginBottom: 12,
         paddingHorizontal: 8,
     },
     card: {
-        backgroundColor: '#FFFFFF',
-        borderRadius: 4,
-        margintop: 4,
-        marginHorizontal: 8,
+        flexDirection: 'row',
+        backgroundColor: '#f4f1f4', // Deep purple background color
+        borderRadius: 6,
+        padding: 10,
+        justifyContent: 'flex-start', // Align to the start of the container
+        alignItems: 'center', // Center items vertically
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 2,
-        elevation: 4,
-        flexDirection: 'row',
-        alignItems: 'center',
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        marginHorizontal: 8,
+        marginBottom: 8
     },
     cardImage: {
         width: 80,
         height: 80,
-        margin: 10,
+        marginRight: 16,
         borderRadius: 40,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     cardContent: {
         flex: 1,
@@ -322,7 +364,7 @@ const styles = StyleSheet.create({
     },
     cardDescription: {
         fontSize: 14,
-        color: '#666',
+        color: '#38006b',
     },
     btn: {
         backgroundColor: 'rgba(134, 65, 244, 1)',
@@ -342,19 +384,19 @@ const styles = StyleSheet.create({
         elevation: 3,
     },
     btnText: {
-        color: 'white',
+        color: '#f4f1f4',
         alignSelf: 'center',
         fontWeight: 'bold',
         fontSize: 18,
     },
     label: {
         fontSize: 16,
-        color: '#666',
-        padding: 8,
+        color: '#f4f1f4',
+        paddingBottom: 8,
         // Add any other styling you need for the label
     },
     pickerContainer: {
-        borderColor: 'gray',
+        borderColor: '#f4f1f4',
         borderWidth: 1,
         paddingBottom: 16,
         borderRadius: 1,

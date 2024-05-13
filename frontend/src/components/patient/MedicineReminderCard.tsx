@@ -43,7 +43,8 @@ const MedicineReminderCard = ({ reminder, onRemoveReminder }: { reminder: any, o
     // Get the current time as a Date object
     const currentTime = new Date();
     // Convert the reminder time from the reminder object to a Date object
-    const reminderTime = new Date(reminder.time);
+    const reminderTime = new Date(reminder.date);
+
     // Compare the current time with the reminder time to determine the color
     const timeColor = currentTime < reminderTime ? 'green' : 'red';
 

@@ -8,7 +8,7 @@ const prettyDate = (date: Date | string) => {
     return date.getDate().toString() + '-' + date.getMonth().toString() + '-' + date.getFullYear().toString();
 }
 
-const MedPresCard = ({prescription}: {prescription: any}) => {
+const MedPresCard = ({ prescription }: { prescription: any }) => {
     console.log('card', prescription);
     return (
         <View>
@@ -33,10 +33,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8
     },
     card: {
-        width: screenWidth - 16,
+        // width: 300,
         borderRadius: 6,
         marginVertical: 8,
-        marginHorizontal: 8
+        marginHorizontal: 8,
+        padding: 10
     },
     cardElevated: {
         backgroundColor: '#FFFFFF',
@@ -66,7 +67,7 @@ const styles = StyleSheet.create({
     cardDescription: {
         color: '#57606f',
         fontSize: 13,
-        marginTop: 6
+        // marginTop: 6
     },
     cardFooter: {
         color: 'rgba(134, 65, 244, 1)'
