@@ -33,11 +33,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8
     },
     card: {
-        width: 280,
+        // width: 300,
         borderRadius: 6,
         marginVertical: 8,
         marginHorizontal: 8,
-        padding: 4
+        padding: 10
     },
     cardElevated: {
         backgroundColor: '#FFFFFF',

@@ -5,6 +5,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as Progress from 'react-native-progress';
 import ActivityModal from '../../../components/patient/ActivityModal';
+import { useSelector } from 'react-redux';
+import { useLogin } from '../../../context/LoginProvider';
+import client from '../../../api/client';
 
 
 interface Activity {
@@ -23,31 +26,13 @@ interface Step {
     activities: Activity[]
 }
 
-// const activities: Activity[] = [
-//     {
-//         step: "Unveiling the Mist",
-//         game: "Hangman (focus on word association and calm thinking)",
-//         video: "Meditation (a guided visualization to explore inner thoughts)",
-//         reading: "Blog on identifying and understanding depression symptoms",
-//         points: 100
-//     },
-//     {
-//         step: "Echoes of Silence",
-//         game: "Flappy Bird (focus on maintaining rhythm and patience)",
-//         video: "Yoga (gentle yoga for stres s relief)",
-//         reading: "Blog on strategies for coping with anxiety in silence",
-//         points: 150
-//     },
-//     {
-//         step: "Depths of Darkness",
-//         game: "Maze Game (solving mazes to symbolize finding a way out of dark thoughts)",
-//         video: "Exercise (light exercises to improve mood and energy levels)",
-//         reading: "Blog on the benefits of psychotherapy",
-//         points: 200
-//     }
-// ];
+interface Game {
+    title: string;
+    description: string;
+    category: string;
+}
 
-const steps: Step[] = [
+const init_steps: Step[] = [
     {
         id: 'step1',
         title: 'Unveiling the Mist',
@@ -55,24 +40,24 @@ const steps: Step[] = [
             {
                 type: 'Game',
                 title: 'Tic Tac Toe',
-                pointsCollected: 10,
-                maxPoints: 50,
+                pointsCollected: 0,
+                maxPoints: 5,
                 image: require('../../../../assets/mindfullness/game.jpg'),
                 isDoctorRecommended: true
             },
             {
                 type: 'Video',
                 title: 'Meditation',
-                pointsCollected: 15,
-                maxPoints: 50,
+                pointsCollected: 0,
+                maxPoints: 1,
                 image: require('../../../../assets/mindfullness/meditation.png'),
                 isDoctorRecommended: false,
             },
             {
                 type: 'Reading',
                 title: 'Depression Symptoms',
-                pointsCollected: 25,
-                maxPoints: 50,
+                pointsCollected: 0,
+                maxPoints: 1,
                 image: require('../../../../assets/mindfullness/medicine.jpg'),
                 isDoctorRecommended: false,
             }
@@ -84,7 +69,7 @@ const steps: Step[] = [
         activities: [
             {
                 type: 'Game',
-                title: 'Tic Tac Toe',
+                title: 'Crossy Road',
                 pointsCollected: 20,
                 maxPoints: 50,
                 image: require('../../../../assets/mindfullness/game.jpg'),
@@ -95,7 +80,15 @@ const steps: Step[] = [
                 title: 'Meditation',
                 pointsCollected: 30,
                 maxPoints: 50,
-                image: require('../../../../assets/mindfullness/game.jpg'),
+                image: require('../../../../assets/mindfullness/meditation.png'),
+                isDoctorRecommended: false,
+            },
+            {
+                type: 'Reading',
+                title: 'Depression Symptoms',
+                pointsCollected: 0,
+                maxPoints: 1,
+                image: require('../../../../assets/mindfullness/medicine.jpg'),
                 isDoctorRecommended: false,
             }
         ],
@@ -126,23 +119,56 @@ const steps: Step[] = [
 
 const Chapter1: React.FC = () => {
     const [modalVisible, setModalVisible] = useState<boolean>(false);
-    // const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
-    const [selectedStep, setSelectedStep] = useState<Step>(steps[0]);
+    const [selectedStep, setSelectedStep] = useState<Step>(init_steps[0]);
+    const [steps, setSteps] = useState<Step[]>(init_steps);
     const [unlockedSteps, setUnlockedSteps] = useState<number[]>([]);
+    const authToken = useSelector((state: Record<string, { token: string | null }>) => state.authToken.token);
+    const { profile } = useLogin();
+
+    const loadProgress = async () => {
+        const progress = await AsyncStorage.getItem('chapter1Progress');
+        if (progress) {
+            setUnlockedSteps(JSON.parse(progress));
+        } else {
+            // Initially unlock the first step only
+            setUnlockedSteps([0]);
+            await AsyncStorage.setItem('chapter1Progress', JSON.stringify([0]));
+        }
+    };
+
+    const fetchGames = async () => {
+        try {
+            const headers = {
+                'Authorization': `Bearer ${authToken}`
+            };
+
+            const resp = await client.get(`/patients/games/patient/${profile._id}`, { headers });
+            if (resp.data.status === 'success') {
+                console.log('Games fetched successfully : ', resp.data.games)
+                updateActivities(resp.data.games);
+            }
+
+        } catch (error) {
+            console.error('Fetch games error:', error);
+        }
+    };
+
+    const updateActivities = (games: Game[]) => {
+        const newSteps = steps.map(step => ({
+            ...step,
+            activities: step.activities.map(activity => ({
+                ...activity,
+                isDoctorRecommended: games.some(game => game.title === activity.title)
+            }))
+        }));
+        setSteps(newSteps);
+    };
+
 
     useEffect(() => {
-        const loadProgress = async () => {
-            const progress = await AsyncStorage.getItem('chapter1Progress');
-            if (progress) {
-                setUnlockedSteps(JSON.parse(progress));
-            } else {
-                // Initially unlock the first step only
-                setUnlockedSteps([0]);
-                await AsyncStorage.setItem('chapter1Progress', JSON.stringify([0]));
-            }
-        };
         AsyncStorage.clear();
         loadProgress();
+        fetchGames();
     }, []);
 
     const handlePress = async (index: number) => {

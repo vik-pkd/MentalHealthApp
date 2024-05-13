@@ -103,7 +103,7 @@ export default function Home() {
     const [alerts, setAlerts] = useState([]);
 
     const [alertModalVisible, setAlertModalVisible] = useState<boolean>(false);
-    const [currentAlert, setCurrentAlert] = useState<AlertDetails | null>(null);
+    const [currentAlertIndex, setCurrentAlertIndex] = useState<number>(0);
 
     const handleLogout = () => {
 
@@ -126,12 +126,11 @@ export default function Home() {
     const showAlertsSequentially = (alerts: AlertDetails[], index: number = 0) => {
 
         if (index < alerts.length) {
-            const alert = alerts[index];
-            setCurrentAlert(alert);
+            setCurrentAlertIndex(index);
             setAlertModalVisible(true);
         } else {
             // Handle the case where no more alerts are left or index is out of range
-            setCurrentAlert(null);
+            setCurrentAlertIndex(0);
             setAlertModalVisible(false);
         }
     };
@@ -179,34 +178,7 @@ export default function Home() {
                 console.log('Alerts : ', resp.data.alerts);
                 setAlerts(resp.data.alerts);  // Assume setAlerts updates state correctly
                 showAlertsSequentially(resp.data.alerts);
-                // // Function to recursively show alerts one by one
-                // const showAlertsSequentially = (index = 0) => {
-                //     if (index < resp.data.alerts.length) {
-                //         const alert = resp.data.alerts[index];
-                //         const formattedTime = formatDate(alert.time); // Make sure formatDate is defined to format date strings
-
-                //         Alert.alert(
-                //             'Medication Reminder', // Title of the alert
-                //             `It's time to take your medicine:\n\nMedicine: ${alert.medicine}\nDose: ${alert.quantity}\nCaregiver: ${alert.caregiver}\nTime: ${formattedTime}`, // Message showing details
-                //             [
-                //                 {
-                //                     text: 'Remind Me Later',
-                //                     onPress: () => console.log('Reminder Delayed'),
-                //                     style: 'cancel',
-                //                 },
-                //                 {
-                //                     text: 'Taken',
-                //                     onPress: () => {
-                //                         console.log('Medicine Taken');
-                //                         showAlertsSequentially(index + 1); // Show next alert after this one is dismissed
-                //                     }
-                //                 },
-                //             ],
-                //             { cancelable: false } // This ensures the alert must be interacted with
-                //         );
-                //     }
-                // };
-            } else if (resp.data.alerts.length === 0) {
+            } else if (resp.data.status === 'success' && resp.data.alerts.length === 0) {
                 console.log("No alerts to show.");
             } else {
                 console.log("Failed to fetch alerts:", resp.data);
@@ -270,7 +242,7 @@ export default function Home() {
                                 <View style={styles.footer2}>
                                     <Progress.Bar
                                         style={styles.progress}
-                                        progress={userPoints / 100} // Assuming 1000 is the max points
+                                        progress={6 / 100} // Assuming 1000 is the max points
                                         width={105}
                                         color="#FFD700"
                                         unfilledColor="rgba(255, 255, 255, 0.5)"
@@ -278,7 +250,7 @@ export default function Home() {
                                     />
                                     <View style={styles.footer3}>
                                         <Icon name="flash" size={20} color="#FFD700" style={styles.icon} />
-                                        <Text style={styles.pointsText}>MP: {userPoints} / 100 </Text>
+                                        <Text style={styles.pointsText}>MP: {6} / 100 </Text>
                                     </View>
                                 </View>
 
@@ -296,7 +268,7 @@ export default function Home() {
 
                 <Text style={styles.header}></Text>
 
-                <MedicineReminderDisplay patientId={profile._id} />
+                {/* <MedicineReminderDisplay patientId={profile._id} /> */}
             </ScrollView>
 
             <FAB
@@ -345,7 +317,7 @@ export default function Home() {
             <AlertModal
                 isVisible={alertModalVisible}
                 onClose={() => setAlertModalVisible(false)}
-                alert={currentAlert}
+                alert={alerts[currentAlertIndex]}
                 onRemindLater={() => {
                     console.log('Reminder Delayed');
                     setAlertModalVisible(false);
@@ -355,9 +327,9 @@ export default function Home() {
                     console.log('Medicine Taken');
                     setAlertModalVisible(false);
                     // Move to the next alert or close if no more alerts
-                    if (currentAlert) {
+                    if (currentAlertIndex) {
                         // console.log('here');
-                        const nextIndex = alerts.indexOf(currentAlert) + 1;
+                        const nextIndex = currentAlertIndex + 1;
                         showAlertsSequentially(alerts, nextIndex);
                     }
                 }}
@@ -378,7 +350,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#6A1B9A', // Deep purple background color
         borderRadius: 6,
         padding: 10,
-        width: 345, // Adjust width as needed for the wider card look
+        // width: 345, // Adjust width as needed for the wider card look
         justifyContent: 'flex-start', // Align to the start of the container
         alignItems: 'center', // Center items vertically
         shadowColor: '#000',

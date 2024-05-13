@@ -43,6 +43,8 @@ interface AlertState {
 }
 
 const FlatCardsVertical: React.FC<FlatCardsVerticalProps> = ({ caregiverInfo, patientInfo, medicineInfo }) => {
+
+    console.log(medicineInfo);
     const [alertSent, setAlertSent] = useState<boolean[]>(new Array(medicineInfo.length).fill(false));
 
     const getTimeDetails = (time: Date) => {

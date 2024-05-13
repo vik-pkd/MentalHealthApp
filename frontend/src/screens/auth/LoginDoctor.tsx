@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, Pressable, Platform, Alert, Image } from 'react-native'
+import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, Pressable, Platform, Alert, Image, Dimensions } from 'react-native'
 import React, { useContext, useState } from 'react'
 import client from '../../api/client';
 
@@ -13,6 +13,8 @@ import { useLogin } from '../../context/LoginProvider';
 import { useDispatch } from 'react-redux';
 import { authTokenActions } from '../../store/authToken-slice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const screenHeight = Dimensions.get("window").height;
 
 type LoginScreenProps = NativeStackScreenProps<AuthStackParamList, 'LoginDoctor'>
 
@@ -125,7 +127,8 @@ const LoginDoctor = ({ navigation }: LoginScreenProps) => {
                                         Snackbar.show({
                                             text: 'Login success',
                                             duration: Snackbar.LENGTH_SHORT,
-                                            backgroundColor: '#63BAAA'
+                                            // backgroundColor: '#9c4dcc',
+                                            marginBottom: screenHeight - 44
                                         })
                                         setIsLoggedIn(true);
                                     }
@@ -137,7 +140,8 @@ const LoginDoctor = ({ navigation }: LoginScreenProps) => {
                     Snackbar.show({
                         text: 'Login success',
                         duration: Snackbar.LENGTH_SHORT,
-                        backgroundColor: '#63BAAA'
+                        marginBottom: screenHeight - 44,
+                        // backgroundColor: '#9c4dcc'
                     })
                     setIsLoggedIn(true);
                 }

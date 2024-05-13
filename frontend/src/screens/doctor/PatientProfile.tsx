@@ -12,6 +12,7 @@ import FancyCard from '../../components/FancyCard';
 import BasicCard from '../../components/BasicCard';
 import PrescriptionTabs from '../../routes/PrescriptionTabs';
 import AssignGameModal from '../../components/AssignGameModal';
+import LinearGradient from 'react-native-linear-gradient';
 
 
 type PatientProfileScreenRouteProp = RouteProp<
@@ -35,7 +36,6 @@ const PatientProfile = ({ navigation }: PatientProfileParamsList) => {
     const [email, setEmail] = useState('');
     const [age, setAge] = useState(0);
     const [isMedicineModalVisible, setIsMedicineModalVisible] = useState(false);
-    const [isGameModalVisible, setIsGameModalVisible] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -56,48 +56,53 @@ const PatientProfile = ({ navigation }: PatientProfileParamsList) => {
 
     return (
         <>
-            <View style={styles.container}>
-                <ScrollView>
-                    <View style={styles.userInfo}>
-                        <View style={styles.userInfoItem}>
-                            <Text style={styles.infoKey}>Name:</Text>
-                            <Text style={styles.infoValue}>{name}</Text>
-                        </View>
+            <LinearGradient
+                colors={['#C485F7', '#C485F7', '#9459C6', '#9459C6', '#662F97']} // Adjust colors to match your design
+                style={styles.backgroundGradient}
+            >
 
-                        <View style={styles.userInfoItem}>
-                            <Text style={styles.infoKey}>Email:</Text>
-                            <Text style={styles.infoValue}>{email}</Text>
-                        </View>
-
-                        <View style={styles.userInfoItem}>
-                            <Text style={styles.infoKey}>Age:</Text>
-                            <Text style={styles.infoValue}>{age}</Text>
-                        </View>
+                <View style={styles.userInfo}>
+                    <View style={styles.userInfoItem}>
+                        <Text style={styles.infoKey}>Name:</Text>
+                        <Text style={styles.infoValue}>{name}</Text>
                     </View>
-                    <View style={styles.buttonContainer}>
-                        <Pressable
-                            onPress={() => navigation.navigate('Prescription', { _id: params!._id })}
-                            style={styles.addModalButton}
-                        >
-                            <Text style={styles.buttonText}>Add Medicine</Text>
-                        </Pressable>
 
-                        <Pressable
-                            onPress={() => setIsMedicineModalVisible(true)}
-                            style={styles.addModalButton}
-                        >
-                            <Text style={styles.buttonText}>Add Activities</Text>
-                        </Pressable>
-                        <Pressable
-                            onPress={() => setIsGameModalVisible(true)}
-                            style={styles.addModalButton}
-                        >
-                            <Text style={styles.buttonText}>Add Game</Text>
-                        </Pressable>
+                    <View style={styles.userInfoItem}>
+                        <Text style={styles.infoKey}>Email:</Text>
+                        <Text style={styles.infoValue}>{email}</Text>
                     </View>
-                </ScrollView>
-                <AssignGameModal isVisible={isGameModalVisible} onRequestClose={() => setIsGameModalVisible(false)} patientId={params!._id} />
-            </View>
+
+                    <View style={styles.userInfoItem}>
+                        <Text style={styles.infoKey}>Age:</Text>
+                        <Text style={styles.infoValue}>{age}</Text>
+                    </View>
+                </View>
+
+
+                {/* <View style={styles.buttonContainer}>
+                    <Pressable
+                        onPress={() => navigation.navigate('Prescription', { _id: params!._id })}
+                        style={styles.addModalButton}
+                    >
+                        <Text style={styles.buttonText}>Add Medicine</Text>
+                    </Pressable>
+
+                    <Pressable
+                        onPress={() => setIsMedicineModalVisible(true)}
+                        style={styles.addModalButton}
+                    >
+                        <Text style={styles.buttonText}>Add Activities</Text>
+                    </Pressable>
+                    <Pressable
+                        onPress={() => setIsGameModalVisible(true)}
+                        style={styles.addModalButton}
+                    >
+                        <Text style={styles.buttonText}>Add Game</Text>
+                    </Pressable>
+                </View> */}
+                {/* <AssignGameModal isVisible={isGameModalVisible} onRequestClose={() => setIsGameModalVisible(false)} patientId={params!._id} /> */}
+            </LinearGradient>
+
             <PrescriptionTabs patientId={params!._id} />
         </>
     );
@@ -106,20 +111,19 @@ const PatientProfile = ({ navigation }: PatientProfileParamsList) => {
 export default PatientProfile;
 
 const styles = StyleSheet.create({
-    container: {
+    backgroundGradient: {
         // flex: 1,
-        backgroundColor: '#f4f4f8', // Light background color
         alignItems: 'center',
         // justifyContent: 'center',
     },
     infoKey: {
         fontSize: 16,
-        color: '#6A1B9A', // Purple text color for the key
+        color: '#38006b', // Purple text color for the key
         fontWeight: 'bold',
     },
     infoValue: {
         fontSize: 16,
-        color: '#4A148C', // Slightly darker purple text color for the value
+        color: 'black', // Slightly darker purple text color for the value
     },
     userInfo: {
         width: '90%',

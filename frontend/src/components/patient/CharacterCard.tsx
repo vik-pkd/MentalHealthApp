@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#6A1B9A', // Deep purple background color
         borderRadius: 6,
         padding: 20,
-        width: 345, // Adjust width as needed for the wider card look
+        // width: 345, // Adjust width as needed for the wider card look
         justifyContent: 'flex-start', // Align to the start of the container
         alignItems: 'center', // Center items vertically
         shadowColor: '#000',

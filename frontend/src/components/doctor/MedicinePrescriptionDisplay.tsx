@@ -26,7 +26,7 @@ const MedicinePrescriptionDisplay: React.FC<{ patientId: string }> = ({ patientI
 
     return (
         <ScrollView style={styles.scrollViewStyle}>
-            <Text style={{ color: 'black', alignSelf: 'center' }}>Medicine Prescriptions</Text>
+            <Text style={{ color: '#38006b', alignSelf: 'center', marginTop: 8 }}>Medicine Prescriptions</Text>
             {prescriptions && prescriptions.map((item, index) => (
                 <MedPresCard key={index} prescription={item} />
             ))}

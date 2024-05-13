@@ -10,7 +10,8 @@ const faceapi = require('@vladmandic/face-api');
 const Prescription = require('../models/prescription');
 const DoseHistory = require('../models/doseHistory');
 const caregiver = require('../models/caregiver');
-const Activity = require('../models/activity')
+const Activity = require('../models/activity');
+const Game = require('../models/game');
 const { areDatesOnSameDay } = require('../utils/date');
 
 module.exports.getPatients = async (req, res) => {
@@ -191,6 +192,42 @@ module.exports.getPrescriptions = async (req, res) => {
 };
 
 
+
+module.exports.getGames = async (req, res) => {
+    try {
+        const patientId = new ObjectId(req.params._id);
+        if (!ObjectId.isValid(patientId)) {
+            return res.status(400).send({ status: "failure", message: "Invalid patient ID" });
+        }
+
+        const patient = await Patient.findById(patientId)
+            .populate({
+                path: 'games',
+                select: 'title description category',
+                populate: {
+                    path: 'category',
+                    select: 'name'
+                }
+            });
+
+        if (!patient) {
+            return res.status(404).send({ status: "failure", message: "Patient not found" });
+        }
+
+        const games = patient.games.map(game => ({
+            title: game.title,
+            description: game.description,
+            category: game.category.name
+        }));
+
+        res.send({ status: "success", games });
+    } catch (err) {
+        console.error("Error fetching games: ", err);
+        res.status(500).send({ status: "failure", message: err.message });
+    }
+};
+
+
 module.exports.getAlerts = async (req, res) => {
 
     try {
@@ -232,37 +269,43 @@ module.exports.getAlerts = async (req, res) => {
 }
 
 module.exports.getReminders = async (req, res) => {
-    const patientId = req.user._id;
-    console.log('reminders fetching...', patientId);
-    const current_date = new Date();
-    // get all prescriptions of patient
-    // const query = { $and: [ {patient: patientId}, ] };
-    // , {start_date: { $lte : current_date}}, {end_date: { $gt: current_date}}
-    // const condition1 = { patient: patientId };
-    const reminders = (await DoseHistory.find({ patient: patientId, istaken: false }))
-        .filter(history => areDatesOnSameDay(history.date, new Date()));
-    const remindersWithDetails = [];
-    for (let i = 0; i < reminders.length; i++) {
-        const reminder = reminders[i];
-        const prescription = await Prescription.findOne({ _id: reminder.prescription });
-        // const reminderDate = new Date(reminder.time);
-        const doseTime = new Date(prescription.doseTimings[reminder.slot]);
-        // reminderDate.setHours(doseTime.getHours());
-        // reminderDate.setMinutes(doseTime.getMinutes());
-        remindersWithDetails.push({
-            _id: reminder._id,
-            prescriptionId: reminder.prescription,
-            patient: reminder.patient,
-            medicine: prescription.medicine,
-            quantity: prescription.quantity,
-            slot: reminder.slot,
-            istaken: reminder.istaken,
-            date: reminder.time,
-            edited: reminder.edited
-        });
+
+    try {
+        const patientId = req.user._id;
+        console.log('reminders fetching...', patientId);
+        const current_date = new Date();
+        // get all prescriptions of patient
+        // const query = { $and: [ {patient: patientId}, ] };
+        // , {start_date: { $lte : current_date}}, {end_date: { $gt: current_date}}
+        // const condition1 = { patient: patientId };
+        const reminders = (await DoseHistory.find({ patient: patientId, istaken: false }))
+            .filter(history => areDatesOnSameDay(history.date, new Date()));
+        const remindersWithDetails = [];
+        for (let i = 0; i < reminders.length; i++) {
+            const reminder = reminders[i];
+            const prescription = await Prescription.findOne({ _id: reminder.prescription });
+            // const reminderDate = new Date(reminder.time);
+            // reminderDate.setHours(doseTime.getHours());
+            // reminderDate.setMinutes(doseTime.getMinutes());
+            remindersWithDetails.push({
+                _id: reminder._id,
+                prescriptionId: reminder.prescription,
+                patient: reminder.patient,
+                medicine: prescription.medicine,
+                quantity: prescription.quantity,
+                slot: reminder.slot,
+                istaken: reminder.istaken,
+                date: reminder.time,
+                edited: reminder.edited
+            });
+        }
+        remindersWithDetails.sort((a, b) => a.date.getTime() - b.date.getTime());
+        res.send({ status: "success", reminders: remindersWithDetails });
     }
-    remindersWithDetails.sort((a, b) => a.date.getTime() - b.date.getTime());
-    res.send({ status: "success", reminders: remindersWithDetails });
+    catch (error) {
+        console.log('error fetching reminders : ', error);
+        res.send({ status: "failure" });
+    }
 };
 
 module.exports.takeMedicine = async (req, res) => {

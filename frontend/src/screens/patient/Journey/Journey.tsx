@@ -186,11 +186,6 @@ const Journey: React.FC = () => {
         loadProgression();
         checkIntroModal();
 
-        // if (!isFocused) {
-        //     closeModal();
-        // }
-
-        // fetchActivities();
     }, [isFocused]);
 
     return (

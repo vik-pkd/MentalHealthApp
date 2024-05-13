@@ -206,8 +206,8 @@ module.exports.assignGames = async (req, res) => {
         const patient = await Patient.findOne({ _id: new ObjectId(patientId) });
         await patient.addGames(games);
         console.log(patient);
-        res.send({ status: "success"});
+        res.send({ status: "success" });
     } catch (err) {
-        res.send({ status: "failure"});
+        res.send({ status: "failure" });
     }
 };

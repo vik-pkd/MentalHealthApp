@@ -9,7 +9,7 @@ import PushNotification from 'react-native-push-notification';
 // Function that schedules a notification
 function scheduleReminder(reminder: any) {
     const now = new Date().getTime();
-    const reminderTime = new Date(reminder.time).getTime();
+    const reminderTime = new Date(reminder.date).getTime();
 
     PushNotification.createChannel(
         {

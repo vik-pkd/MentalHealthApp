@@ -43,7 +43,7 @@ const Game: React.FC<GameCardProps> = ({ title, description, imageUrl, cardStyle
 
 const styles = StyleSheet.create({
     card: {
-        width: screenWidth - 16,
+        // width: '100%',
         height: 150,
         borderRadius: 6,
         marginHorizontal: 8,
@@ -80,10 +80,9 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     cardTitle: {
-        color: '#000000',
+        color: '#38006b',
         fontSize: 22,
         fontWeight: 'bold',
-        marginBottom: 4,
         marginTop: 8
     },
     cardDescription: {
@@ -91,7 +90,7 @@ const styles = StyleSheet.create({
         fontSize: 13,
     },
     cardSubTitle: {
-        color: '#000000',
+        color: '#6a1b9a',
         fontSize: 16,
         fontWeight: 'bold',
     },

@@ -8,12 +8,18 @@ import { AppDispatch } from '../store';
 import { fetchGameCategories } from '../store/gameCategories-slice';
 import { RootState } from '../store/rootReducer';
 import Game from './Game';
+import globalStyles from '../constants/styles';
 
 type GameData = {
     _id: string;
     title: string;
     description: string;
     category: string;
+};
+
+const gameImages: { [key: string]: any } = {
+    'Crossy Road': require('../../assets/games/cross.png'),
+    'Tic Tac Toe': require('../../assets/games/tic-tac-toe.png'),
 };
 
 const AssignGameModal = ({ isVisible, onRequestClose, patientId }: { isVisible: boolean; onRequestClose: () => void; patientId: string }) => {
@@ -43,7 +49,7 @@ const AssignGameModal = ({ isVisible, onRequestClose, patientId }: { isVisible: 
 
     const handleSelectGame = (index: number) => {
         const updatedSelectedGames: boolean[] = JSON.parse(JSON.stringify(selectedGames));
-    updatedSelectedGames[index] = !updatedSelectedGames[index];
+        updatedSelectedGames[index] = !updatedSelectedGames[index];
         setSelectedGames(updatedSelectedGames);
     };
 
@@ -79,19 +85,20 @@ const AssignGameModal = ({ isVisible, onRequestClose, patientId }: { isVisible: 
             <View style={styles.container}>
                 <View style={styles.content}>
                     <View style={styles.instructionText}>
-                        <Text style={[styles.blackText]}>Select or unselect one or more games by tapping</Text>
+                        <Text style={[globalStyles.titleText]}>Select or Unselect Games</Text>
                     </View>
                     <View>
                         {gameList && gameList.map((game, index) => (
-                            <View style={[selectedGames[index] ? styles.GameCardOutside: {}]} key={index}>
+                            <View style={[selectedGames[index] ? styles.GameCardOutside : {}]} key={index}>
                                 <Pressable
-                                    onPress={() => {handleSelectGame(index)}}
+                                    onPress={() => { handleSelectGame(index) }}
                                 >
                                     <Game
                                         title={game.title}
+                                        imageUrl={gameImages[game.title]}
                                         description={game.description}
                                         categoryTitle={game.category}
-                                        cardStyle={[selectedGames[index] ? styles.GameCardInside: {}]}
+                                        cardStyle={[selectedGames[index] ? styles.GameCardInside : {}]}
                                     />
                                 </Pressable>
                             </View>
@@ -116,15 +123,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        // backgroundColor: 'rgba(0, 0, 0, 1)',
     },
     content: {
-        // backgroundColor: 'rgba(134, 65, 244, 1)',
-        backgroundColor: 'white',
-        // padding: 20,
+        backgroundColor: '#f4f1f4',
         borderRadius: 10,
         elevation: 5,
-        width: '100%'
+        width: '95%',
+        padding: 10,
     },
     GameCardOutside: {
         // backgroundColor: 'red'
@@ -139,7 +144,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     btn: {
-        backgroundColor: 'rgba(134, 65, 244, 1)',
+        backgroundColor: '#9c4dcc',
         padding: 10,
         height: 45,
         alignSelf: 'center',

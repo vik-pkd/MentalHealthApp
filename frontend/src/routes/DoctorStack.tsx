@@ -63,9 +63,13 @@ export const DoctorStack = () => {
                         // You can return any component that you like here!
                         return <Ionicons name={iconName} size={size} color={color} />;
                     },
-                    tabBarActiveTintColor: 'rgba(134, 65, 244, 1)',
-                    tabBarInactiveTintColor: 'gray',
-                    headerShown: false
+                    tabBarActiveTintColor: '#cc4dbd',
+                    tabBarInactiveTintColor: 'white',
+                    headerShown: false,
+                    tabBarStyle: {
+                        backgroundColor: '#6a1b9a', // Background color of the tab bar
+                        paddingBottom: 2,
+                    },
                 })}
             >
 
