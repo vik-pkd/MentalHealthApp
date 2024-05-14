@@ -37,6 +37,7 @@ import GameCategory from '../screens/patient/Games/GameCategory';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Journey from '../screens/patient/Journey/Journey';
 import Journal from '../screens/patient/Journal/Journal';
+import Yoga from '../screens/patient/Yoga';
 // Import other game screens here
 
 // navigation/types.ts
@@ -70,6 +71,8 @@ export type GameStackParamList = {
 export type MindStackParamList = {
   Mindfulness: undefined;
   Meditation: undefined;
+  Yoga: undefined;
+  Excercise: undefined;
 };
 
 const Tab = createBottomTabNavigator();
@@ -137,7 +140,7 @@ const MindStack: React.FC = () => {
     }}>
       <MStack.Screen name="Mindfulness" component={Mindfulness} />
       <MStack.Screen name="Meditation" component={Meditation} />
-
+      <MStack.Screen name="Yoga" component={Yoga} />
     </MStack.Navigator>
   );
 };

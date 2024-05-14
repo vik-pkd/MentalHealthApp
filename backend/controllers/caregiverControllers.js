@@ -42,7 +42,7 @@ module.exports.caregiverSignIn = async (req, res) => {
     const isMatch = await caregiver.comparePassword(password);
     if (!isMatch) return res.json({ status: 'failure', message: 'email / password does not match!' })
 
-    const token = jwt.sign({ userId: caregiver._id }, process.env.JWT_SECRET, { expiresIn: '1d' })
+    const token = jwt.sign({ userId: caregiver._id, role: 'caregiver' }, process.env.JWT_SECRET, { expiresIn: '1d' })
 
     res.send({ status: 'success', caregiver, token })
 }
@@ -54,6 +54,8 @@ module.exports.getPatientsCaregiver = async (req, res) => {
     const caregiverid = new ObjectId(req.body.caregiverid);
     console.log(caregiverid)
     const patients = (await Caregiver.findById(caregiverid).populate('patients')).patients;
+
+
 
     const reminder_list = []
     for (let i = 0; i < patients.length; i++) {
@@ -88,7 +90,7 @@ module.exports.getPatientsCaregiver = async (req, res) => {
         reminders.sort((a, b) => a.time.getTime() - b.time.getTime());
         reminder_list.push(reminders)
     }
-    // console.log(reminder_list)
+    console.log(reminder_list)
     res.send({ status: "success", patients: patients, reminders: reminder_list });
 }
 

@@ -23,7 +23,11 @@ const Stack = createNativeStackNavigator<PatientSerachStackParamList>();
 
 const PatientStack = () => {
     return (
-        <Stack.Navigator>
+        <Stack.Navigator screenOptions={{
+            headerTitleAlign: 'center',
+            headerBackTitleVisible: false,
+            headerShown: false
+        }}>
             <Stack.Screen name='PatientSearch' component={PatientSearch} />
             <Stack.Screen name='PatientProfile' component={PatientProfile} />
         </Stack.Navigator>

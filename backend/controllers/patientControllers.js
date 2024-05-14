@@ -9,7 +9,6 @@ const canvas = require('canvas');
 const faceapi = require('@vladmandic/face-api');
 const Prescription = require('../models/prescription');
 const DoseHistory = require('../models/doseHistory');
-const caregiver = require('../models/caregiver');
 const Activity = require('../models/activity');
 const Game = require('../models/game');
 const { areDatesOnSameDay } = require('../utils/date');
@@ -17,13 +16,26 @@ const { areDatesOnSameDay } = require('../utils/date');
 module.exports.getPatients = async (req, res) => {
     // console.log('Inside search patients!')
     try {
-        const doctorId = req.user._id;
+        const userId = req.user._id;
         const searchText = req.query.searchText.toLowerCase();
-        const patients = (await Doctor.findById(doctorId).populate('patients')).patients;
-        const includedPatients = patients.filter((patient) => {
-            return searchText.length > 0 && (patient.email.toLowerCase().includes(searchText) || patient.name.toLowerCase().includes(searchText));
-        })
-        res.send(includedPatients);
+
+        // Try to find the user as a Doctor or Caregiver
+        let user = await Doctor.findById(userId).populate('patients');
+        if (!user) {
+            user = await Caregiver.findById(userId).populate('patients');
+        }
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found as either Doctor or Caregiver' });
+        }
+
+        // Filter patients based on the search text
+        const patients = user.patients.filter(patient =>
+            searchText.length > 0 &&
+            (patient.email.toLowerCase().includes(searchText) || patient.name.toLowerCase().includes(searchText))
+        );
+
+        res.send(patients);
     } catch (err) {
         res.send(err);
     }
@@ -60,22 +72,34 @@ module.exports.addPatient = async (req, res) => {
 }
 
 module.exports.getDetails = async (req, res) => {
-    // TODO logic to be added when patient and caregiver login will be added
     try {
-        const doctorId = req.user._id;
-        const patientId = new ObjectId(req.params._id);
-        const patients = (await Doctor.findById(doctorId)).patients;
-        if (patients.includes(patientId)) {
+        const userId = req.user._id; // ID of the authenticated user (doctor or caregiver)
+        const patientId = new ObjectId(req.params._id); // Convert string ID to ObjectId
+
+        let user = await Doctor.findById(userId);
+        if (!user) {
+            user = await Caregiver.findById(userId);
+        }
+
+        if (!user) {
+            return res.status(404).json({ status: 'failure', message: 'User not found' });
+        }
+
+        // Check if the patientId is in the user's list of patients
+        if (user.patients.includes(patientId)) {
             const patient = await Patient.findById(patientId);
+            if (!patient) {
+                return res.status(404).json({ status: 'failure', message: 'Patient not found' });
+            }
             const { _id, name, email, age } = patient;
             const dataToSend = { _id, name, email, age };
             res.send({ status: 'Success', data: dataToSend });
         } else {
-            res.send({ status: 'failure', message: 'Not allowed action' });
+            res.status(403).json({ status: 'failure', message: 'Not allowed action' });
         }
     } catch (err) {
         console.log(err);
-        res.send({ status: 'failure', message: 'Could not fetch patient details' });
+        res.status(500).json({ status: 'failure', message: 'Could not fetch patient details' });
     }
 
 };
@@ -174,7 +198,6 @@ module.exports.getPoints = async (req, res) => {
 
 module.exports.getPrescriptions = async (req, res) => {
     try {
-        const doctorId = req.user._id;
         const patientId = new ObjectId(req.params._id);
         // console.log(doctorId, patientId);
         const prescriptions = (await Prescription.find({ patient: patientId })).map(item => ({
@@ -304,7 +327,7 @@ module.exports.getReminders = async (req, res) => {
     }
     catch (error) {
         console.log('error fetching reminders : ', error);
-        res.send({ status: "failure" });
+        res.send({ status: "failure", reminders: [] });
     }
 };
 

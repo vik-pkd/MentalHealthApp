@@ -32,7 +32,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ title, bodyText, videoId }) => {
 
     return (
         <View style={styles.container}>
-            <View>
+            <View pointerEvents="none">
                 <YoutubePlayer
                     height={200}
                     play={playing}

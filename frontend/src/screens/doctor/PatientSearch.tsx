@@ -45,7 +45,7 @@ const PatientSearch: React.FC<PatientSearchScreenProps> = ({ navigation }) => {
         >
             {profile && (
                 <View style={styles.userContainer}>
-                    <Text style={styles.header}>Search Your Patients {profile.name}!</Text>
+                    <Text style={styles.header}>Search Your Patients</Text>
                     {/* <Text style={styles.userDetails}></Text> */}
                 </View>
             )}

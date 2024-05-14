@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, Alert, TouchableOpacity, ScrollView } from 'react-native';
 import client from '../api/client';
 
@@ -44,8 +44,7 @@ interface AlertState {
 
 const FlatCardsVertical: React.FC<FlatCardsVerticalProps> = ({ caregiverInfo, patientInfo, medicineInfo }) => {
 
-    console.log(medicineInfo);
-    const [alertSent, setAlertSent] = useState<boolean[]>(new Array(medicineInfo.length).fill(false));
+    const [alertSent, setAlertSent] = useState<boolean[]>([]);
 
     const getTimeDetails = (time: Date) => {
         const currentTime = new Date();
@@ -92,6 +91,10 @@ const FlatCardsVertical: React.FC<FlatCardsVerticalProps> = ({ caregiverInfo, pa
         ]);
     };
 
+    useEffect(() => {
+        // Reset alertSent state to match the current length of medicineInfo
+        setAlertSent(new Array(medicineInfo.length).fill(false));
+    }, [medicineInfo]);
 
     return (
         <View style={styles.container}>
@@ -105,25 +108,31 @@ const FlatCardsVertical: React.FC<FlatCardsVerticalProps> = ({ caregiverInfo, pa
 
             {/* Medication Information Cards */}
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={true}>
-                {medicineInfo.map((med, index) => {
-                    const { timeColor, alertEnabled } = getTimeDetails(med.time); // Logic for time color and alert
-                    const isAlerted = alertSent[index];
+                {medicineInfo.length > 0 ? (
+                    medicineInfo.map((med, index) => {
+                        const { timeColor, alertEnabled } = getTimeDetails(med.time); // Logic for time color and alert
+                        const isAlerted = alertSent[index];
 
-                    return (
-                        <View key={index} style={[styles.card, styles.medicationCard]}>
-                            <Text style={styles.medicationTitle}>{med.medicine}</Text>
-                            <Text style={[styles.medDetail, { color: timeColor }]}>
-                                Time: {formatDate(med.time)}
-                            </Text>
-                            {alertEnabled && (
-                                <TouchableOpacity style={isAlerted ? styles.greenAlertButton : styles.alertButton}
-                                    onPress={() => !isAlerted && handleAlert(med.prescriptionId, patientInfo._id, caregiverInfo._id, index)}>
-                                    <Text style={styles.alertButtonText}>{isAlerted ? 'Alerted' : 'Alert'}</Text>
-                                </TouchableOpacity>
-                            )}
-                        </View>
-                    );
-                })}
+                        return (
+                            <View key={index} style={[styles.card, styles.medicationCard]}>
+                                <Text style={styles.medicationTitle}>{med.medicine}</Text>
+                                <Text style={[styles.medDetail, { color: timeColor }]}>
+                                    Time: {formatDate(med.time)}
+                                </Text>
+                                {alertEnabled && (
+                                    <TouchableOpacity style={isAlerted ? styles.greenAlertButton : styles.alertButton}
+                                        onPress={() => !isAlerted && handleAlert(med.prescriptionId, patientInfo._id, caregiverInfo._id, index)}>
+                                        <Text style={styles.alertButtonText}>{isAlerted ? 'Alerted' : 'Alert'}</Text>
+                                    </TouchableOpacity>
+                                )}
+                            </View>
+                        );
+                    })
+                ) : (
+                    <View style={styles.noMedicationContainer}>
+                        <Text style={{ color: 'white', alignSelf: 'center', fontSize: 16 }}>No medication information available!!!</Text>
+                    </View>
+                )}
             </ScrollView>
         </View>
     );
@@ -149,6 +158,19 @@ const styles = StyleSheet.create({
         shadowOffset: { height: 3, width: 0 },
         elevation: 3,
         alignItems: 'center',
+    },
+    noMedicationContainer: {
+        backgroundColor: '#38006b',
+        borderRadius: 10,
+        padding: 10,
+        justifyContent: 'space-evenly',
+        // shadowOpacity: 0.1,
+        // shadowRadius: 10,
+        // shadowColor: '#000',
+        // shadowOffset: { height: 1, width: 0 },
+        // elevation: 3,
+        alignItems: 'center',
+        height: 170
     },
     patientCard: {
         backgroundColor: '#9C27B0', // Or your theme color

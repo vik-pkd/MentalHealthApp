@@ -78,8 +78,10 @@ export default function CaretakerDashboard() {
                 }
                 const response = await client.post('/caregivers/get-patients', data);
                 console.log('data : ', response.data.patients[0]);
+                console.log('reminder list : ', response.data.reminders)
                 setPatients(response.data.patients);
                 setReminders(response.data.reminders);
+
             } catch (err) {
                 console.error(err);
                 // Snackbar.show({
@@ -110,7 +112,7 @@ export default function CaretakerDashboard() {
                                         unfilledColor="rgba(255, 255, 255, 0.5)"
                                         borderColor="rgba(255, 255, 255, 0)"
                                     /> */}
-                                    <Text style={styles.pointsText}>Alerted: {0} / {patients.length} Patients </Text>
+                                    <Text style={styles.pointsText}>How is your day going?</Text>
 
                                 </View>
                             </View>
@@ -119,8 +121,9 @@ export default function CaretakerDashboard() {
                 </View>
                 {patients && reminders && patients.map((patient, index) => {
                     // Get the corresponding reminders for this patient
-                    const patientReminders = reminders[index];
-                    console.log(patientReminders);
+                    const patientReminders = reminders[index] || [];
+                    console.log('reminder list after saving : ', reminders)
+                    // console.log('reminders : ', index);
                     return (
                         <FlatCardsVertical
                             key={index} // Assuming each patient has a unique _id
@@ -133,7 +136,7 @@ export default function CaretakerDashboard() {
             </ScrollView>
             <FAB
                 placement="right"
-                color='#6A1B9A'
+                color='#62a8c3'
                 size="large"
                 title="Logout"
                 icon={{ name: 'logout', color: '#FFFFFF' }}
