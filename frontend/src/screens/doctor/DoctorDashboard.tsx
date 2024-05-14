@@ -40,6 +40,8 @@ export default function DoctorDashboard() {
     const [isAddPatientModalVisible, setAddPatientModalVisible] = useState(false);
     const [isAddMedicineModalVisible, setAddMedicineModalVisible] = useState(false);
     const [isAddGameCategoryModalVisible, setAddGameCategoryModalVisible] = useState(false);
+    const [isAddGameModalVisible, setAddGameModalVisible] = useState(false);
+
     const [patientName, setPatientName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -144,10 +146,13 @@ export default function DoctorDashboard() {
                         <Text style={styles.cardDescription}>Tap here to add a new game category.</Text>
                     </View>
                 </TouchableOpacity>
-                <View>
-                    <GameUploader />
-                </View>
-
+                <TouchableOpacity onPress={() => setAddGameModalVisible(true)} style={styles.card}>
+                    <Image source={require('../../add_medicine.png')} style={styles.cardImage} />
+                    <View style={styles.cardContent}>
+                        <Text style={styles.cardTitle}>Add new Games</Text>
+                        <Text style={styles.cardDescription}>Tap here to add a new games</Text>
+                    </View>
+                </TouchableOpacity>
                 {/* Add Patient Modal */}
                 <Modal
                     animationType="slide"
@@ -220,6 +225,10 @@ export default function DoctorDashboard() {
                 <AddGameCategory
                     isVisible={isAddGameCategoryModalVisible}
                     onRequestClose={() => setAddGameCategoryModalVisible(false)}
+                />
+                <GameUploader
+                    isVisible={isAddGameModalVisible}
+                    onRequestClose={() => setAddGameModalVisible(false)}
                 />
 
                 {/* <Text style={styles.cardTitle}>Past Appointments</Text> */}

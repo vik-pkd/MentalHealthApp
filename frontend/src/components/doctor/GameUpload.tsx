@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Button, StyleSheet, Platform } from 'react-native';
+import { View, Button, StyleSheet, Platform, Modal, Pressable, Text } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DocumentPicker from 'react-native-document-picker';
 import RNFetchBlob from 'rn-fetch-blob';
@@ -13,7 +13,7 @@ import { AppDispatch } from '../../store';
 import { fetchGameCategories } from '../../store/gameCategories-slice';
 import client from '../../api/client';
 
-const GameUploader = () => {
+const GameUploader = ({ isVisible, onRequestClose }: { isVisible: boolean, onRequestClose: () => void }) => {
   const [htmlContent, setHtmlContent] = useState('');
   const [cssContent, setCssContent] = useState('');
   const [javascriptContent, setJavascriptContent] = useState('');
@@ -25,6 +25,7 @@ const GameUploader = () => {
 
   useEffect(() => {
     dispatch(fetchGameCategories());
+    console.log('Game upload modal opened');
   }, []);
 
   const resolveContentUri = async (uri: string) => {
@@ -92,7 +93,7 @@ const GameUploader = () => {
     }
   };
 
-  const handleUpload = async() => {
+  const handleUpload = async () => {
     console.log(htmlContent, 'htmlContent');
     const payload = {
       htmlContent,
@@ -107,51 +108,77 @@ const GameUploader = () => {
     }
     const resp = await client.post('/games/upload-game', payload, { headers });
     console.log(resp.data);
+    onRequestClose();
   };
 
   return (
-    <View>
-      <TextInput
-        keyboardType='default'
-        value={gameName}
-        onChangeText={(text) => setGameName(text)}
-        placeholderTextColor={'#AEAEAE'}
-        placeholder="Game name"
-        style={styles.input}
-      />
-      <TextInput
-        keyboardType='default'
-        value={gameDescription}
-        onChangeText={(text) => setGameDescription(text)}
-        placeholderTextColor={'#AEAEAE'}
-        placeholder="Game description"
-        style={styles.input}
-      />
-      <Picker
-        style={{ height: 50, width: 150 }}
-        onValueChange={(itemValue: string, itemIndex) => setCategory(itemValue)}
-      >
-        {gameCategories.map(gameCategory => (
-          <Picker.Item key={gameCategory._id} label={gameCategory.title} value={gameCategory._id}/>
-        ))}
-      </Picker>
-      <Button title="Select File" onPress={handleSelectFile} />
-      <Button title="Upload File" onPress={handleUpload} />
-    </View>
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={isVisible}
+      onRequestClose={onRequestClose}
+    >
+      <View style={styles.container}>
+        <View style={styles.content}>
+          <TextInput
+            keyboardType='default'
+            value={gameName}
+            onChangeText={(text) => setGameName(text)}
+            placeholderTextColor={'#AEAEAE'}
+            placeholder="Game name"
+            style={styles.input}
+          />
+          <TextInput
+            keyboardType='default'
+            value={gameDescription}
+            onChangeText={(text) => setGameDescription(text)}
+            placeholderTextColor={'#AEAEAE'}
+            placeholder="Game description"
+            style={styles.input}
+          />
+          <Picker
+            dropdownIconColor={'#f2b3d3'}
+            onValueChange={(itemValue: string, itemIndex) => setCategory(itemValue)}
+          >
+            {gameCategories.map(gameCategory => (
+              <Picker.Item key={gameCategory._id} label={gameCategory.title} value={gameCategory._id} />
+            ))}
+          </Picker>
+          <Button title="Select File" onPress={handleSelectFile} />
+          <Button title="Upload File" onPress={handleUpload} />
+          <Pressable onPress={onRequestClose}>
+            <View style={[styles.button]}>
+              <Text style={[styles.buttonText]}>Close</Text>
+            </View>
+          </Pressable>
+        </View>
+      </View>
+    </Modal>
   );
 };
 
 export default GameUploader;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+  },
+  content: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    elevation: 5,
+  },
   input: {
     backgroundColor: '#FCF8FF',
-    padding: 10,
-    height: 40,
+    // padding: 10,
+    // height: 40,
     alignSelf: 'center',
     borderRadius: 5,
 
-    width: '80%',
     color: '#000000',
 
     marginTop: 10,
@@ -165,4 +192,14 @@ const styles = StyleSheet.create({
 
     elevation: 1,
   },
+  button: {
+    backgroundColor: '#2196F3',
+    borderRadius: 6,
+    padding: 6,
+    marginHorizontal: 6
+  },
+  buttonText: {
+    color: 'white'
+  },
+
 });

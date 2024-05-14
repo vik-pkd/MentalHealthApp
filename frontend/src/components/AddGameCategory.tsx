@@ -94,5 +94,6 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: 'white'
-    }
+    },
+    
 });
