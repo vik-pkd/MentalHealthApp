@@ -28,7 +28,7 @@ const Game: React.FC<GameCardProps> = ({ title, description, imageUrl, cardStyle
 
                     <View style={styles.cardBody}>
                         <Text style={styles.cardTitle}>{title}</Text>
-                        {categoryTitle && <Text style={styles.cardSubTitle}>{categoryTitle}</Text>}
+                        {/* {categoryTitle && <Text style={styles.cardSubTitle}>{categoryTitle}</Text>} */}
                         <Text style={styles.cardDescription}>{description}</Text>
                     </View>
                     <Image
@@ -83,7 +83,8 @@ const styles = StyleSheet.create({
         color: '#38006b',
         fontSize: 22,
         fontWeight: 'bold',
-        marginTop: 8
+        marginTop: 8,
+        marginBottom: 8
     },
     cardDescription: {
         color: '#57606f',

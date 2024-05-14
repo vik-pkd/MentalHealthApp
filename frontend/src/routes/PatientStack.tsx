@@ -43,7 +43,7 @@ import Journal from '../screens/patient/Journal/Journal';
 export type GameStackParamList = {
   Games: undefined;
   Category: { _id: string };
-  GameItem: { _id: string };
+  GameItem: { _id: string, category: string };
   //   // Game Types Here
   //   Puzzle: undefined;
   //   Focus: undefined;
@@ -167,7 +167,7 @@ export const PatientStack: React.FC = () => {
 
               return <Ionicons name={iconName} size={size} color={color} />;
             },
-            tabBarActiveTintColor: '#cc4dbd',
+            tabBarActiveTintColor: '#62a8c3',
             tabBarInactiveTintColor: 'white',
             headerShown: false,
             tabBarStyle: {

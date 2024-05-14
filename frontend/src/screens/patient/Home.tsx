@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, Image, Animated, Modal, TouchableOpacity, FlatList, Platform, Alert } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, Image, Animated, Modal, TouchableOpacity, FlatList, Platform, Alert, Dimensions } from 'react-native'
 import FancyCard from '../../components/FancyCard'
 import BasicCard from '../../components/BasicCard'
 import HistoryCard from '../../components/HistoryCards'
@@ -105,12 +105,16 @@ export default function Home() {
     const [alertModalVisible, setAlertModalVisible] = useState<boolean>(false);
     const [currentAlertIndex, setCurrentAlertIndex] = useState<number>(0);
 
+    const screenHeight = Dimensions.get("window").height;
+
     const handleLogout = () => {
 
         setIsLoggedIn(false);
         Snackbar.show({
             text: 'Logout Successful',
-            duration: Snackbar.LENGTH_SHORT
+            duration: Snackbar.LENGTH_SHORT,
+            backgroundColor: '#62a8c3',
+            marginBottom: screenHeight - 44
         });
 
     }
@@ -242,7 +246,7 @@ export default function Home() {
                                 <View style={styles.footer2}>
                                     <Progress.Bar
                                         style={styles.progress}
-                                        progress={6 / 100} // Assuming 1000 is the max points
+                                        progress={userPoints / 100} // Assuming 1000 is the max points
                                         width={105}
                                         color="#FFD700"
                                         unfilledColor="rgba(255, 255, 255, 0.5)"
@@ -250,7 +254,7 @@ export default function Home() {
                                     />
                                     <View style={styles.footer3}>
                                         <Icon name="flash" size={20} color="#FFD700" style={styles.icon} />
-                                        <Text style={styles.pointsText}>MP: {6} / 100 </Text>
+                                        <Text style={styles.pointsText}>MP: {userPoints} / 100 </Text>
                                     </View>
                                 </View>
 

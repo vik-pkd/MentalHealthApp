@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, Button, Modal, TextInput, TouchableOpacity, Image, Pressable } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, Button, Modal, TextInput, TouchableOpacity, Image, Pressable, Dimensions } from 'react-native'
 import { FAB } from '@rneui/themed'
 import Snackbar from 'react-native-snackbar'
 import React, { useState, useEffect } from 'react'
@@ -28,12 +28,16 @@ type CaregiverObj = {
 export default function DoctorDashboard() {
     const { setIsLoggedIn, profile, userCategory } = useLogin();
     const authToken = useSelector((state: Record<string, { token: string | null }>) => state.authToken.token);
+    const screenHeight = Dimensions.get("window").height;
+
     const handleLogout = () => {
 
         setIsLoggedIn(false);
         Snackbar.show({
             text: 'Logout Successful',
-            duration: Snackbar.LENGTH_SHORT
+            duration: Snackbar.LENGTH_SHORT,
+            backgroundColor: '#62a8c3',
+            marginBottom: screenHeight - 44
         });
 
     }

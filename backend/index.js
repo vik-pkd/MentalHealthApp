@@ -63,6 +63,12 @@ const gameData = [
     category: 'Strategy',
     path: 'tic_tac_toe.html'
   },
+  {
+    name: 'Flip Card',
+    description: 'Enhances memory recall and concentration. Improves visual recognition and pattern matching skills.',
+    category: 'Memory',
+    path: 'card_matching.html'
+  },
 ];
 
 async function seedGameCategories() {

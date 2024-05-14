@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, Pressable, Platform, Alert, Image } from 'react-native'
+import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, Pressable, Platform, Alert, Image, Dimensions } from 'react-native'
 import React, { useContext, useState } from 'react'
 import client from '../../api/client';
 
@@ -13,6 +13,7 @@ import { useLogin } from '../../context/LoginProvider';
 import { useDispatch } from 'react-redux';
 import { authTokenActions } from '../../store/authToken-slice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type LoginScreenProps = NativeStackScreenProps<AuthStackParamList, 'LoginCaretaker'>
 
@@ -22,6 +23,7 @@ const LoginCaretaker = ({ navigation }: LoginScreenProps) => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const dispatch = useDispatch();
+    const screenHeight = Dimensions.get("window").height;
 
     const handleLogin = async () => {
         if (email.length < 1 || password.length < 1) {
@@ -46,7 +48,8 @@ const LoginCaretaker = ({ navigation }: LoginScreenProps) => {
                 Snackbar.show({
                     text: 'Login success',
                     duration: Snackbar.LENGTH_SHORT,
-                    backgroundColor: '#63BAAA'
+                    backgroundColor: '#62a8c3',
+                    marginBottom: screenHeight - 44
                 })
                 setIsLoggedIn(true);
             }
@@ -95,6 +98,7 @@ const LoginCaretaker = ({ navigation }: LoginScreenProps) => {
                 <Pressable
                     onPress={handleLogin}
                     style={[styles.btn, { marginTop: error ? 10 : 20 }]}>
+                    <Icon name="login-variant" size={25} style={{ marginTop: 10, marginRight: 0 }} color="black" />
                     <Text style={styles.btnText}>Login</Text>
                 </Pressable>
 
@@ -102,6 +106,7 @@ const LoginCaretaker = ({ navigation }: LoginScreenProps) => {
                 <Pressable
                     onPress={() => navigation.navigate('FaceLogin')}
                     style={[styles.btn, { marginTop: error ? 10 : 20 }]}>
+                    <Icon name="face-recognition" size={25} style={{ marginTop: 10, marginRight: 0 }} color="black" />
                     <Text style={styles.btnText}>Face ID</Text>
                 </Pressable>
 
@@ -136,7 +141,7 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     appName: {
-        color: 'rgba(134, 65, 244, 1)',
+        color: '#62a8c3',
         fontSize: 40,
         fontWeight: 'bold',
         alignSelf: 'center',
@@ -170,8 +175,10 @@ const styles = StyleSheet.create({
     },
     btn: {
         backgroundColor: '#ffffff',
-        padding: 10,
+        // padding: 10,
         height: 45,
+        flexDirection: 'row',
+        justifyContent: 'center',
 
         alignSelf: 'center',
         borderRadius: 5,
@@ -189,10 +196,11 @@ const styles = StyleSheet.create({
         elevation: 3,
     },
     btnText: {
-        color: '#484848',
+        color: '#000',
         alignSelf: 'center',
         fontWeight: 'bold',
         fontSize: 18,
+        marginLeft: 8
     },
     signUpContainer: {
         marginTop: 80,
@@ -211,7 +219,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     signUpLabel: {
-        color: '#1d9bf0',
+        color: '#62a8c3',
     },
     tinyLogo: {
         width: 50,

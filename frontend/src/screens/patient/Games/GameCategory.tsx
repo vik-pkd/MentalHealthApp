@@ -14,8 +14,14 @@ import { RootState } from '../../../store/rootReducer';
 import { fetchGames } from '../../../store/game-slice';
 import { GameStackParamList } from '../../../routes/PatientStack';
 import Game from '../../../components/Game';
+import client from '../../../api/client';
 // import { Balloons } from 'react-native-fiesta';
-
+interface Category {
+    __v: number;
+    _id: string;
+    description: string;
+    title: string;
+}
 // type GameScreenProps = NativeStackScreenProps<GameStackParamList, 'Slot'>;
 type GameCategoryScreenProps = NativeStackScreenProps<GameStackParamList, 'Category'>;
 
@@ -24,29 +30,46 @@ const GameCategory = ({ route, navigation }: GameCategoryScreenProps) => {
     const games = useSelector((state: RootState) => state.games.games);
     const categoryId = route.params._id;
     const [categoryGames, setCategoryGames] = useState<typeof games>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
+
+
+    const getAllCategories = async () => {
+        try {
+            const response = await client.get('/games/game-categories');
+            const data = await response.data.gameCategories;  // Assuming the API response structure
+            setCategories(data);
+
+        } catch (error) {
+            console.error("Failed to fetch categories:", error);
+        }
+    };
+
     useEffect(() => {
-        console.log('categoryId', categoryId);
-        console.log('games', games);
+        // console.log('categoryId', categoryId);
+        // console.log('games', games);
         dispatch(fetchGames(categoryId));
     }, []);
 
     useEffect(() => {
         const filtered = games.filter(game => {
-            console.log('game._id', game.category);
-            console.log('categoryId', categoryId);
+            // console.log('game._id', game.category);
+            // console.log('categoryId', categoryId);
             return game.category === categoryId;
         });
         setCategoryGames(filtered);
+        getAllCategories();
     }, [games]);
 
 
+
     useEffect(() => {
-        console.log('categoryGames', categoryGames);
+        // console.log('categoryGames', categoryGames);
     }, [categoryGames]);
 
     const gameImages: { [key: string]: any } = {
         'Crossy Road': require('../../../../assets/games/cross.png'),
         'Tic Tac Toe': require('../../../../assets/games/tic-tac-toe.png'),
+        'Flip Card': require('../../../../assets/games/flipcard.jpg')
     };
 
     // const [dialogVisible, setDialogVisible] = useState(false);
@@ -72,15 +95,25 @@ const GameCategory = ({ route, navigation }: GameCategoryScreenProps) => {
     return (
         <ScrollView>
             {
-                categoryGames && categoryGames.map((card) => (
-                    <TouchableOpacity key={card._id} onPress={() => navigation.navigate('GameItem', { _id: card._id })}>
-                        <Game
-                            title={card.title}
-                            description={card.description}
-                            imageUrl={gameImages[card.title]}
-                        />
-                    </TouchableOpacity>
-                ))}
+                categoryGames && categoryGames.map((card) => {
+                    const category = categories.find(c => c._id === card.category);
+                    const categoryTitle = category ? category.title : 'Unknown';
+
+                    return (
+                        <TouchableOpacity key={card._id} onPress={() => {
+                            // Prepare the data you want to pass without mutating the original data.
+                            navigation.navigate('GameItem', { _id: card._id, category: categoryTitle });
+                        }}>
+                            <Game
+                                title={card.title}
+                                description={card.description}
+                                imageUrl={gameImages[card.title]}
+                                categoryTitle={categoryTitle}  // Now using the variable correctly scoped
+                            />
+                        </TouchableOpacity>
+                    );
+                })
+            }
 
         </ScrollView>
     );
