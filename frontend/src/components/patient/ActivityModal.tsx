@@ -16,9 +16,35 @@ interface Props {
     isVisible: boolean;
     onClose: () => void;
     activities: Activity[];
+    navigation: any;
 }
 
-const ActivityModal: React.FC<Props> = ({ isVisible, onClose, activities }) => {
+const ActivityModal: React.FC<Props> = ({ isVisible, onClose, activities, navigation }) => {
+
+    const handleSelect = (activity: Activity) => {
+        // Example of navigating to a game screen
+        onClose(); // Close the modal first
+
+        // Mapping of activity types to navigation routes
+        const routeMap: { [key: string]: any } = {
+            'Game': 'Games',
+            'Meditation': 'Meditation',
+            'Yoga': 'Yoga'
+        };
+
+        const route = routeMap[activity.type];
+        if (route === 'Games') {
+            navigation.navigate('GameItem', { _id: '66423d52fa325a391ddd9ce1', category: 'Strategy' });  // Passing title as _id, adjust based on actual params needed
+        } else if (route === 'Meditation') {
+            navigation.navigate("Zen", { screen: 'Meditation' });
+        }
+        else if (route === 'Yoga') {
+            navigation.navigate("Zen", { screen: 'Yoga' });
+        }
+
+    };
+
+
     return (
         <Modal
             animationType="slide"
@@ -30,25 +56,27 @@ const ActivityModal: React.FC<Props> = ({ isVisible, onClose, activities }) => {
                 <View style={styles.modalView}>
                     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
                         {activities.map((activity, index) => (
-                            <View key={index} style={[styles.activityItem, activity.isDoctorRecommended && styles.recommended]}>
-                                <Image source={activity.image} style={styles.badgeImage} />
-                                <View style={styles.detailsAndProgress}>
-                                    <Text style={styles.activityTitle}>{activity.title}</Text>
-                                    <Text style={styles.activityType}>{activity.type}</Text>
-                                    <Progress.Bar
-                                        style={styles.progress}
-                                        progress={activity.pointsCollected / activity.maxPoints}
-                                        width={200}
-                                        color={'#9c4dcc'}
-                                        unfilledColor="rgba(255, 255, 255, 0.5)"
-                                        borderColor="#ccc"
-                                    />
-                                    <Text style={styles.pointsText}>Points: {activity.pointsCollected} / {activity.maxPoints}</Text>
+                            <TouchableOpacity key={index} onPress={() => handleSelect(activity)}>
+                                <View key={index} style={[styles.activityItem, activity.isDoctorRecommended && styles.recommended]}>
+                                    <Image source={activity.image} style={styles.badgeImage} />
+                                    <View style={styles.detailsAndProgress}>
+                                        <Text style={styles.activityTitle}>{activity.title}</Text>
+                                        <Text style={styles.activityType}>{activity.type}</Text>
+                                        <Progress.Bar
+                                            style={styles.progress}
+                                            progress={activity.pointsCollected / activity.maxPoints}
+                                            width={200}
+                                            color={'#9c4dcc'}
+                                            unfilledColor="rgba(255, 255, 255, 0.5)"
+                                            borderColor="#ccc"
+                                        />
+                                        <Text style={styles.pointsText}>Points: {activity.pointsCollected} / {activity.maxPoints}</Text>
+                                    </View>
+                                    {activity.isDoctorRecommended && (
+                                        <Ionicons name="medkit" size={24} color="#4CAF50" style={styles.medicalIcon} />
+                                    )}
                                 </View>
-                                {activity.isDoctorRecommended && (
-                                    <Ionicons name="medkit" size={24} color="#4CAF50" style={styles.medicalIcon} />
-                                )}
-                            </View>
+                            </TouchableOpacity>
                         ))}
                     </ScrollView>
                     <TouchableOpacity style={styles.closeButton} onPress={onClose}>

@@ -8,7 +8,7 @@ import ActivityModal from '../../../components/patient/ActivityModal';
 import { useSelector } from 'react-redux';
 import { useLogin } from '../../../context/LoginProvider';
 import client from '../../../api/client';
-
+import { useNavigation } from '@react-navigation/native';
 
 interface Activity {
     type: string;
@@ -46,18 +46,18 @@ const init_steps: Step[] = [
                 isDoctorRecommended: true
             },
             {
-                type: 'Video',
-                title: 'Meditation',
+                type: 'Meditation',
+                title: 'Focus',
                 pointsCollected: 0,
-                maxPoints: 1,
+                maxPoints: 5,
                 image: require('../../../../assets/mindfullness/meditation.png'),
                 isDoctorRecommended: false,
             },
             {
-                type: 'Reading',
-                title: 'Depression Symptoms',
+                type: 'Yoga',
+                title: 'Traditional Yoga',
                 pointsCollected: 0,
-                maxPoints: 1,
+                maxPoints: 5,
                 image: require('../../../../assets/mindfullness/medicine.jpg'),
                 isDoctorRecommended: false,
             }
@@ -124,6 +124,7 @@ const Chapter1: React.FC = () => {
     const [unlockedSteps, setUnlockedSteps] = useState<number[]>([]);
     const authToken = useSelector((state: Record<string, { token: string | null }>) => state.authToken.token);
     const { profile } = useLogin();
+    const navigation = useNavigation();
 
     const loadProgress = async () => {
         const progress = await AsyncStorage.getItem('chapter1Progress');
@@ -176,11 +177,14 @@ const Chapter1: React.FC = () => {
             setSelectedStep(steps[index]);
             setModalVisible(true);
         } else if (index === unlockedSteps.length) { // Assuming sequential unlocking
-            const newUnlockedSteps = [...unlockedSteps, index];
-            setUnlockedSteps(newUnlockedSteps);
-            await AsyncStorage.setItem('chapter1Progress', JSON.stringify(newUnlockedSteps));
-            setSelectedStep(steps[index]);
-            setModalVisible(true);
+            const allActivitiesCompleted = steps[index - 1].activities.every(activity => activity.pointsCollected >= activity.maxPoints);
+            if (allActivitiesCompleted) {
+                const newUnlockedSteps = [...unlockedSteps, index];
+                setUnlockedSteps(newUnlockedSteps);
+                await AsyncStorage.setItem('chapter1Progress', JSON.stringify(newUnlockedSteps));
+                setSelectedStep(steps[index]);
+                setModalVisible(true);
+            }
         }
     };
 
@@ -237,6 +241,7 @@ const Chapter1: React.FC = () => {
                 isVisible={modalVisible}
                 onClose={() => setModalVisible(false)}
                 activities={selectedStep.activities}
+                navigation={navigation}
             />
         </LinearGradient>
     )

@@ -1,6 +1,7 @@
 import { View, Text } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
+import LottieSplashScreen from "react-native-lottie-splash-screen";
 
 //Routes
 import ParentStack from './ParentStack';
@@ -18,9 +19,11 @@ export const Router = () => {
         setIsLoggedIn(hasToken);
     };
 
-    // useEffect(() => {
-    //     hasAuthToken();
-    // }, []);
+    useEffect(() => {
+        setTimeout(() => {
+            LottieSplashScreen.hide(); // here
+        }, 2_000);
+    }, []);
 
     console.log(isLoggedIn)
 

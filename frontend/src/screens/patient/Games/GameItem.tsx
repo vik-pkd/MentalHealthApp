@@ -26,7 +26,8 @@ const GameItem = ({ route, navigation }: GameScreenProps) => {
     const [dialogVisible, setDialogVisible] = useState(false);
     const [animationVisible, setAnimationVisible] = useState(false);
     const [pointEarned, setpointEarned] = useState(false);
-    const { updateUserPoints } = useLogin();
+    const { updateUserPoints, setExtraPoints } = useLogin();
+    const extraPoints = route.params ?? { extraPoints: 0 };
 
     const animationRef = useRef<LottieView>(null);
 
@@ -34,9 +35,10 @@ const GameItem = ({ route, navigation }: GameScreenProps) => {
         const data = JSON.parse(event.nativeEvent.data);
         console.log(data);
         if (data.type) {
-
-            setpointEarned(data.points);
-            updateUserPoints(data.points, gameCategory);
+            const totalPoints = data.points + extraPoints;
+            setExtraPoints(extraPoints);
+            setpointEarned(totalPoints);
+            updateUserPoints(totalPoints, gameCategory);
             setAnimationVisible(true); // Show animation first
             setTimeout(() => {
                 setAnimationVisible(false);
