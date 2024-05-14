@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, Image, Animated, Modal, TouchableOpacity, FlatList } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, Image, Animated, Modal, TouchableOpacity, FlatList, Dimensions } from 'react-native'
 import FancyCard from '../../components/FancyCard'
 import BasicCard from '../../components/BasicCard'
 import HistoryCard from '../../components/HistoryCards'
@@ -18,6 +18,8 @@ export default function CaretakerDashboard() {
     const { setIsLoggedIn, profile } = useLogin();
     const [patients, setPatients] = useState([]);
     const [reminders, setReminders] = useState([[]]);
+
+    const screenHeight = Dimensions.get("window").height;
 
     // Dummy patient information
     const patientInfo = {
@@ -60,7 +62,9 @@ export default function CaretakerDashboard() {
         setIsLoggedIn(false);
         Snackbar.show({
             text: 'Logout Successful',
-            duration: Snackbar.LENGTH_SHORT
+            duration: Snackbar.LENGTH_SHORT,
+            backgroundColor: '#62a8c3',
+            marginBottom: screenHeight - 44
         });
 
     }

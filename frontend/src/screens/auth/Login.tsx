@@ -1,9 +1,10 @@
-import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, Pressable, Platform, Alert, Image } from 'react-native'
+import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, Pressable, Platform, Alert, Image, Dimensions } from 'react-native'
 import React, { useContext, useState } from 'react'
 import client from '../../api/client';
 
 //react native elements
 import { FAB } from '@rneui/themed'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 //Snackbar
 import Snackbar from 'react-native-snackbar'
 
@@ -29,6 +30,7 @@ const Login = ({ navigation }: LoginScreenProps) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const dispatch = useDispatch();
+  const screenHeight = Dimensions.get("window").height;
 
   const handleFaceID = async () => {
 
@@ -131,7 +133,8 @@ const Login = ({ navigation }: LoginScreenProps) => {
                     Snackbar.show({
                       text: 'Login success',
                       duration: Snackbar.LENGTH_SHORT,
-                      backgroundColor: '#9c4dcc'
+                      backgroundColor: '#62a8c3',
+                      marginBottom: screenHeight - 44
                     })
                     setIsLoggedIn(true);
                   }
@@ -143,7 +146,8 @@ const Login = ({ navigation }: LoginScreenProps) => {
           Snackbar.show({
             text: 'Login success',
             duration: Snackbar.LENGTH_SHORT,
-            backgroundColor: '#9c4dcc'
+            backgroundColor: '#62a8c3',
+            marginBottom: screenHeight - 44
           })
           setIsLoggedIn(true);
         }
@@ -192,26 +196,37 @@ const Login = ({ navigation }: LoginScreenProps) => {
         <Pressable
           onPress={handleLogin}
           style={[styles.btn, { marginTop: error ? 10 : 20 }]}>
+          <Icon name="login-variant" size={25} style={{ marginTop: 10, marginRight: 0 }} color="black" />
           <Text style={styles.btnText}>Login</Text>
         </Pressable>
 
         {/* Face ID button */}
         <Pressable
           onPress={() => navigation.navigate('FaceLogin')}
-          style={[styles.btn, { marginTop: error ? 10 : 20 }]}>
+          style={[styles.btn, { marginTop: 20 }]}>
+          <Icon name="face-recognition" size={25} style={{ marginTop: 10, marginRight: 0 }} color="black" />
           <Text style={styles.btnText}>Face ID</Text>
         </Pressable>
 
 
-        {/* Sign up navigation */}
+        {/* Face ID button */}
         <Pressable
+          onPress={() => navigation.navigate('FaceLogin')}
+          style={[styles.btn, { marginTop: 20, marginBottom: 25 }]}>
+          <Icon name="account-voice" size={25} style={{ marginTop: 10, marginRight: 0 }} color="black" />
+          <Text style={styles.btnText}>Voice ID</Text>
+        </Pressable>
+
+
+        {/* Sign up navigation */}
+        {/* <Pressable
           onPress={() => navigation.navigate('Signup')}
           style={styles.signUpContainer}>
           <Text style={styles.noAccountLabel}>
             Don't have an account?{'  '}
             <Text style={styles.signUpLabel}>Create an account</Text>
           </Text>
-        </Pressable>
+        </Pressable> */}
 
 
 
@@ -233,7 +248,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   appName: {
-    color: '#9c4dcc',
+    color: '#62a8c3',
     fontSize: 40,
     fontWeight: 'bold',
     alignSelf: 'center',
@@ -267,8 +282,10 @@ const styles = StyleSheet.create({
   },
   btn: {
     backgroundColor: '#ffffff',
-    padding: 10,
+    // padding: 10,
     height: 45,
+    flexDirection: 'row',
+    justifyContent: 'center',
 
     alignSelf: 'center',
     borderRadius: 5,
@@ -286,10 +303,11 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   btnText: {
-    color: '#484848',
+    color: '#000',
     alignSelf: 'center',
     fontWeight: 'bold',
     fontSize: 18,
+    marginLeft: 8
   },
   signUpContainer: {
     marginTop: 80,

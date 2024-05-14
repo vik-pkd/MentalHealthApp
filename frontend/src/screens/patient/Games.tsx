@@ -19,8 +19,7 @@ type GameScreenProps = NativeStackScreenProps<GameStackParamList, 'Games'>
 // };
 
 const Games = ({ navigation }: GameScreenProps) => {
-    const { sectionPoints, setSectionPoints, userPoints, profile } = useLogin();
-    const [cardData, setCardData] = useState([]);
+    const { sectionPoints, setSectionPoints, profile } = useLogin();
     const gameCategories = useSelector((state: RootState) => state.gameCategories.gameCategories);
     const dispatch = useDispatch<AppDispatch>();
 
@@ -63,7 +62,7 @@ const Games = ({ navigation }: GameScreenProps) => {
 
     useEffect(() => {
         // console.log('gameCategories in games', gameCategories);
-
+        console.log('section points', sectionPoints);
     }, [gameCategories]);
 
 
@@ -86,7 +85,7 @@ const Games = ({ navigation }: GameScreenProps) => {
                             title={card.title}
                             description={card.description}
                             imageUrl={localImages[card.title]}
-                            progress={0}
+                            progress={sectionPoints[card.title] ? sectionPoints[card.title] : 0}
                             imageList={localImageLists[card.title]}
                         />
                     </TouchableOpacity>

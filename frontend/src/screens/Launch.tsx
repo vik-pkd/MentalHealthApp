@@ -53,7 +53,7 @@ export default function Launch({ navigation }: LaunchScreenProps) {
 
 const styles = StyleSheet.create({
     appName: {
-        color: '#9c4dcc',
+        color: '#62a8c3',
         fontSize: 40,
         fontWeight: 'bold',
         alignSelf: 'center',

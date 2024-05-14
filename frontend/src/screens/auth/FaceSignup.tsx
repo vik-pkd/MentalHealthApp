@@ -6,8 +6,9 @@ import { useLogin } from '../../context/LoginProvider';
 import Snackbar from 'react-native-snackbar'
 import ImageResizer from 'react-native-image-resizer';
 
+
 const FaceSignup = () => {
-    const [cameraPermission, setCameraPermission] = useState(null);
+    const [cameraPermission, setCameraPermission] = useState(false);
     const device = useCameraDevice('back'); // Set the initial camera device
     const camera = useRef<Camera>(null);
     const [capturedPhoto, setCapturedPhoto] = useState(null);
@@ -20,11 +21,9 @@ const FaceSignup = () => {
 
         if (status === 'granted') {
             setCameraPermission(true);
-        } else if (status === 'notDetermined') {
-            const permission = await Camera.requestCameraPermission();
-            setCameraPermission(permission === 'authorized');
         } else {
-            setCameraPermission(false);
+            const permission = await Camera.requestCameraPermission() as string;
+            setCameraPermission(permission === 'authorized');
         }
     };
 

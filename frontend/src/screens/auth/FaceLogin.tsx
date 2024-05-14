@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { StyleSheet, Text, View, Button, Image, Pressable } from 'react-native';
-import { Camera, useCameraDevice, useCameraDevices } from 'react-native-vision-camera';
+import { Camera, useCameraDevice, useCameraDevices, useCameraPermission } from 'react-native-vision-camera';
 import client from '../../api/client';
 import { useLogin } from '../../context/LoginProvider';
 import Snackbar from 'react-native-snackbar'
 
 const FaceLogin = () => {
+    const { hasPermission, requestPermission } = useCameraPermission();
     const [cameraPermission, setCameraPermission] = useState(null);
     const device = useCameraDevice('back'); // Set the initial camera device
     const camera = useRef<Camera>(null);
@@ -17,13 +18,20 @@ const FaceLogin = () => {
         const status = await Camera.getCameraPermissionStatus();
         console.log('status', status);
 
+        // if (status === 'granted') {
+        //     setCameraPermission(true);
+        // } else if (status === 'notDetermined') {
+        //     const permission = await Camera.requestCameraPermission();
+        //     setCameraPermission(permission === 'authorized');
+        // } else {
+        //     setCameraPermission(false);
+        // }
+
         if (status === 'granted') {
             setCameraPermission(true);
-        } else if (status === 'notDetermined') {
+        } else {
             const permission = await Camera.requestCameraPermission();
             setCameraPermission(permission === 'authorized');
-        } else {
-            setCameraPermission(false);
         }
     };
 

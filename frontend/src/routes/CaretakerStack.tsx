@@ -53,7 +53,7 @@ export const CaretakerStack = () => {
                         // You can return any component that you like here!
                         return <Ionicons name={iconName} size={size} color={color} />;
                     },
-                    tabBarActiveTintColor: '#cc4dbd',
+                    tabBarActiveTintColor: '#62a8c3',
                     tabBarInactiveTintColor: 'white',
                     headerShown: false,
                     tabBarStyle: {
